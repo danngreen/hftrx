@@ -224,8 +224,8 @@
 	//#define CTLREGMODE24	1		/* управляющий регистр 24 бита	*/
 	//#define CTLREGMODE16_GEN500	1
 
-	#define DSTYLE_UR3LMZMOD	1	// Расположение элементов экрана в трансиверах UR3LMZ
-	#define	FONTSTYLE_ITALIC	1	// Использовать альтернативный шрифт
+	//#define DSTYLE_UR3LMZMOD	1	// Расположение элементов экрана в трансиверах UR3LMZ
+	//#define FONTSTYLE_ITALIC	1	// Использовать альтернативный шрифт
 	//#define DSTYLE_SIMPLEFREQ	1	// Только отображение частоты (и прямой ввод частоты)
 
 	// +++ Особые варианты расположения кнопок на клавиатуре
@@ -284,7 +284,8 @@
 	//#define LCDMODE_ILI8961	1	/* 320 * 240, RGB, ILI8961 */
 	//#define LCDMODE_ILI8961_TOPDOWN	1
 	//#define LCDMODE_LQ043T3DX02K 1	/* LQ043T3DX02K panel (272*480) - SONY PSP-1000 display */
-	#define LCDMODE_DUMMY	1
+	//#define LCDMODE_DUMMY	1
+	#define LCDMODE_SSD1326	1
 	// --- Одна из этих строк определяет тип дисплея, для которого компилируется прошивка
 
 	#define WITHLCDBACKLIGHTMAX	1
@@ -390,10 +391,10 @@
 	//#define PLL2_FRACTIONAL_LENGTH	10	/* Si5351a: lower 10 bits is a fractional part */
 	//#define PLL1_TYPE PLL_TYPE_SI570
 	//#define PLL1_FRACTIONAL_LENGTH	28	/* Si570: lower 28 bits is a fractional part */
-	#define DDS1_TYPE DDS_TYPE_AD9951
+	//#define DDS1_TYPE DDS_TYPE_AD9951
 	//#define DDS1_TYPE DDS_TYPE_AD9852
 	//#define DDS1_TYPE DDS_TYPE_AD9851
-	#define DDS2_TYPE DDS_TYPE_AD9834
+	//#define DDS2_TYPE DDS_TYPE_AD9834
 	//#define DDS2_TYPE DDS_TYPE_AD9851
 	//#define PLL2_TYPE PLL_TYPE_CMX992
 	//#define DDS3_TYPE DDS_TYPE_AD9834
@@ -413,25 +414,8 @@
 	///#define DDS1_TYPE DDS_TYPE_AD9834
 	///#define targetdds1 SPI_CSEL1 	/* DDS1 - LO1 output - работает AD9834 (Vasiliy, Ufa). */
 	/* Назначение адресов на SPI шине */
-	#define targetdds1 SPI_CSEL0 	/* DDS1 */
-	//#define targetdds3 SPI_CSEL1 	/* DDS2 - LO2 output - RU6NFK with FQMODEL_10M7_500K */
-	#define targetdds2 SPI_CSEL1 	/* DDS2 - LO3 output */
-	#define targetdds3 SPI_CSEL2 	/* DDS3 - PBT output */
-	//#define targetpll1 SPI_CSEL2 	/* ADF4001 after DDS1 - divide by r1 and scale to n1. Для двойной DDS первого гетеродина - вторая DDS */
-	//#define targetpll2 SPI_CSEL3 	/* ADF4001 - fixed 2-nd LO generate or LO1 divider */ 
-	#define targetext1 SPI_CSEL4 	/* external devices control */
-#ifndef SPI_IOUPDATE_BIT 
-	#define targetupd1 SPI_CSEL5 	/* DDS IOUPDATE signals at output of SPI chip-select register */
-#endif
-	#define targetctl1 SPI_CSEL6 	/* control register */
-	#define targetnvram SPI_CSEL7  	/* serial nvram */
 
-	#define targetlcd targetext1 	/* LCD over SPI line devices control */ 
-	#define targetuc1608 SPI_CSEL255	/* LCD with positive chip select signal	*/
-	#define targetdsp1 targetext1 	/* external devices control */
-
-	#define targetcodec2 SPI_CSEL2 	/* PD1 CS4272 */
-	#define targetcodec1 SPI_CSEL3 	/* PD3 TLV320AIC23B */
+	#define targetlcd SPI_CSEL0 	/* external devices control */
 
 	/* коды фильтров второй ПЧ, выдаваемые на дешифраторы */
 	#define BOARD_FILTER_3P1		BOARD_FILTERCODE_0	/* 3.1 or 2.75 kHz filter */

@@ -117,13 +117,13 @@ static void adcdones_spool(void)
 	}
 }
 
-#if WITHLWIP
+#if WITHLWIP || TOBD1_BK
 static volatile uint32_t sys_now_counter;
 uint32_t sys_now(void)
 {
 	return sys_now_counter;
 }
-#endif /* WITHLWIP */
+#endif /* WITHLWIP  || TOBD1_BK*/
 
 /* Машинно-независимый обработчик прерываний. */
 // Функции с побочным эффектом - отсчитывание времени.
@@ -132,9 +132,9 @@ RAMFUNC void spool_systimerbundle1(void)
 {
 	//beacon_255();
 
-#if WITHLWIP
+#if WITHLWIP || TOBD1_BK
 	sys_now_counter += (1000 / TICKS_FREQUENCY);
-#endif /* WITHLWIP */
+#endif /* WITHLWIP || TOBD1_BK*/
 
 	//spool_lfm();
 	tickers_spool();
@@ -217,6 +217,12 @@ static RAMFUNC void stm32fxxx_pinirq(portholder_t pr)
 		stmpe811_interrupt_handler();	/* прерывание по изменению сигнала на входе от тач */
 	}
 #endif /* BOARD_STMPE811_INT_PIN */
+#if TOBD1_BK
+	if ((pr & TOBD1_DATA_PIN) != 0)
+	{
+		tobd1_interrupt_handler();		/* прерывание по поступлению пакета данных obd1 */
+	}
+#endif /* TOBD1_BK */
 }
 
 #endif /* CPUSTYLE_STM32MP1 || CPUSTYLE_STM32F */

@@ -1066,7 +1066,7 @@ extern "C" {
 #endif
 
 
-#if LCDMODE_RDX0154 || LCDMODE_RDX0120 || LCDMODE_RDX0077 || LCDMODE_RDT065
+#if LCDMODE_RDX0154 || LCDMODE_RDX0120 || LCDMODE_RDX0077 || LCDMODE_RDT065 || LCDMODE_SSD1326
 	#define LCDMODE_UC1601 1
 #endif /* LCDMODE_RDX0154 || LCDMODE_RDX0120 || LCDMODE_RDX0077 || LCDMODE_RDT065 */
 #if LCDMODE_TIC218 || LCDMODE_TIC154
@@ -1426,6 +1426,21 @@ extern "C" {
 
 #elif LCDMODE_HD44780 && LCDMODE_WH1604
 	#define DSTYLE_T_X16_Y4	1	
+
+#elif LCDMODE_SSD1326
+
+	#define DIM_X 256
+	#define DIM_Y 32
+
+	#define CHAR_W 6
+	#define CHAR_H 8
+
+#define DSTYLE_T_X16_Y2	1
+
+#define CHARS2GRID(columns) ((columns) * 1)		/* перевести количество символов в ячейкт сетки разметки отображния */
+	#define ROWS2GRID(rows) ((rows) * 1)		/* перевести количество символов в ячейкт сетки разметки отображния */
+	#define GRID2X(cellsx) ((cellsx) * CHAR_W)	/* перевод ячеек сетки разметки в номер пикселя по горизонталм */
+	#define GRID2Y(cellsy) ((cellsy) * CHAR_H)	/* перевод ячеек сетки разметки в номер пикселя по вертикали */
 
 #elif LCDMODE_DUMMY
 

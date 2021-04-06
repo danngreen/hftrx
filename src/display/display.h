@@ -235,6 +235,19 @@ COLOR24_T colorgradient(unsigned pos, unsigned maxpos);
 
 	#define HALFCOUNT_FREQA HALFCOUNT_BIG
 
+#elif LCDMODE_SSD1326
+
+#include "ssd1326.h"
+
+#define HALFCOUNT_BIG 2		// big and half sizes
+	#define HALFCOUNT_SMALL 1	// small size
+	#define HALFCOUNT_SMALL2 1	// small2 size
+	#define HALFCOUNT_BAR 1		// small size
+
+	#define HALFCOUNT_FREQA HALFCOUNT_BIG
+
+	#define DEFAULT_LCD_CONTRAST	100 	//  на SW2011RDX питание 8 вольт
+
 #elif LCDMODE_DUMMY
 	/* При использовании frame buffer цвета восьмибитные */
 	typedef uint_fast8_t COLORMAIN_T;
