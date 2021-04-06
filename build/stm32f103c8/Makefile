@@ -72,7 +72,7 @@ SRCDIR = ../../src
 PROJECT = tc1_stm32f103c8
 
 # Define linker script file here
-LDSCRIPT_ROM = ./STM32F103C8_rom.ld
+LDSCRIPT_ROM = ./STM32F103CB_rom.ld
 
 # List all user C define here, like -D_DEBUG=1
 UDEFS = -DNDEBUG=1 -DCPUSTYLE_STM32F1XX=1 -DSTM32F103xB=1

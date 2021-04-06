@@ -508,4 +508,6 @@
 	#define  WITHPOWERTRIMMAX 100
 	#define LCDMODE_PIXELSIZE 1
 
+	#define	TOBD1_BK	1			// Бортовой компьютер для протокола Toyota OBD1
+
 #endif /* ARM_STM32F103C8_CTLSTYLE_TEST_H_INCLUDED */

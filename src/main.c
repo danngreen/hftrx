@@ -21639,6 +21639,20 @@ hamradio_mainloop(void)
 	}
 }
 
+#if TOBD1_BK
+#include "tobd1.h"
+
+static void
+tobd1_mainloop(void)
+{
+	tobd1_initialize();
+	for (;;)
+	{
+		tobd1_main_step();
+	}
+}
+#endif /* TOBD1_BK */
+
 #if 0
 
 static volatile uint16_t f255, f255cnt, f255period;
@@ -22057,6 +22071,8 @@ main(void)
 	dspcontrol_mainloop();
 #elif CTLSTYLE_V1H
 	hamradio_mainloop_vh1();
+#elif TOBD1_BK
+	tobd1_mainloop();
 #else /* WITHSPISLAVE */
 	hamradio_mainloop();
 #endif /* WITHSPISLAVE */
