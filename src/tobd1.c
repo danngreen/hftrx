@@ -4,7 +4,7 @@
 #include "hardware.h"
 #include "gpio.h"
 
-#if TOBD1_BK
+#if CTLSTYLE_TOBD1
 
 #include "display/ssd1326.h"
 #include <stdbool.h>
@@ -252,4 +252,4 @@ void tobd1_interrupt_handler(void)
     } // end while
   } // end (InPacket == false)
 }
-#endif /* TOBD1_BK */
+#endif /* CTLSTYLE_TOBD1 */

@@ -21639,7 +21639,7 @@ hamradio_mainloop(void)
 	}
 }
 
-#if TOBD1_BK
+#if CTLSTYLE_TOBD1
 #include "tobd1.h"
 
 static void
@@ -21651,7 +21651,7 @@ tobd1_mainloop(void)
 		tobd1_main_step();
 	}
 }
-#endif /* TOBD1_BK */
+#endif /* CTLSTYLE_TOBD1 */
 
 #if 0
 
@@ -22071,7 +22071,7 @@ main(void)
 	dspcontrol_mainloop();
 #elif CTLSTYLE_V1H
 	hamradio_mainloop_vh1();
-#elif TOBD1_BK
+#elif CTLSTYLE_TOBD1
 	tobd1_mainloop();
 #else /* WITHSPISLAVE */
 	hamradio_mainloop();

@@ -946,9 +946,9 @@ extern uint8_t myIP [4];
 extern uint8_t myNETMASK [4];
 extern uint8_t myGATEWAY [4];
 
-#if TOBD1_BK
+#if CTLSTYLE_TOBD1
 	#include "tobd1.h"
-#endif /* TOBD1_BK */
+#endif /* CTLSTYLE_TOBD1 */
 
 #ifdef __cplusplus
 }

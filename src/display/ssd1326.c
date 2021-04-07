@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#if LCDMODE_SSD1326
+
 #define CTLREG_SPIMODE	SPIC_MODE3
 
 uint8_t display_buffer_gray [4096];
@@ -162,3 +164,4 @@ void ssd1326_draw_line(uint_fast16_t x1, uint_fast8_t y1, uint_fast16_t x2, uint
 		}
 	}
 }
+#endif /* LCDMODE_SSD1326 */

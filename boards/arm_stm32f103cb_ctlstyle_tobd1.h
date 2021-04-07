@@ -10,8 +10,8 @@
 //
 // copy atmega644_ctlstyle_v1.h.prototype atmega644_ctlstyle_v1.h
 
-#ifndef ARM_STM32F103C8_CTLSTYLE_TEST_H_INCLUDED
-#define ARM_STM32F103C8_CTLSTYLE_TEST_H_INCLUDED 1
+#ifndef ARM_STM32F103C8_CTLSTYLE_TOBD1_H_INCLUDED
+#define ARM_STM32F103C8_CTLSTYLE_TOBD1_H_INCLUDED 1
 
 	#define WITHUSEPLL		1	/* Главная PLL	*/
 	//#define WITHUSESAIPLL	1	/* SAI PLL	*/
@@ -209,10 +209,7 @@
 
 
 	#define CTLREGMODE_NOCTLREG	1		/* управляющий регистр - "Воробей-3" с 3*ULN2003 */
-	//#define CTLREGMODE24_V1	1		/* управляющий регистр - "Воробей" и "Колибри" */
-	//#define CTLREGMODE16	1	// "синтезатор с хорошим сервисом"
 
-	//#define WITHAGCMODE5STAGES 1
 	#define WITHAGCMODEONOFF 1	/* среди режимов АРУ есть только включено-выключено */
 
 	#define WITHPREAMPATT2_6DB		1	// Управление УВЧ и двухкаскадным аттенюатором с затуханиями 0 - 6 - 12 - 18 dB */
@@ -305,7 +302,7 @@
 	//#define WITHELKEY	1
 	//#define WITHKBDENCODER 1	// перестройка частоты кнопками
 	//#define WITHKEYBOARD 1	/* в данном устройстве есть клавиатура */
-	#define KEYBOARD_USE_ADC	1	/* на одной линии установлено  четыре  клавиши. на vref - 6.8K, далее 2.2К, 4.7К и 13K. */
+	//#define KEYBOARD_USE_ADC	1	/* на одной линии установлено  четыре  клавиши. на vref - 6.8K, далее 2.2К, 4.7К и 13K. */
 	//#define WITHNESTEDINTERRUPTS	1	/* используется при наличии real-time части. */
 
 	// +++ Эти строки можно отключать, уменьшая функциональность готового изделия
@@ -415,7 +412,7 @@
 	///#define targetdds1 SPI_CSEL1 	/* DDS1 - LO1 output - работает AD9834 (Vasiliy, Ufa). */
 	/* Назначение адресов на SPI шине */
 
-	#define targetlcd SPI_CSEL0 	/* external devices control */
+	#define targetlcd SPI_CSEL0 	/* LCD SSD1326 */
 
 	/* коды фильтров второй ПЧ, выдаваемые на дешифраторы */
 	#define BOARD_FILTER_3P1		BOARD_FILTERCODE_0	/* 3.1 or 2.75 kHz filter */
@@ -442,49 +439,14 @@
 	/* фильтры, для которых стоит признак HAVE */
 	#define IF3_FHAVE	(IF3_FMASK_0P5 |  IF3_FMASK_3P1/* | IF3_FMASK_6P0 | IF3_FMASK_15P0*/)
 
-
-
 	// Назначения входов АЦП процессора.
 	enum 
 	{ 
-	#if WITHTEMPSENSOR
-		TEMPIX = 16,		// ADC1->CR2 |= ADC_CR2_TSVREFE;	// для тестов
-	#endif
-	#if WITHVOLTLEVEL 
-		VOLTSOURCE = 4,		// Средняя точка делителя напряжения, для АКБ
-	#endif /* WITHVOLTLEVEL */
-	#if WITHBARS
-		SMETERIX = 0,	// S-meter
-	#endif /* WITHBARS */
-	#if WITHVOX
-		VOXIX = 2, AVOXIX = 1,	// VOX
-	#endif /* WITHVOX */
-	#if WITHPOTPBT
-		POTPBT = 2,
-	#endif /* WITHPOTPBT */
-	#if WITHPOTIFSHIFT
-		POTIFSHIFT = 1,
-	#endif /* WITHPOTIFSHIFT */
-	#if WITHPOTWPM
-		POTWPM = 2,
-	#endif /* WITHPOTWPM */
-	#if WITHSWRMTR
-		PWRI = 4,
-		FWD = 4, REF = 3,	// SWR-meter
-	#endif /* WITHSWRMTR */
-
-		XTHERMOMRRIX = BOARD_ADCMRRIN(0),	// кеш - индекc не должен повторяться в конфигурации
-		PASENSEMRRIX = BOARD_ADCMRRIN(1),	// кеш - индекc не должен повторяться в конфигурации
-		REFMRRIX = BOARD_ADCMRRIN(2),
-		FWDMRRIX = BOARD_ADCMRRIN(3),
-		PWRMRRIX = FWDMRRIX,
-		VOLTMRRIX = BOARD_ADCMRRIN(4),	// кеш - индекc не должен повторяться в конфигурации
-
-		KI0 = 5, KI1 = 6, KI2 = 7	// клавиатура
+		KI0 = 1	// клавиатура
 	};
 
-	#define KI_COUNT 3	// количество используемых под клавиатуру входов АЦП
-	#define KI_LIST	KI2, KI1, KI0,	// инициализаторы для функции перекодировки
+	#define KI_COUNT 1	// количество используемых под клавиатуру входов АЦП
+	#define KI_LIST	KI0,	// инициализаторы для функции перекодировки
 
 	#define VOLTLEVEL_UPPER		47	// 4.7 kOhm - верхний резистор делителя датчика напряжения
 	#define VOLTLEVEL_LOWER		10	// 1.0 kOhm - нижний резистор
@@ -492,6 +454,4 @@
 	#define  WITHPOWERTRIMMAX 100
 	#define LCDMODE_PIXELSIZE 1
 
-	#define	TOBD1_BK	1			// Бортовой компьютер для протокола Toyota OBD1
-
-#endif /* ARM_STM32F103C8_CTLSTYLE_TEST_H_INCLUDED */
+#endif /* ARM_STM32F103C8_CTLSTYLE_TOBD1_H_INCLUDED */
