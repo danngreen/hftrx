@@ -528,8 +528,10 @@
 		#define HARDWARE_KBD_INITIALIZE() do { \
 			} while (0)
 	#else
+		#define KBD_TARGET_PIN (GPIOB->IDR)
+		#define KBD_MASK ((1UL << 12) | (1UL << 13) | (1UL << 14) | (1UL << 15))
 		#define HARDWARE_KBD_INITIALIZE() do { \
-			arm_hardware_pioa_inputs(KBD_MASK); \
+			arm_hardware_piob_inputs(KBD_MASK); \
 			} while (0)
 #endif
 	#endif
