@@ -8,6 +8,8 @@
 
 #if LCDMODE_SSD1326
 
+#include "src/display/fonts/ssd1326_fonts.h"
+
 #define CTLREG_SPIMODE	SPIC_MODE3
 
 uint8_t display_buffer_gray [4096];
@@ -45,10 +47,12 @@ void ssd1326_send_framebuffer(void)
 	Write_Instruction(0x1F);
 	SSD1326_CONTROL_PORT_S(SSD1326_DC_PIN);
 	spi_select(target, CTLREG_SPIMODE);
-	__disable_irq();
+	//__disable_irq();
 	prog_spi_send_frame(target, display_buffer_gray, sizeof display_buffer_gray / sizeof display_buffer_gray [0]);
-	__enable_irq();
+	//__enable_irq();
 	spi_unselect(target);
+
+	memset(display_buffer_gray, 0x00, 4096);
 }
 
 void ssd1326_init(void)
@@ -99,6 +103,9 @@ void ssd1326_init(void)
 	Write_Instruction(0xBE); //Set VCOMH
 	Write_Instruction(0x0F);
 	Write_Instruction(0xAF); //Set Display ON/OFF
+
+	memset(display_buffer_gray, 0x00, 4096);
+	ssd1326_send_framebuffer();
 }
 // ************************************************************************
 void ssd1326_draw_point (uint_fast16_t x, uint_fast8_t y, uint_fast8_t color)
@@ -164,4 +171,102 @@ void ssd1326_draw_line(uint_fast16_t x1, uint_fast8_t y1, uint_fast16_t x2, uint
 		}
 	}
 }
+
+void DrawSingleAscii8x16(uint_fast8_t x, uint_fast8_t y, char *pAscii, uint_fast8_t inverse)
+{
+	uint_fast16_t OffsetSym;
+	uint_fast8_t x1, y1, str, front, back;
+	if (inverse)
+	{
+		front = 0;
+		back = 15;
+	}
+	else
+	{
+		front = 15;
+		back = 0;
+	}
+
+	OffsetSym = (* pAscii - 32) * 16;
+
+	for (y1 = 0; y1 < 16; y1 ++)
+	{
+		str = * (ASCII_8x16 + OffsetSym + y1);
+		for (x1 = 0; x1 < 8; x1 ++)
+		{
+			if ((str >> x1) & 1)
+				ssd1326_draw_point (x + 8 - x1, y + y1, front);
+			else
+				ssd1326_draw_point (x + 8 - x1, y + y1, back);
+		}
+	}
+}
+
+void DrawSingleAscii16x32(uint_fast8_t x, uint_fast8_t y, char * pAscii, uint_fast8_t inverse)
+{
+	uint_fast16_t OffsetSym, str;
+	uint_fast8_t x1, y1, front, back;
+
+	if (inverse)
+	{
+		front = 0;
+		back = 15;
+	}
+	else
+	{
+		front = 15;
+		back = 0;
+	}
+
+	OffsetSym = (* pAscii - 32) * 64;
+
+	for (y1 = 0; y1 < 32; y1 ++)
+	{
+		memcpy (& str, ASCII_16x32 + OffsetSym + (y1 * 2), 2);
+		str = ((str << 8) | (str >> 8)) & 0xFFFF;
+		for (x1 = 0; x1 < 16; x1 ++)
+		{
+			if (str >> x1 & 1)
+				ssd1326_draw_point (x + 16 - x1, y + y1, front);
+			else
+				ssd1326_draw_point (x + 16 - x1, y + y1, back);
+		}
+	}
+}
+
+// ************************************************************************
+void ssd1326_DrawString_small(uint_fast8_t col, uint_fast8_t row, char * pStr, uint_fast8_t inverse)
+{
+	ASSERT(col < 32);
+	ASSERT(row < 2);
+    while(1)
+    {
+        if (* pStr == 0 || * pStr > 0x7e) return;
+        else
+        {
+            DrawSingleAscii8x16(col * 8, row * 16, pStr, inverse);
+            col ++;
+			if (col > 32)
+				return;
+            pStr ++;
+        }
+    }
+}
+
+void ssd1326_DrawString_big(uint_fast8_t col, char * pStr, uint_fast8_t inverse)
+{
+    while(1)
+    {
+        if (* pStr == 0 || * pStr > 0x7e) return;
+        else
+        {
+            DrawSingleAscii16x32(col * 16, 0, pStr, inverse);
+            col ++;
+			if (col > 32)
+				return;
+            pStr ++;
+        }
+    }
+}
+
 #endif /* LCDMODE_SSD1326 */

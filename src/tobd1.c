@@ -1,7 +1,10 @@
 /*
  * Бортовой компьютер для протокола Toyota OBD1
  */
+
 #include "hardware.h"
+#include "keyboard.h"
+#include "formats.h"
 #include "gpio.h"
 
 #if CTLSTYLE_TOBD1
@@ -26,11 +29,23 @@
 
 volatile uint_fast16_t ToyotaFailBit = 0;
 volatile uint_fast8_t ToyotaID, ToyotaNumBytes, ToyotaData[TOYOTA_MAX_BYTES];
+uint_fast8_t flag_send_framebuf = 0;
 
-const uint_fast8_t graph_count = 25;
-static uint_fast8_t graph[25] = { 0 };
+enum {
+	graph_count = 25,
+	screen_count = 2,
+	KBCH_DN = KBD_CODE_1,
+	KBCH_UP = KBD_CODE_2
+};
+
+enum {
+	SCREEN_SPEED,
+	SCREEN_DIAG
+
+};
 
 float getOBDdata(uint_fast8_t OBDdataIDX);
+void tobd1_graph(void);
 uint32_t sys_now(void);
 
 void tobd1_initialize(void)
@@ -39,32 +54,85 @@ void tobd1_initialize(void)
 	TOBD1_DATA_INITIALIZE();
 }
 
+void display_screen(uint_fast8_t index)
+{
+	int tmp;
+	char buf[20];
+	switch(index)
+	{
+	case SCREEN_SPEED:
+
+		// Скорость
+		tmp = getOBDdata(OBD_SPD);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "Speed %d", tmp);
+		ssd1326_DrawString_big(0, buf, 0);
+
+		break;
+
+	case SCREEN_DIAG:
+
+		// температура
+		tmp = (float) getOBDdata(OBD_ECT);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "Temp: %d", tmp);
+		ssd1326_DrawString_small(0, 0, buf, 0);
+
+		// Обороты
+		tmp = getOBDdata(OBD_RPM);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "RPM:  %d", tmp);
+		ssd1326_DrawString_small(0, 1, buf, 0);
+
+		// Впрыск
+		tmp = getOBDdata(OBD_INJ);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "INJ:  %d", tmp);
+		ssd1326_DrawString_small(10, 0, buf, 0);
+
+		// Throttle
+		tmp = getOBDdata(OBD_TPS);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "TPS:  %d", tmp);
+		ssd1326_DrawString_small(10, 1, buf, 0);
+
+		break;
+
+	default:
+		break;
+	}
+}
+
 void tobd1_main_step(void)
 {
-	static uint_fast16_t ccc = 0;
-	for (uint_fast8_t i = graph_count - 1; i >= 1; i --)
+	static uint_fast8_t screen_index = 0, update = 1;
+	uint_fast8_t kbch = KBD_CODE_MAX;
+	kbd_scan(& kbch);
+
+	switch(kbch)
 	{
-		graph[i] = graph[i - 1];
+	case KBCH_DN:
+
+		screen_index = screen_index ? screen_index : screen_count;
+		screen_index --;
+		update = 1;
+
+		break;
+
+	case KBCH_UP:
+
+		screen_index ++;
+		screen_index = (screen_index >= screen_count) ? 0 : screen_index;
+		update = 1;
+
+		break;
+
+	default:
+		break;
 	}
-	graph[0] = ++ ccc;
 
-	if (ccc > 31)
-		ccc = 0;
-
-	uint_fast8_t i, j, x0 = 130;
-	uint_fast16_t x1;
-
-	for(i = 0; i < graph_count; i ++)
+	if (update)
 	{
-		for (j = 0; j <= 2; j ++)
-		{
-			x1 = x0 + 4 * (i - 1) + j;
-			ssd1326_draw_line(x1, 31, x1, 31 - graph[i], (i + 5) / 2);
-			ssd1326_draw_line(x1, 31 - graph[i], x1, 0, 0);
-		}
+		update = 0;
+		display_screen(screen_index);
+		ssd1326_send_framebuffer();
+		TP();
 	}
-
-	ssd1326_send_framebuffer();
 }
 
 float getOBDdata(uint_fast8_t OBDdataIDX) {
@@ -252,4 +320,35 @@ void tobd1_interrupt_handler(void)
     } // end while
   } // end (InPacket == false)
 }
+
+void tobd1_graph(void)
+{
+	static uint_fast8_t graph[graph_count] = { 0 };
+	static uint_fast16_t ccc = 0;
+
+	for (uint_fast8_t i = graph_count - 1; i >= 1; i --)
+	{
+		graph[i] = graph[i - 1];
+	}
+	graph[0] = ++ ccc;
+
+	if (ccc > 31)
+		ccc = 0;
+
+	uint_fast8_t i, j, x0 = 160;
+	uint_fast16_t x1;
+
+	for(i = 0; i < graph_count; i ++)
+	{
+		for (j = 0; j <= 2; j ++)
+		{
+			x1 = x0 + 4 * (i - 1) + j;
+			ssd1326_draw_line(x1, 31, x1, 31 - graph[i], (i + 5) / 2);
+			ssd1326_draw_line(x1, 31 - graph[i], x1, 0, 0);
+		}
+	}
+	ssd1326_send_framebuffer();
+}
+
+
 #endif /* CTLSTYLE_TOBD1 */
