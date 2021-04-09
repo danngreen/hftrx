@@ -6826,7 +6826,11 @@ void hardware_spi_master_initialize(void)
 	// Начнем с настройки порта:
 	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;     //включить тактирование альтернативных функций
 	__DSB();
+#if CTLSTYLE_TOBD1
+	cpu_stm32f1xx_setmapr(0);
+#else
 	cpu_stm32f1xx_setmapr(AFIO_MAPR_SPI1_REMAP);
+#endif /* CTLSTYLE_TOBD1 */
 
 	// Теперь настроим модуль SPI.
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN; //подать тактирование
