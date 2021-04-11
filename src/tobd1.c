@@ -11,10 +11,11 @@
 
 #include "display/ssd1326.h"
 #include <stdbool.h>
+#include <string.h>
 
-#define  MY_HIGH  1 //0    // I have inverted the Eng line using an Opto-Coupler, if yours isn't then reverse these low & high defines.
-#define  MY_LOW   0 //1
-#define  TOYOTA_MAX_BYTES  24
+#define MY_HIGH  1 //0    // I have inverted the Eng line using an Opto-Coupler, if yours isn't then reverse these low & high defines.
+#define MY_LOW   0 //1
+#define TOBD1_MAX_BYTES  24
 #define OBD_INJ 1 //Injector pulse width (INJ)
 #define OBD_IGN 2 //Ignition timing angle (IGN)
 #define OBD_IAC 3 //Idle Air Control (IAC)
@@ -27,9 +28,10 @@
 
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 
-volatile uint_fast16_t ToyotaFailBit = 0;
-volatile uint_fast8_t ToyotaID, ToyotaNumBytes, ToyotaData[TOYOTA_MAX_BYTES];
-uint_fast8_t flag_send_framebuf = 0;
+volatile uint_fast16_t tobd1_FailBit = 0;
+volatile uint_fast8_t tobd1_ID, tobd1_NumBytes;
+uint_fast8_t tobd1_Data[TOBD1_MAX_BYTES];
+static uint_fast32_t timer = 0;
 
 enum {
 	graph_count = 25,
@@ -45,13 +47,14 @@ enum {
 };
 
 float getOBDdata(uint_fast8_t OBDdataIDX);
-void tobd1_graph(void);
+void tobd1_graph(uint_fast8_t val);
 uint32_t sys_now(void);
 
 void tobd1_initialize(void)
 {
 	ssd1326_init();
 	TOBD1_DATA_INITIALIZE();
+	timer = sys_now();
 }
 
 void display_screen(uint_fast8_t index)
@@ -61,19 +64,20 @@ void display_screen(uint_fast8_t index)
 	switch(index)
 	{
 	case SCREEN_SPEED:
-
+	{
 		// Скорость
 		tmp = getOBDdata(OBD_SPD);
 		local_snprintf_P(buf, ARRAY_SIZE(buf), "Speed %d", tmp);
 		ssd1326_DrawString_big(0, buf, 0);
-
+		tobd1_graph(tmp);
+	}
 		break;
 
 	case SCREEN_DIAG:
-
+	{
 		// температура
-		tmp = (float) getOBDdata(OBD_ECT);
-		local_snprintf_P(buf, ARRAY_SIZE(buf), "Temp: %d", tmp);
+		tmp = getOBDdata(OBD_ECT);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "Temp: %.0f", tmp);
 		ssd1326_DrawString_small(0, 0, buf, 0);
 
 		// Обороты
@@ -90,7 +94,7 @@ void display_screen(uint_fast8_t index)
 		tmp = getOBDdata(OBD_TPS);
 		local_snprintf_P(buf, ARRAY_SIZE(buf), "TPS:  %d", tmp);
 		ssd1326_DrawString_small(10, 1, buf, 0);
-
+	}
 		break;
 
 	default:
@@ -126,137 +130,143 @@ void tobd1_main_step(void)
 		break;
 	}
 
+	if (sys_now() >= timer + 500)
+	{
+		timer = sys_now();
+		update = 1;
+	}
+
 	if (update)
 	{
 		update = 0;
 		display_screen(screen_index);
 		ssd1326_send_framebuffer();
-		TP();
+//		TP();
 	}
 }
 
 float getOBDdata(uint_fast8_t OBDdataIDX) {
-  float returnValue;
-  switch (OBDdataIDX) {
-    case 0:// UNKNOWN
-      returnValue = ToyotaData[0];
-      break;
-    case OBD_INJ: //  Время впрыска форсунок  =X*0.125 (мс)
-      returnValue = ToyotaData[OBD_INJ] * 0.125; //Время впрыска форсунок
-      break;
-    case OBD_IGN: // Угол опережения зажигания X*0.47-30 (град)
-      returnValue = ToyotaData[OBD_IGN] * 0.47 - 30;
-      break;
-    case OBD_IAC: //  Состояние клапана ХХ Для разных типов КХХ разные формулы: X/255*100 (%)
-      //  X (шаг)
-      returnValue = ToyotaData[OBD_IAC] * 0.39215; ///optimize divide
-      break;
-    case OBD_RPM: //Частота вращения коленвала X*25(об/мин)
-      returnValue = ToyotaData[OBD_RPM] * 25;
-      break;
-    case OBD_MAP: //Расходомер воздуха (MAP/MAF)
-      //  X*0.6515 (кПа)
-      //  X*4.886 (мм.ртут.столба)
-      //  X*0.97 (кПа) (для турбомоторов)
-      //  X*7.732 (мм.рт.ст) (для турбомоторов)
-      //  (гр/сек) (данная формула для MAF так и не найдена)
-      //  X/255*5 (Вольт) (напряжение на расходомере)
-      returnValue = ToyotaData[OBD_MAP] * 4.886;
-      break;
-    case OBD_ECT: // Температура двигателя (ECT)
-      // В зависимости от величины Х разные формулы:
-      // 0..14:          =(Х-5)*2-60
-      // 15..38:        =(Х-15)*0.83-40
-      // 39..81:        =(Х-39)*0.47-20
-      // 82..134:      =(Х-82)*0.38
-      // 135..179:    =(Х-135)*0.44+20
-      // 180..209:    =(Х-180)*0.67+40
-      // 210..227:    =(Х-210)*1.11+60
-      // 228..236:    =(Х-228)*2.11+80
-      // 237..242:    =(Х-237)*3.83+99
-      // 243..255:    =(Х-243)*9.8+122
-      // Температура в градусах цельсия.
-      if (ToyotaData[OBD_ECT] >= 243)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 243) * 9.8) + 122;
-      else if (ToyotaData[OBD_ECT] >= 237)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 237) * 3.83) + 99;
-      else if (ToyotaData[OBD_ECT] >= 228)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 228) * 2.11) + 80.0;
-      else if (ToyotaData[OBD_ECT] >= 210)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 210) * 1.11) + 60.0;
-      else if (ToyotaData[OBD_ECT] >= 180)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 180) * 0.67) + 40.0;
-      else if (ToyotaData[OBD_ECT] >= 135)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 135) * 0.44) + 20.0;
-      else if (ToyotaData[OBD_ECT] >= 82)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 82) * 0.38);
-      else if (ToyotaData[OBD_ECT] >= 39)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 39) * 0.47) - 20.0;
-      else if (ToyotaData[OBD_ECT] >= 15)
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 15) * 0.83) - 40.0;
-      else
-        returnValue = ((float)(ToyotaData[OBD_ECT] - 15) * 2.0) - 60.0;
-      break;
-    case OBD_TPS: // Положение дроссельной заслонки
-      // X/2(градусы)
-      // X/1.8(%)
-      returnValue = ToyotaData[OBD_TPS] / 1.8;
-      break;
-    case OBD_SPD: // Скорость автомобиля (км/час)
-      returnValue = ToyotaData[OBD_SPD];
-      break;
-    //  Коррекция для рядных/ коррекция первой половины
-    case OBD_OXSENS:
-      returnValue = (float)ToyotaData[OBD_OXSENS] * 0.01953125;
-      break;
+	float returnValue;
+	switch (OBDdataIDX) {
+	case 0:// UNKNOWN
+		returnValue = tobd1_Data[0];
+		break;
+	case OBD_INJ: //  Время впрыска форсунок  =X*0.125 (мс)
+		returnValue = tobd1_Data[OBD_INJ] * 0.125; //Время впрыска форсунок
+		break;
+	case OBD_IGN: // Угол опережения зажигания X*0.47-30 (град)
+		returnValue = tobd1_Data[OBD_IGN] * 0.47 - 30;
+		break;
+	case OBD_IAC: //  Состояние клапана ХХ Для разных типов КХХ разные формулы: X/255*100 (%)
+		//  X (шаг)
+		returnValue = tobd1_Data[OBD_IAC] * 0.39215; ///optimize divide
+		break;
+	case OBD_RPM: //Частота вращения коленвала X*25(об/мин)
+		returnValue = tobd1_Data[OBD_RPM] * 25;
+		break;
+	case OBD_MAP: //Расходомер воздуха (MAP/MAF)
+		//  X*0.6515 (кПа)
+		//  X*4.886 (мм.ртут.столба)
+		//  X*0.97 (кПа) (для турбомоторов)
+		//  X*7.732 (мм.рт.ст) (для турбомоторов)
+		//  (гр/сек) (данная формула для MAF так и не найдена)
+		//  X/255*5 (Вольт) (напряжение на расходомере)
+		returnValue = tobd1_Data[OBD_MAP] * 4.886;
+		break;
+	case OBD_ECT: // Температура двигателя (ECT)
+		// В зависимости от величины Х разные формулы:
+		// 0..14:          =(Х-5)*2-60
+		// 15..38:        =(Х-15)*0.83-40
+		// 39..81:        =(Х-39)*0.47-20
+		// 82..134:      =(Х-82)*0.38
+		// 135..179:    =(Х-135)*0.44+20
+		// 180..209:    =(Х-180)*0.67+40
+		// 210..227:    =(Х-210)*1.11+60
+		// 228..236:    =(Х-228)*2.11+80
+		// 237..242:    =(Х-237)*3.83+99
+		// 243..255:    =(Х-243)*9.8+122
+		// Температура в градусах цельсия.
+		if (tobd1_Data[OBD_ECT] >= 243)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 243) * 9.8) + 122;
+		else if (tobd1_Data[OBD_ECT] >= 237)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 237) * 3.83) + 99;
+		else if (tobd1_Data[OBD_ECT] >= 228)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 228) * 2.11) + 80.0;
+		else if (tobd1_Data[OBD_ECT] >= 210)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 210) * 1.11) + 60.0;
+		else if (tobd1_Data[OBD_ECT] >= 180)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 180) * 0.67) + 40.0;
+		else if (tobd1_Data[OBD_ECT] >= 135)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 135) * 0.44) + 20.0;
+		else if (tobd1_Data[OBD_ECT] >= 82)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 82) * 0.38);
+		else if (tobd1_Data[OBD_ECT] >= 39)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 39) * 0.47) - 20.0;
+		else if (tobd1_Data[OBD_ECT] >= 15)
+			returnValue = ((float)(tobd1_Data[OBD_ECT] - 15) * 0.83) - 40.0;
+		else
+			returnValue = ((float)(0 - 5) * 2.0) - 60.0;
+		break;
+	case OBD_TPS: // Положение дроссельной заслонки
+		// X/2(градусы)
+		// X/1.8(%)
+		returnValue = tobd1_Data[OBD_TPS] / 1.8;
+		break;
+	case OBD_SPD: // Скорость автомобиля (км/час)
+		returnValue = tobd1_Data[OBD_SPD];
+		break;
+		//  Коррекция для рядных/ коррекция первой половины
+	case OBD_OXSENS:
+		returnValue = (float)tobd1_Data[OBD_OXSENS] * 0.01953125;
+		break;
 
-    //  читаем Байты флагов побитно
-    case 11:
-      returnValue = bitRead(ToyotaData[11], 0);  //  Переобогащение после запуска 1-Вкл
-      break;
-    case 12:
-      returnValue = bitRead(ToyotaData[11], 1); //Холодный двигатель 1-Да
-      break;
-    case 13:
-      returnValue = bitRead(ToyotaData[11], 4); //Детонация 1-Да
-      break;
-    case 14:
-      returnValue = bitRead(ToyotaData[11], 5); //Обратная связь по лямбда зонду 1-Да
-      break;
-    case 15:
-      returnValue = bitRead(ToyotaData[11], 6); //Дополнительное обогащение 1-Да
-      break;
-    case 16:
-      returnValue = bitRead(ToyotaData[12], 0); //Стартер 1-Да
-      break;
-    case 17:
-      returnValue = bitRead(ToyotaData[12], 1); //Признак ХХ (Дроссельная заслонка) 1-Да(Закрыта)
-      break;
-    case 18:
-      returnValue = bitRead(ToyotaData[12], 2); //Кондиционер 1-Да
-      break;
-    case 19:
-      returnValue = bitRead(ToyotaData[12], 3); //Нейтраль 1-Да
-      break;
-    case 20:
-      returnValue = bitRead(ToyotaData[12], 4); //Смесь  первой половины 1-Богатая, 0-Бедная
-      break;
-    default: // DEFAULT CASE (in no match to number)
-      // send "error" value
-      returnValue =  9999.99;
-  } // end switch
-  // send value back
-  return returnValue;
+		//  читаем Байты флагов побитно
+	case 11:
+		returnValue = bitRead(tobd1_Data[11], 0);  //  Переобогащение после запуска 1-Вкл
+		break;
+	case 12:
+		returnValue = bitRead(tobd1_Data[11], 1); //Холодный двигатель 1-Да
+		break;
+	case 13:
+		returnValue = bitRead(tobd1_Data[11], 4); //Детонация 1-Да
+		break;
+	case 14:
+		returnValue = bitRead(tobd1_Data[11], 5); //Обратная связь по лямбда зонду 1-Да
+		break;
+	case 15:
+		returnValue = bitRead(tobd1_Data[11], 6); //Дополнительное обогащение 1-Да
+		break;
+	case 16:
+		returnValue = bitRead(tobd1_Data[12], 0); //Стартер 1-Да
+		break;
+	case 17:
+		returnValue = bitRead(tobd1_Data[12], 1); //Признак ХХ (Дроссельная заслонка) 1-Да(Закрыта)
+		break;
+	case 18:
+		returnValue = bitRead(tobd1_Data[12], 2); //Кондиционер 1-Да
+		break;
+	case 19:
+		returnValue = bitRead(tobd1_Data[12], 3); //Нейтраль 1-Да
+		break;
+	case 20:
+		returnValue = bitRead(tobd1_Data[12], 4); //Смесь  первой половины 1-Богатая, 0-Бедная
+		break;
+	default: // DEFAULT CASE (in no match to number)
+		// send "error" value
+		returnValue =  9999.99;
+	} // end switch
+	// send value back
+	return returnValue;
 } // end void getOBDdata
 
 void tobd1_interrupt_handler(void)
 {
-	static uint_fast8_t ID, EData[TOYOTA_MAX_BYTES];
+	static uint_fast8_t ID, EData[TOBD1_MAX_BYTES];
   static bool InPacket = false;
   static unsigned long StartMS;
   static uint_fast16_t BitCount;
   int state = (TOBD1_DATA_PORT & TOBD1_DATA_PIN) != 0;
-//  digitalWrite(LED_PIN, state);
+
   if (InPacket == false)  {
     if (state == MY_HIGH)   {
       StartMS = sys_now();
@@ -284,7 +294,7 @@ void tobd1_interrupt_handler(void)
         if (bitpos == 0)      {
           // Start bit, should be LOW
           if ((BitCount > 4) && (state != MY_HIGH))  { // inverse state as we are detecting the change!
-            ToyotaFailBit = BitCount;
+            tobd1_FailBit = BitCount;
             InPacket = false;
             break;
           } // end if ((BitCount > 4) && (state != MY_HIGH))
@@ -295,20 +305,20 @@ void tobd1_interrupt_handler(void)
         } else { // else if (bitpos == 0)
           // Stop bits, should be HIGH
           if (state != MY_LOW)  { // inverse state as we are detecting the change!
-            ToyotaFailBit = BitCount;
+            tobd1_FailBit = BitCount;
             InPacket = false;
             break;
           } // end if (state != MY_LOW)
-          if ( (bitpos == 10) && ((bits > 1) || (bytepos == (TOYOTA_MAX_BYTES - 1))) ) {
-            ToyotaNumBytes = 0;
-            ToyotaID = ID;
+          if ( (bitpos == 10) && ((bits > 1) || (bytepos == (TOBD1_MAX_BYTES - 1))) ) {
+            tobd1_NumBytes = 0;
+            tobd1_ID = ID;
             for (uint_fast16_t i = 0; i <= bytepos; i++)
-              ToyotaData[i] = EData[i];
-            ToyotaNumBytes = 1;
+              tobd1_Data[i] = EData[i];
+            tobd1_NumBytes = 1;
             if (bits >= 16)  // Stop bits of last byte were 1's so detect preamble for next packet
               BitCount = 0;
             else  {
-              ToyotaFailBit = BitCount;
+              tobd1_FailBit = BitCount;
               InPacket = false;
             }
             break;
@@ -321,7 +331,7 @@ void tobd1_interrupt_handler(void)
   } // end (InPacket == false)
 }
 
-void tobd1_graph(void)
+void tobd1_graph(uint_fast8_t val)
 {
 	static uint_fast8_t graph[graph_count] = { 0 };
 	static uint_fast16_t ccc = 0;
@@ -347,7 +357,6 @@ void tobd1_graph(void)
 			ssd1326_draw_line(x1, 31 - graph[i], x1, 0, 0);
 		}
 	}
-	ssd1326_send_framebuffer();
 }
 
 

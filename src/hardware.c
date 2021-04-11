@@ -17,6 +17,10 @@
 #include "gpio.h"
 #include "spi.h"
 
+#if CTLSTYLE_TOBD1
+	#include "tobd1.h"
+#endif /* CTLSTYLE_TOBD1 */
+
 
 #if WITHDEBUG && WITHISBOOTLOADER && CPUSTYLE_R7S721
 	#error WITHDEBUG and WITHISBOOTLOADER can not be used in same time for CPUSTYLE_R7S721

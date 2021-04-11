@@ -72,7 +72,7 @@
 	do { \
 		arm_hardware_pioa_inputs(TOBD1_DATA_PIN); \
 		arm_hardware_pioa_updown(TOBD1_DATA_PIN, 0); \
-		arm_hardware_pioa_onchangeinterrupt(0 * TOBD1_DATA_PIN, TOBD1_DATA_PIN, TOBD1_DATA_PIN, ARM_OVERREALTIME_PRIORITY, TARGETCPU_OVRT); \
+		arm_hardware_pioa_onchangeinterrupt(TOBD1_DATA_PIN, TOBD1_DATA_PIN, TOBD1_DATA_PIN, ARM_OVERREALTIME_PRIORITY, TARGETCPU_OVRT); \
 	} while (0)
 
 #define LS020_RS_INITIALIZE() \

@@ -208,7 +208,9 @@
 	// --- вариации прошивки, специфические для разных плат
 
 
-	#define CTLREGMODE_NOCTLREG	1		/* управляющий регистр - "Воробей-3" с 3*ULN2003 */
+	#define CTLREGMODE_NOCTLREG		1
+
+	#define FORMATFROMLIBRARY 		1
 
 	#define WITHAGCMODEONOFF 1	/* среди режимов АРУ есть только включено-выключено */
 
