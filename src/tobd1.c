@@ -49,7 +49,7 @@ enum {
 float getOBDdata(uint_fast8_t OBDdataIDX);
 void tobd1_graph(uint_fast8_t val);
 
-static void tobd1_tim4_handler(void)
+static void tobd1_tim4_IRQHandler(void)
 {
 	 TIM4->SR &= ~TIM_SR_UIF;
 	 tobd1_timer ++;
@@ -64,13 +64,13 @@ void tobd1_initialize(void)
 	TIM4->PSC = CPU_FREQ / 2000 - 1;
 	TIM4->ARR = 1;
 	TIM4->DIER |= TIM_DIER_UIE;
-	arm_hardware_set_handler_system(TIM4_IRQn, tobd1_tim4_handler);
+	arm_hardware_set_handler_system(TIM4_IRQn, tobd1_tim4_IRQHandler);
 	TIM4->CR1 |= TIM_CR1_CEN;
 }
 
 void display_screen(uint_fast8_t index)
 {
-	int tmp;
+	float tmp;
 	char buf[20];
 	switch(index)
 	{
@@ -78,7 +78,7 @@ void display_screen(uint_fast8_t index)
 	{
 		// Скорость
 		tmp = getOBDdata(OBD_SPD);
-		local_snprintf_P(buf, ARRAY_SIZE(buf), "Speed %d", tmp);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "Speed %.0f", tmp);
 		ssd1326_DrawString_big(0, buf, 0);
 		tobd1_graph(tmp);
 	}
@@ -93,17 +93,17 @@ void display_screen(uint_fast8_t index)
 
 		// Обороты
 		tmp = getOBDdata(OBD_RPM);
-		local_snprintf_P(buf, ARRAY_SIZE(buf), "RPM:  %d", tmp);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "RPM:  %.0f", tmp);
 		ssd1326_DrawString_small(0, 1, buf, 0);
 
 		// Впрыск
 		tmp = getOBDdata(OBD_INJ);
-		local_snprintf_P(buf, ARRAY_SIZE(buf), "INJ:  %d", tmp);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "INJ:  %.1f", tmp);
 		ssd1326_DrawString_small(10, 0, buf, 0);
 
 		// Throttle
 		tmp = getOBDdata(OBD_TPS);
-		local_snprintf_P(buf, ARRAY_SIZE(buf), "TPS:  %d", tmp);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "TPS:  %.0f", tmp);
 		ssd1326_DrawString_small(10, 1, buf, 0);
 	}
 		break;

@@ -121,13 +121,13 @@ static void adcdones_spool(void)
 	}
 }
 
-#if WITHLWIP || CTLSTYLE_TOBD1
+#if WITHLWIP
 static volatile uint32_t sys_now_counter;
 uint32_t sys_now(void)
 {
 	return sys_now_counter;
 }
-#endif /* WITHLWIP  || CTLSTYLE_TOBD1*/
+#endif /* WITHLWIP*/
 
 /* Машинно-независимый обработчик прерываний. */
 // Функции с побочным эффектом - отсчитывание времени.
@@ -136,9 +136,9 @@ RAMFUNC void spool_systimerbundle1(void)
 {
 	//beacon_255();
 
-#if WITHLWIP || CTLSTYLE_TOBD1
+#if WITHLWIP
 	sys_now_counter += (1000 / TICKS_FREQUENCY);
-#endif /* WITHLWIP || CTLSTYLE_TOBD1*/
+#endif /* WITHLWIP*/
 
 	//spool_lfm();
 	tickers_spool();
