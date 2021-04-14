@@ -31,7 +31,7 @@
 volatile uint_fast16_t tobd1_FailBit = 0;
 volatile uint_fast8_t tobd1_ID, tobd1_NumBytes;
 uint_fast8_t tobd1_Data[TOBD1_MAX_BYTES];
-static uint_fast32_t timer = 0;
+static uint_fast32_t tobd1_timer = 0;
 
 enum {
 	graph_count = 25,
@@ -48,13 +48,24 @@ enum {
 
 float getOBDdata(uint_fast8_t OBDdataIDX);
 void tobd1_graph(uint_fast8_t val);
-uint32_t sys_now(void);
+
+static void tobd1_tim4_handler(void)
+{
+	 TIM4->SR &= ~TIM_SR_UIF;
+	 tobd1_timer ++;
+}
 
 void tobd1_initialize(void)
 {
 	ssd1326_init();
 	TOBD1_DATA_INITIALIZE();
-	timer = sys_now();
+
+	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
+	TIM4->PSC = CPU_FREQ / 2000 - 1;
+	TIM4->ARR = 1;
+	TIM4->DIER |= TIM_DIER_UIE;
+	arm_hardware_set_handler_system(TIM4_IRQn, tobd1_tim4_handler);
+	TIM4->CR1 |= TIM_CR1_CEN;
 }
 
 void display_screen(uint_fast8_t index)
@@ -130,10 +141,10 @@ void tobd1_main_step(void)
 		break;
 	}
 
-	if (sys_now() >= timer + 500)
+	if (tobd1_timer % 1000 == 0)
 	{
-		timer = sys_now();
 		update = 1;
+//		TP();
 	}
 
 	if (update)
@@ -269,17 +280,17 @@ void tobd1_interrupt_handler(void)
 
   if (InPacket == false)  {
     if (state == MY_HIGH)   {
-      StartMS = sys_now();
+      StartMS = tobd1_timer;
     }   else   { // else  if (state == MY_HIGH)
-      if ((sys_now() - StartMS) > (15 * 8))   {
-        StartMS = sys_now();
+      if ((tobd1_timer - StartMS) > (15 * 8))   {
+        StartMS = tobd1_timer;
         InPacket = true;
         BitCount = 0;
       } // end if  ((millis() - StartMS) > (15 * 8))
     } // end if  (state == MY_HIGH)
   }  else   { // else  if (InPacket == false)
-    uint_fast16_t bits = ((sys_now() - StartMS) + 1 ) / 8; // The +1 is to cope with slight time errors
-    StartMS = sys_now();
+    uint_fast16_t bits = ((tobd1_timer - StartMS) + 1 ) / 8; // The +1 is to cope with slight time errors
+    StartMS = tobd1_timer;
     // process bits
     while (bits > 0)  {
       if (BitCount < 4)  {
