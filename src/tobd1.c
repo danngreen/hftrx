@@ -26,6 +26,9 @@
 #define OBD_SPD 8 //Speed (SPD)
 #define OBD_OXSENS 9
 
+#define Ls 0.004020653 	//производительность форсунки литров в секунду // базовый 0.004 или 240cc
+#define Ncyl 4 			//кол-во цилиндров
+
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 
 volatile uint_fast16_t tobd1_FailBit = 0;
@@ -33,17 +36,35 @@ volatile uint_fast8_t tobd1_ID, tobd1_NumBytes;
 uint_fast8_t tobd1_Data[TOBD1_MAX_BYTES];
 static uint_fast32_t tobd1_timer = 0;
 
+float total_fuel_consumption = 0, trip_fuel_consumption = 0;
+float trip_avg_fuel_consumption;
+float cycle_obd_inj_dur = 0;
+float cycle_trip = 0;
+float trip_inj_dur = 0;
+float total_inj_dur_ee = 0;
+float current_trip = 0;
+float total_trip = 0;
+float total_avg_consumption;
+float total_avg_speed;
+float trip_avg_speed;
+unsigned long current_time = 0;
+unsigned long total_time = 0;
+unsigned long t;
+unsigned long odometer;
+
 enum {
 	graph_count = 25,
-	screen_count = 2,
 	KBCH_DN = KBD_CODE_1,
 	KBCH_UP = KBD_CODE_2
 };
 
 enum {
+	SCREEN_CONSUMPTION_100,
+	SCREEN_CONSUMPTION_CURRENT,
 	SCREEN_SPEED,
-	SCREEN_DIAG
+	SCREEN_DIAG,
 
+	SCREEN_COUNT
 };
 
 float getOBDdata(uint_fast8_t OBDdataIDX);
@@ -66,6 +87,8 @@ void tobd1_initialize(void)
 	TIM4->DIER |= TIM_DIER_UIE;
 	arm_hardware_set_handler_system(TIM4_IRQn, tobd1_tim4_IRQHandler);
 	TIM4->CR1 |= TIM_CR1_CEN;
+
+	t = tobd1_timer;
 }
 
 void display_screen(uint_fast8_t index)
@@ -74,6 +97,30 @@ void display_screen(uint_fast8_t index)
 	char buf[20];
 	switch(index)
 	{
+	case SCREEN_CONSUMPTION_100:
+	{
+		// Средний расход топлива на 100 км
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "Cons", tmp);
+		ssd1326_DrawString_small(0, 0, buf, 0);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "1/100", tmp);
+		ssd1326_DrawString_small(0, 1, buf, 0);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "%.1f", trip_avg_fuel_consumption);
+		ssd1326_DrawString_big(5, buf, 0);
+	}
+	break;
+
+	case SCREEN_CONSUMPTION_CURRENT:
+	{
+		// Средний расход топлива в секунду
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "Cons", tmp);
+		ssd1326_DrawString_small(0, 0, buf, 0);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "1/1", tmp);
+		ssd1326_DrawString_small(0, 1, buf, 0);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "%.1f", trip_fuel_consumption);
+		ssd1326_DrawString_big(5, buf, 0);
+	}
+	break;
+
 	case SCREEN_SPEED:
 	{
 		// Скорость
@@ -113,17 +160,62 @@ void display_screen(uint_fast8_t index)
 	}
 }
 
+void tobd1_compute(void)
+{
+	unsigned long new_t;
+	unsigned int diff_t;
+
+	if (tobd1_NumBytes > 0)  {    // if found bytes
+		new_t = tobd1_timer;
+		if (new_t > t && getOBDdata(OBD_RPM) > 100 )
+		{
+			// выполняем только когда на работающем двигателе
+			diff_t = new_t - t;
+			cycle_obd_inj_dur = getOBDdata(OBD_RPM) / 120000 * Ncyl * (float) diff_t  * getOBDdata(OBD_INJ); //Время открытых форсунок за 1 такт данных. В МС
+			// ОБ/М           ОБ/С
+			// форсунка срабатывает раз в 2 оборота КВ
+			// 4 форсунки в с
+			// время цикла мс в с. Получаем кол-во срабатываний за время цикла. Умножаем на время открытия форсунки, получаем время открытия 4 форсунок В МИЛЛИСЕКУНДАХ
+
+			trip_inj_dur += cycle_obd_inj_dur;						// Время открытых форсунок за поездку        В МС
+			total_inj_dur_ee += cycle_obd_inj_dur;					// Время открытых форсунок за все время. EEPROM    В МС
+
+			trip_fuel_consumption = trip_inj_dur / 1000 * Ls;		// потребление топлива за поездку в литрах
+			total_fuel_consumption = total_inj_dur_ee / 1000 * Ls;	// потребление топлива за все время. Из ЕЕПРОМ в литрах
+
+			cycle_trip = (float)diff_t / 3600000 * getOBDdata(OBD_SPD);   //расстояние пройденное за такт обд данных
+			current_trip += cycle_trip;  // Пройденное расстояние с момента включения. В КМ
+			total_trip += cycle_trip;    // Полное пройденное расстояние. EEPROM. В КМ
+			odometer += cycle_trip;      // электронный одометр. Хранится в еепром и не стирается кнопкой
+
+			current_time += diff_t;      // Время в пути в миллисекундах с момента включения
+			total_time += diff_t;        // полное пройденное время в миллисекундах лимит ~49 суток. EEPROM
+
+			trip_avg_speed = current_trip / (float) current_time * 3600000 ;       // средняя скорость за поездку
+			total_avg_speed = total_trip / (float) total_time * 3600000;           // средняя скорость за все время. км\ч
+
+			trip_avg_fuel_consumption = 100 * trip_fuel_consumption / current_trip; // средний расход за поездку
+			total_avg_consumption = 100 * total_fuel_consumption / total_trip;      // среднее потребление за все время - Л на 100км
+
+			t = new_t; //тест
+		}
+		tobd1_NumBytes = 0;     // reset the counter.
+	} // end if (tobd1_NumBytes > 0)
+}
+
 void tobd1_main_step(void)
 {
 	static uint_fast8_t screen_index = 0, update = 1;
 	uint_fast8_t kbch = KBD_CODE_MAX;
 	kbd_scan(& kbch);
 
+	tobd1_compute();
+
 	switch(kbch)
 	{
 	case KBCH_DN:
 
-		screen_index = screen_index ? screen_index : screen_count;
+		screen_index = screen_index ? screen_index : SCREEN_COUNT;
 		screen_index --;
 		update = 1;
 
@@ -132,7 +224,7 @@ void tobd1_main_step(void)
 	case KBCH_UP:
 
 		screen_index ++;
-		screen_index = (screen_index >= screen_count) ? 0 : screen_index;
+		screen_index = (screen_index >= SCREEN_COUNT) ? 0 : screen_index;
 		update = 1;
 
 		break;
@@ -144,7 +236,6 @@ void tobd1_main_step(void)
 	if (tobd1_timer % 1000 == 0)
 	{
 		update = 1;
-//		TP();
 	}
 
 	if (update)
@@ -152,7 +243,6 @@ void tobd1_main_step(void)
 		update = 0;
 		display_screen(screen_index);
 		ssd1326_send_framebuffer();
-//		TP();
 	}
 }
 
@@ -286,7 +376,7 @@ void tobd1_interrupt_handler(void)
         StartMS = tobd1_timer;
         InPacket = true;
         BitCount = 0;
-      } // end if  ((millis() - StartMS) > (15 * 8))
+      } // end if  ((tobd1_timer - StartMS) > (15 * 8))
     } // end if  (state == MY_HIGH)
   }  else   { // else  if (InPacket == false)
     uint_fast16_t bits = ((tobd1_timer - StartMS) + 1 ) / 8; // The +1 is to cope with slight time errors
