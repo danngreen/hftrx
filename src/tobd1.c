@@ -26,7 +26,7 @@
 #define OBD_SPD 8 //Speed (SPD)
 #define OBD_OXSENS 9
 
-#define Ls 0.004020653 	//производительность форсунки литров в секунду // базовый 0.004 или 240cc
+#define Ls 0.0026 	//производительность форсунки литров в секунду // 39сс за 15 секунд
 #define Ncyl 4 			//кол-во цилиндров
 
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
@@ -60,7 +60,7 @@ enum {
 
 enum {
 	SCREEN_CONSUMPTION_100,
-	SCREEN_CONSUMPTION_CURRENT,
+	SCREEN_CONSUMPTION_BY_TRIP,
 	SCREEN_SPEED,
 	SCREEN_DIAG,
 
@@ -104,17 +104,21 @@ void display_screen(uint_fast8_t index)
 		ssd1326_DrawString_small(0, 0, buf, 0);
 		local_snprintf_P(buf, ARRAY_SIZE(buf), "1/100", tmp);
 		ssd1326_DrawString_small(0, 1, buf, 0);
-		local_snprintf_P(buf, ARRAY_SIZE(buf), "%.1f", trip_avg_fuel_consumption);
+		if (getOBDdata(OBD_SPD) > 0)
+			local_snprintf_P(buf, ARRAY_SIZE(buf), "%.1f", trip_avg_fuel_consumption);
+		else
+			local_snprintf_P(buf, ARRAY_SIZE(buf), "---");
+
 		ssd1326_DrawString_big(5, buf, 0);
 	}
 	break;
 
-	case SCREEN_CONSUMPTION_CURRENT:
+	case SCREEN_CONSUMPTION_BY_TRIP:
 	{
-		// Средний расход топлива в секунду
+		// Расход топлива за поездку в литрах
 		local_snprintf_P(buf, ARRAY_SIZE(buf), "Cons", tmp);
 		ssd1326_DrawString_small(0, 0, buf, 0);
-		local_snprintf_P(buf, ARRAY_SIZE(buf), "1/1", tmp);
+		local_snprintf_P(buf, ARRAY_SIZE(buf), "trip", tmp);
 		ssd1326_DrawString_small(0, 1, buf, 0);
 		local_snprintf_P(buf, ARRAY_SIZE(buf), "%.1f", trip_fuel_consumption);
 		ssd1326_DrawString_big(5, buf, 0);
@@ -171,7 +175,7 @@ void tobd1_compute(void)
 		{
 			// выполняем только когда на работающем двигателе
 			diff_t = new_t - t;
-			cycle_obd_inj_dur = getOBDdata(OBD_RPM) / 120000 * Ncyl * (float) diff_t  * getOBDdata(OBD_INJ); //Время открытых форсунок за 1 такт данных. В МС
+			cycle_obd_inj_dur = getOBDdata(OBD_RPM) / 120000.0 * (float) Ncyl * (float) diff_t  * getOBDdata(OBD_INJ); //Время открытых форсунок за 1 такт данных. В МС
 			// ОБ/М           ОБ/С
 			// форсунка срабатывает раз в 2 оборота КВ
 			// 4 форсунки в с
