@@ -102,7 +102,7 @@ uint8_t *USBD_MSC_GetDeviceQualifierDescriptor(uint16_t *length);
   */
 
 //Added for hftrx usb system:
-static USBD_MSC_BOT_HandleTypeDef hMSC;
+USBD_MSC_BOT_HandleTypeDef hMSC;
 extern USBD_StorageTypeDef USBD_MSC_fops;
 
 USBD_ClassTypeDef  USBD_MSC =
