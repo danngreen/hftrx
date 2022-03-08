@@ -64,7 +64,7 @@
 
 
 // OHCI at USB1HSFSP2_BASE
-//#define WITHUSBHW_OHCI ((struct ohci_registers *) USB1HSFSP2_BASE)
+#define WITHUSBHW_OHCI ((struct ohci_registers *) USB1HSFSP2_BASE)
 
 #define WITHSDRAM_PMC1	1	/* power management chip - need for HDMI and AUDIO */
 
@@ -85,15 +85,15 @@
 #define WITHUSBDEV_DMAENABLE 1
 
 //#define WITHUSBHW_HOST		USB_OTG_HS
-//#define WITHUSBHOST_HIGHSPEEDPHYC	1	// UTMI -> USB_DP2 & USB_DM2
+#define WITHUSBHOST_HIGHSPEEDPHYC	1	// UTMI -> USB_DP2 & USB_DM2
 //#define WITHUSBHOST_DMAENABLE 1
 
 #define USBPHYC_MISC_SWITHOST_VAL 0		// 0 or 1 - value for USBPHYC_MISC_SWITHOST field. 0: Select OTG controller for 2nd PHY port, 1: Select Host controller for 2nd PHY port
 #define USBPHYC_MISC_PPCKDIS_VAL 0x00
 
-//#define WITHEHCIHW	1	/* USB_EHCI controller */
-//#define WITHUSBHW_EHCI		USB1_EHCI
-//#define WITHEHCIHW_EHCIPORT 0	// 0 - use 1st PHY port (Microchip USB2514 USB 2.0 hub controller, shared with USB_OTG_HS), 1 - 2nd PHY port. See USBPHYC_MISC_SWITHOST_VAL
+#define WITHEHCIHW	1	/* USB_EHCI controller */
+#define WITHUSBHW_EHCI		USB1_EHCI
+#define WITHEHCIHW_EHCIPORT 0	// 0 - use 1st PHY port (Microchip USB2514 USB 2.0 hub controller, shared with USB_OTG_HS), 1 - 2nd PHY port. See USBPHYC_MISC_SWITHOST_VAL
 
 #if WITHISBOOTLOADER
 
