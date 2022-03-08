@@ -68,6 +68,9 @@ EndBSPDependencies */
   * @{
   */
 
+//Added for hftrx usb system
+extern USBD_StorageTypeDef USBD_MSC_fops;
+
 /**
   * @}
   */
@@ -111,7 +114,8 @@ void MSC_BOT_Init(USBD_HandleTypeDef *pdev)
   hmsc->scsi_sense_head = 0U;
   hmsc->scsi_medium_state = SCSI_MEDIUM_UNLOCKED;
 
-  ((USBD_StorageTypeDef *)pdev->pUserData)->Init(0U);
+  // ((USBD_StorageTypeDef *)pdev->pUserData)->Init(0U);
+  USBD_MSC_fops.Init(0U);
 
   (void)USBD_LL_FlushEP(pdev, MSC_EPOUT_ADDR);
   (void)USBD_LL_FlushEP(pdev, MSC_EPIN_ADDR);
