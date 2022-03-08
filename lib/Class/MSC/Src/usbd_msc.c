@@ -80,11 +80,12 @@ EndBSPDependencies */
 /** @defgroup MSC_CORE_Private_FunctionPrototypes
   * @{
   */
-uint8_t USBD_MSC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
-uint8_t USBD_MSC_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
-uint8_t USBD_MSC_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
-uint8_t USBD_MSC_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
-uint8_t USBD_MSC_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
+
+USBD_StatusTypeDef USBD_MSC_Init(USBD_HandleTypeDef *pdev, uint_fast8_t cfgidx);
+USBD_StatusTypeDef USBD_MSC_DeInit(USBD_HandleTypeDef *pdev, uint_fast8_t cfgidx);
+USBD_StatusTypeDef USBD_MSC_Setup(USBD_HandleTypeDef *pdev, const USBD_SetupReqTypedef *req);
+USBD_StatusTypeDef USBD_MSC_DataIn(USBD_HandleTypeDef *pdev, uint_fast8_t epnum);
+USBD_StatusTypeDef USBD_MSC_DataOut(USBD_HandleTypeDef *pdev, uint_fast8_t epnum);
 
 uint8_t *USBD_MSC_GetHSCfgDesc(uint16_t *length);
 uint8_t *USBD_MSC_GetFSCfgDesc(uint16_t *length);
@@ -103,6 +104,7 @@ uint8_t *USBD_MSC_GetDeviceQualifierDescriptor(uint16_t *length);
 
 USBD_ClassTypeDef  USBD_MSC =
 {
+  NULL, // ColdInit: added for hftrx usb system 
   USBD_MSC_Init,
   USBD_MSC_DeInit,
   USBD_MSC_Setup,
@@ -113,10 +115,11 @@ USBD_ClassTypeDef  USBD_MSC =
   NULL, /*SOF */
   NULL,
   NULL,
-  USBD_MSC_GetHSCfgDesc,
-  USBD_MSC_GetFSCfgDesc,
-  USBD_MSC_GetOtherSpeedCfgDesc,
-  USBD_MSC_GetDeviceQualifierDescriptor,
+  // Convert to hftrx usb system:
+  // USBD_MSC_GetHSCfgDesc,
+  // USBD_MSC_GetFSCfgDesc,
+  // USBD_MSC_GetOtherSpeedCfgDesc,
+  // USBD_MSC_GetDeviceQualifierDescriptor,
 };
 
 /* USB Mass storage device Configuration Descriptor */
@@ -288,7 +291,7 @@ __ALIGN_BEGIN static uint8_t USBD_MSC_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
   * @param  cfgidx: configuration index
   * @retval status
   */
-uint8_t USBD_MSC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+USBD_StatusTypeDef USBD_MSC_Init(USBD_HandleTypeDef *pdev, uint_fast8_t cfgidx)
 {
   UNUSED(cfgidx);
   USBD_MSC_BOT_HandleTypeDef *hmsc;
@@ -327,7 +330,7 @@ uint8_t USBD_MSC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   /* Init the BOT  layer */
   MSC_BOT_Init(pdev);
 
-  return (uint8_t)USBD_OK;
+  return USBD_OK;
 }
 
 /**
@@ -337,10 +340,11 @@ uint8_t USBD_MSC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   * @param  cfgidx: configuration index
   * @retval status
   */
-uint8_t USBD_MSC_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+USBD_StatusTypeDef USBD_MSC_DeInit(USBD_HandleTypeDef *pdev, uint_fast8_t cfgidx)
 {
   UNUSED(cfgidx);
 
+  //TODO: Need to close these or not? They aren't in DFU
   /* Close MSC EPs */
   (void)USBD_LL_CloseEP(pdev, MSC_EPOUT_ADDR);
   pdev->ep_out[MSC_EPOUT_ADDR & 0xFU].is_used = 0U;
@@ -359,7 +363,7 @@ uint8_t USBD_MSC_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     pdev->pClassData = NULL;
   }
 
-  return (uint8_t)USBD_OK;
+  return USBD_OK;
 }
 /**
   * @brief  USBD_MSC_Setup
@@ -368,7 +372,7 @@ uint8_t USBD_MSC_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   * @param  req: USB request
   * @retval status
   */
-uint8_t USBD_MSC_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
+USBD_StatusTypeDef USBD_MSC_Setup(USBD_HandleTypeDef *pdev, const USBD_SetupReqTypedef *req)
 {
   USBD_MSC_BOT_HandleTypeDef *hmsc = (USBD_MSC_BOT_HandleTypeDef *)pdev->pClassData;
   USBD_StatusTypeDef ret = USBD_OK;
@@ -376,7 +380,7 @@ uint8_t USBD_MSC_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 
   if (hmsc == NULL)
   {
-    return (uint8_t)USBD_FAIL;
+    return USBD_FAIL;
   }
 
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
@@ -485,7 +489,7 @@ uint8_t USBD_MSC_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
       break;
   }
 
-  return (uint8_t)ret;
+  return ret;
 }
 
 /**
@@ -495,11 +499,11 @@ uint8_t USBD_MSC_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
   * @param  epnum: endpoint index
   * @retval status
   */
-uint8_t USBD_MSC_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
+USBD_StatusTypeDef USBD_MSC_DataIn(USBD_HandleTypeDef *pdev, uint_fast8_t epnum)
 {
   MSC_BOT_DataIn(pdev, epnum);
 
-  return (uint8_t)USBD_OK;
+  return USBD_OK;
 }
 
 /**
@@ -509,11 +513,11 @@ uint8_t USBD_MSC_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
   * @param  epnum: endpoint index
   * @retval status
   */
-uint8_t USBD_MSC_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
+USBD_StatusTypeDef USBD_MSC_DataOut(USBD_HandleTypeDef *pdev, uint_fast8_t epnum)
 {
   MSC_BOT_DataOut(pdev, epnum);
 
-  return (uint8_t)USBD_OK;
+  return USBD_OK;
 }
 
 /**
