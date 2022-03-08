@@ -14664,7 +14664,7 @@ processmessages(
 		sdcardbgprocess();
 #endif /* WITHUSEAUDIOREC */
 #if WITHUSBHW
-		board_usbh_polling();     // usb device polling
+		//board_usbh_polling();     // usb device polling
 #endif /* WITHUSBHW */
 #if WITHWAVPLAYER || WITHSENDWAV
 		spoolplayfile();
