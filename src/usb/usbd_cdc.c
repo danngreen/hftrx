@@ -416,7 +416,8 @@ static USBD_StatusTypeDef USBD_CDC_DataOut(USBD_HandleTypeDef *pdev, uint_fast8_
 		/* CDC EP OUT */
 		// use CDC data
 		cdcXout_buffer_save(cdcXbuffout [offset], USBD_LL_GetRxDataSize(pdev, epnum), offset);	/* использование буфера принятых данных */
-		//memcpy(cdc1buffin, cdc1buffout, cdc1buffinlevel = USBD_LL_GetRxDataSize(pdev, epnum));
+		//DG uncommented:
+		memcpy(cdcXbuffin[offset], cdcXbuffout[offset], cdcXbuffinlevel[offset] = USBD_LL_GetRxDataSize(pdev, epnum));
 		/* Prepare Out endpoint to receive next cdc data packet */
 		USBD_LL_PrepareReceive(pdev, USB_ENDPOINT_OUT(epnum), cdcXbuffout [offset], VIRTUAL_COM_PORT_OUT_DATA_SIZE);
 	}
