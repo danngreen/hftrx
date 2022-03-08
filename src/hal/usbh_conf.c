@@ -21,7 +21,7 @@
 
 #include "hardware.h"
 
-#if 0 && WITHUSBHW && defined (WITHUSBHW_HOST)
+#if WITHUSBHW && defined (WITHUSBHW_HOST)
 
 #include "board.h"
 #include "formats.h"
