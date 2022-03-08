@@ -86,42 +86,42 @@
   * @param  id: Low level core index
   * @retval None
   */
-#if 0
-USBD_StatusTypeDef USBD_Init(USBD_HandleTypeDef *pdev,
-                             USBD_DescriptorsTypeDef *pdesc, uint8_t id)
-{
-  USBD_StatusTypeDef ret;
+// #if 0
+// USBD_StatusTypeDef USBD_Init(USBD_HandleTypeDef *pdev,
+//                              USBD_DescriptorsTypeDef *pdesc, uint8_t id)
+// {
+//   USBD_StatusTypeDef ret;
 
-  /* Check whether the USB Host handle is valid */
-  if (pdev == NULL)
-  {
-#if (USBD_DEBUG_LEVEL > 1U)
-    USBD_ErrLog("Invalid Device handle");
-#endif
-    return USBD_FAIL;
-  }
+//   /* Check whether the USB Host handle is valid */
+//   if (pdev == NULL)
+//   {
+// #if (USBD_DEBUG_LEVEL > 1U)
+//     USBD_ErrLog("Invalid Device handle");
+// #endif
+//     return USBD_FAIL;
+//   }
 
-  /* Unlink previous class resources */
-  pdev->pClass = NULL;
-  pdev->pUserData = NULL;
-  pdev->pConfDesc = NULL;
+//   /* Unlink previous class resources */
+//   pdev->pClass = NULL;
+//   pdev->pUserData = NULL;
+//   pdev->pConfDesc = NULL;
 
-  /* Assign USBD Descriptors */
-  if (pdesc != NULL)
-  {
-    pdev->pDesc = pdesc;
-  }
+//   /* Assign USBD Descriptors */
+//   if (pdesc != NULL)
+//   {
+//     pdev->pDesc = pdesc;
+//   }
 
-  /* Set Device initial State */
-  pdev->dev_state = USBD_STATE_DEFAULT;
-  pdev->id = id;
+//   /* Set Device initial State */
+//   pdev->dev_state = USBD_STATE_DEFAULT;
+//   pdev->id = id;
 
-  /* Initialize low level driver */
-  ret = USBD_LL_Init(pdev);
+//   /* Initialize low level driver */
+//   ret = USBD_LL_Init(pdev);
 
-  return ret;
-}
-#endif
+//   return ret;
+// }
+// #endif
 /**
 * @brief  USBD_Init2
 *         Initializes the device stack and load the class driver
