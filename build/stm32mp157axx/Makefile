@@ -68,6 +68,7 @@ USBXDIR = $(PRJROOT)/src/hal
 MDLWUSBDIR = $(PRJROOT)/lib/Middlewares/ST/STM32_USB_Device_Library
 MDLWHOSTDIR = $(PRJROOT)/lib/Middlewares/ST/STM32_USB_Host_Library
 HALDIR = $(PRJROOT)/lib/Drivers/STM32MP1xx_HAL_Driver
+MSCUSBDIR = $(PRJROOT)/lib/Class/MSC
 
 # List all default C defines here, like -D_DEBUG=1
 DDEFS = 
@@ -80,6 +81,7 @@ DINCDIR = \
 	$(HALDIR)/Inc \
 	$(MDLWUSBDIR)/Core/Inc \
 	$(MDLWHOSTDIR)/Core/Inc \
+	$(MSCUSBDIR)/Inc \
 	$(USBXDIR) \
 	$(DSP3DDIR) \
 	$(CMSISDIR)/Core_A/Include \
@@ -143,6 +145,7 @@ SRCDIRS += $(PRJROOT)/src
 #SRCDIRS += $(OPENVGDIR)/src
 SRCDIRS += $(ARCHDIR)
 SRCDIRS += $(HALDIR) $(MDLWUSBDIR) $(MDLWHOSTDIR)
+SRCDIRS += $(MSCUSBDIR)
 
 CSRC += $(call rwildcard, $(SRCDIRS), *.c)
 CPPSRC += $(call rwildcard, $(SRCDIRS), *.cpp)
