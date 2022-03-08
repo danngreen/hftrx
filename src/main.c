@@ -14674,7 +14674,9 @@ processmessages(
 		usb_polling();     // usb device polling
 		//stmr();            // call software timers
 #endif /* WITHLWIP */
+#if ORIGINALHFTRX
 		display2_bgprocess();			/* выполнение шагов state machine отображения дисплея */
+#endif
 		directctlupdate(inmenu, mp);		/* управление скоростью передачи (и другими параметрами) через потенциометр */
 #if WITHLCDBACKLIGHT || WITHKBDBACKLIGHT
 		// обработать запрос на обновление состояния аппаратуры из user mode программы
@@ -20656,7 +20658,9 @@ lowinitialize(void)
 
 	board_initialize();		/* инициализация чипселектов и SPI, I2C, загрузка FPGA */
 	cpu_initdone();			/* секция init (в которой лежит образ для загрузки в FPGA) больше не нужна */
+#ifdef ORIGINALHFTRX
 	display_hardware_initialize();
+#endif
 #if WITHWATCHDOG
 	watchdog_initialize();	/* разрешение сторожевого таймера в устройстве */
 #endif /* WITHWATCHDOG */
@@ -21428,7 +21432,9 @@ static void hamradio_main_initialize(void)
 	directctlupdate(0, NULL);		/* управление скоростью передачи (и другими параметрами) через потенциометр */
 	updateboard(1, 1);	/* полная перенастройка (как после смены режима) - режим приема */
 	updateboard2();			/* настройки валкодера и цветовой схемы дисплея. */
+#ifdef ORIGINALHFTRX
 	display2_bgreset();
+#endif
 
 #if 0 && MODEL_MAXLAB
 	// тестирование алгоритма для MAXLAB
@@ -21543,7 +21549,9 @@ hamradio_main_step(void)
 			}
 			#endif /* WITHAUTOTUNER */
 
+#ifdef ORIGINALHFTRX
 			display2_redrawbarstimed(0, 0, NULL);		/* обновление динамической части отображения - обновление S-метра или SWR-метра и volt-метра. */
+#endif
 
 	#if WITHLFM && defined (LO1MODE_DIRECT)
 			if (lfmmode && spool_lfm_enable)
@@ -21592,7 +21600,9 @@ hamradio_main_step(void)
 				hamradio_gui_enc2_update();
 				display2_mode_subset(0);
 #else
+#ifdef ORIGINALHFTRX
 				display_redrawfreqmodesbarsnow(0, NULL);			/* Обновление дисплея - всё, включая частоту */
+#endif
 #endif /* WITHTOUCHGUI && WITHENCODER2 */
 			}
 	#if 0//WITHDEBUG
@@ -21625,7 +21635,9 @@ hamradio_main_step(void)
 				display_redrawmodestimed(1);
 
 		#else /* WITHTOUCHGUI */
+#ifdef ORIGINALHFTRX
 				display_redrawfreqmodesbarsnow(0, NULL);			/* Обновление дисплея - всё, включая частоту */
+#endif
 
 		#endif /* WITHTOUCHGUI */
 
@@ -21635,7 +21647,9 @@ hamradio_main_step(void)
 			if (processmodem())
 			{
 				/* обновление индикатора без сохранения состояния диапазона */
+#ifdef ORIGINALHFTRX
 				display_redrawfreqmodesbarsnow(0, NULL);			/* Обновление дисплея - всё, включая частоту */
+#endif
 			} // end keyboard processing
 
 			//auto int marker;
