@@ -207,7 +207,10 @@
 	#define LCDMODEX_SII9022A	1 // siiI9022A Lattice Semiconductor Corp HDMI Transmitter
 
 	//#define WITHLWIP 1
+	#ifdef ORIGINALHFTRX
 	#define RTC1_TYPE RTC_TYPE_STM32F4xx	/* STM32F4xx/STM32F7xx internal RTC peripherial */
+	#endif
+
 	//#define TSC1_TYPE TSC_TYPE_S3402	/* Capasitive touch screen controller S3402 (on panel H497TLB01.4) */
 	#define TSC1_TYPE TSC_TYPE_USBTOUCH
 	#define WITHUSESDCARD		1	// Включение поддержки SD CARD
