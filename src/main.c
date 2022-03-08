@@ -23640,8 +23640,10 @@ main(void)
 	/* запись значений по умолчанию для корректировок мощности в завивимости от диапазона ФНЧ УМ */
 	bandf2adjust_initialize();
 #endif /* WITHTX */
+#ifdef ORIGINALHFTRX
 	initialize2();	/* вызывается при разрешённых прерываниях. */
 	network_initialize();
+#endif
 	hamradio_initialize();
 	hightests();		/* подпрограммы для тестирования аппаратуры */
 
