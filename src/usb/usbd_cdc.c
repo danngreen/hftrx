@@ -295,7 +295,7 @@ static void cdcXout_buffer_save(
 	)
 {
 	unsigned i;
-	//PRINTF("1:%u '%*.*s'", length, length, length, data);
+	PRINTF("1:%u '%*.*s'", length, length, length, data);
 
 	for (i = 0; usbd_cdcX_rxenabled [offset] && i < length; ++ i)
 	{
