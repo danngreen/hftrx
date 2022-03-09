@@ -112,6 +112,8 @@
 		#define USB_FUNCTION_PRODUCT_ID	0x0734
 	#elif WITHUSBDFU && WITHMOVEDFU
 		#define USB_FUNCTION_PRODUCT_ID	0x073C
+	#elif WITHUSBDMSC
+		#define USB_FUNCTION_PRODUCT_ID	0x0799
 	#else /* WITHUSBDFU && WITHMOVEDFU */
 		#define USB_FUNCTION_PRODUCT_ID	0x0738
 	#endif /* WITHUSBDFU && WITHMOVEDFU */
@@ -3042,6 +3044,32 @@ static unsigned fill_CDCACM_function(uint_fast8_t fill, uint8_t * p, unsigned ma
 
 #endif /* WITHUSBCDCACM */
 
+#if WITHUSBDMSC
+#ifndef USB_MSC_CONFIG_DESC_SIZ
+#define USB_MSC_CONFIG_DESC_SIZ 32
+#endif
+extern uint8_t USBD_MSC_CfgHSDesc[USB_MSC_CONFIG_DESC_SIZ];
+
+static unsigned fill_MSC_function(uint_fast8_t fill, uint8_t * p, unsigned maxsize, int highspeed)
+{
+	const unsigned header_sz = 9;
+	const unsigned sz = USB_MSC_CONFIG_DESC_SIZ - header_sz;
+
+	if (maxsize < sz)
+		return 0; //not enough room in the buffer
+
+	if (fill !=0 && p != NULL) {
+		for (unsigned i=0; i < sz; i++) {
+			*p++ = USBD_MSC_CfgHSDesc[i + header_sz];
+		}
+	}
+	return sz;
+}
+
+
+#endif
+
+
 #if WITHUSBCDCEEM
 
 static unsigned CDCEEM_InterfaceAssociationDescriptor(
@@ -4143,6 +4171,10 @@ static unsigned fill_Configuration_compound(uint_fast8_t fill, uint8_t * p, unsi
 	n += fill_DFU_function(fill, p + n, maxsize - n, highspeed);
 #endif /* WITHUSBDFU */
 
+#if WITHUSBDMSC
+	n += fill_MSC_function(fill, p + n, maxsize - n, highspeed);
+#endif
+
 #if WITHUSBCDCACM
 	/* создаем одно или несколько (WITHUSBCDCACM_N) устройств */
 	n += fill_CDCACM_function(fill, p + n, maxsize - n, highspeed);
@@ -4620,7 +4652,7 @@ void usbd_descriptors_initialize(uint_fast8_t HSdesc)
 			{ fill_Configuration_compound,	INTERFACE_count, 1, }
 #else /* WITHPLAINDESCROPTOR */
 			{ fill_RNDIS_function,		INTERFACE_RNDIS_count, 	RNDIS_cfgidx, },	// bConfigurationValue = 1
-			{ fill_CDCECM_function,		INTERFACE_CDCECM_count, CDCECM_cfgidx },	// bConfigurationValue = 2
+			{ fill_CDCACM_function,		INTERFACE_CDCACM_count, CDCECM_cfgidx },	// bConfigurationValue = 2
 #endif /* WITHPLAINDESCROPTOR */
 	};
 	const uint_fast8_t bNumConfigurations = ARRAY_SIZE(funcs);

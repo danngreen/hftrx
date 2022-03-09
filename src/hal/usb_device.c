@@ -163,6 +163,9 @@ void MX_USB_DEVICE_Init(void)
 #if WITHUSBHID
 	USBD_AddClass(& hUsbDeviceHS, & USBD_CLASS_HID);
 #endif /* WITHUSBHID */
+#if WITHUSBDMSC
+	USBD_AddClass(& hUsbDeviceHS, & USBD_MSC);
+#endif
 
  /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
   
