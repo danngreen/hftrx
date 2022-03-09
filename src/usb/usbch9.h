@@ -99,6 +99,9 @@ enum
 #if WITHUSBDFU
 		/* no endpoints need */
 #endif /* WITHUSBDFU */
+#if WITHUSBDMSC
+	USBD_EP_MSC_IN,
+#endif
 	//
 	epincount
 };
@@ -107,7 +110,11 @@ enum
 enum
 {
 	ep0outxxx = 0x00,
-	epoutbase = (epincount - 1) & 0x7F,
+	//epoutbase = (epincount - 1) & 0x7F,
+
+#if WITHUSBDMSC
+	USBD_EP_MSC_OUT,
+#endif
 
 #if WITHUSBRNDIS
 	USBD_EP_RNDIS_OUT,
@@ -316,6 +323,9 @@ enum interfaces_tag
 	INTERFACE_DFU_CONTROL,		/* DFU control Interface */
 #endif /* WITHUSBDFU */
 	// 
+#if WITHUSBDMSC
+	INTERFACE_MSCDEVICE_CONTROL, //MSC Device
+#endif
 	INTERFACE_count				/* Значение для configuration descriptor */
 };
 
@@ -325,11 +335,13 @@ enum interfaces_tag
 #define INTERFACE_HID_count 1	/* количество интерфейсов в одном HID */
 #define INTERFACE_RNDIS_count 2	/* количество интерфейсов в одном RNDIS */
 #define INTERFACE_DFU_count 1	/* количество интерфейсов в одном DFU */
+#define INTERFACE_MSCDEVICE_count 1
 
 //#define INTERFACE_UAC_count (INTERFACE_AUDIO_last - INTERFACE_AUDIO_CONTROL_SPK)
 
 
-
+//FIXME: USBD_EP_CDCACM_EP is not defined when PLAINDESCROPTOR is undefined.
+//Should these definitions be outside of the #if PLAINDESCROPTOR/#else/#endif block?
 #if WITHUSBCDCACMINTSHARING
 
 	#define USBD_CDCACM_EP(base, offset) ((base) + (offset))
@@ -451,6 +463,7 @@ enum interfaces_tag
 		// sequence of IDs should be same as used in usbd_descriptors_initialize
 		CDCECM_cfgidx = 1,
 		RNDIS_cfgidx = 2,
+		MSCDEVICE_cfgidx = 3,
 		//
 		UNUSED2_cfgidx
 	};

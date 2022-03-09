@@ -180,6 +180,10 @@ enum
 #endif /* WIHSPIDFHW || WIHSPIDFSW */
 	STRING_ID_DFU_2,	/* RAM target for debug */
 	// 
+#if WITHUSBDMSC
+	STRING_ID_MSC_IF,
+#endif
+
 	STRING_ID_count
 };
 
@@ -193,6 +197,10 @@ static const struct stringtempl strtemplates [] =
 {
 	{ STRING_ID_1, "MicroGenSF", },		// Manufacturer
 	{ STRING_ID_2, PRODUCTSTR, },	// Product
+
+#if WITHUSBDMSC
+	{ STRING_ID_MSC_IF, "USB Mass StoragE",},
+#endif
 
 	{ STRING_ID_5, PRODUCTSTR " CDC EEM", },
 	{ STRING_ID_5a, PRODUCTSTR " CDC ECM", },
