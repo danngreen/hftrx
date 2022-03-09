@@ -4253,7 +4253,6 @@ typedef unsigned (* fill_func_t)(uint_fast8_t fill, uint8_t * p, unsigned maxsiz
 // Configuration descriptor - pass highspeed=0
 static unsigned fill_Configuration_descriptor(
 		uint8_t * buff, unsigned maxsize, int highspeed,
-		const uint_fast8_t iConfiguration,
 		const uint_fast8_t bConfigurationValue, // = 0x01;
 		const uint_fast8_t bNumInterfaces, // = INTERFACE_count;
 		const fill_func_t fill_main_group	// fill functional descriptor(s)
@@ -4274,7 +4273,7 @@ static unsigned fill_Configuration_descriptor(
 		* buff ++ = HI_BYTE(totalsize);		/* length of packed config descr. (16 bit) */
 		* buff ++ = bNumInterfaces;			/* bNumInterfaces  */
 		* buff ++ = bConfigurationValue;    /* bConfigurationValue - Value to use as an argument to the SetConfiguration() request to select this configuration */
-		* buff ++ = iConfiguration;       		/* iConfiguration - Index of string descriptor describing this configuration */
+		* buff ++ = STRING_ID_0;       		/* iConfiguration - Index of string descriptor describing this configuration */
 		* buff ++ = 0xC0;                   /* bmAttributes  BUS Powred, self powered. See USBD_SELF_POWERED */
 		* buff ++ = USB_CONFIG_POWER_MA(250);/* bMaxPower = 250 mA. Сделано как попытка улучшить работу через активные USB изоляторы для обеспечения их питания. */
 
@@ -4711,7 +4710,7 @@ void usbd_descriptors_initialize(uint_fast8_t HSdesc)
 		{
 			// Configuration Descriptor
 			score += fill_align4(alldescbuffer + score, ARRAY_SIZE(alldescbuffer) - score);
-			partlen = fill_Configuration_descriptor(alldescbuffer + score, ARRAY_SIZE(alldescbuffer) - score, HSdesc, /*TODO:*/STRING_ID_0, /*bConfigurationValue*/funcs [index].confvalue, /*bNumInterfaces*/funcs [index].count, funcs [index].fp);
+			partlen = fill_Configuration_descriptor(alldescbuffer + score, ARRAY_SIZE(alldescbuffer) - score, HSdesc, funcs [index].confvalue, funcs [index].count, funcs [index].fp);
 			ConfigDescrTbl [index].size = partlen;
 			ConfigDescrTbl [index].data = alldescbuffer + score;
 			score += partlen;
