@@ -58,13 +58,13 @@
 	#define USB_FUNCTION_BCD_USB	0x0200
 #endif /* (USBD_LPM_ENABLED == 1) */
 
-#define USB_FUNCTION_VENDOR_ID	0xFFFF	// Generic
+//#define USB_FUNCTION_VENDOR_ID	0xFFFF	// Generic
 //#define USB_FUNCTION_VENDOR_ID	0x041C	// Altera Corp.
 //#define USB_FUNCTION_VENDOR_ID	0x04d9	// Holtek Semiconductor, Inc.
 //#define USB_FUNCTION_VENDOR_ID	0x1D6B	// Linux Foundation
 
 // From STMicroelectronics Communication Device Class driver (CDC) INF FILE:
-//#define USB_FUNCTION_VENDOR_ID	0x0483	// STM
+#define USB_FUNCTION_VENDOR_ID	0x0483	// STM
 //#define USB_FUNCTION_PRODUCT_ID	0x5740
 //#define USB_FUNCTION_RELEASE_NO	0x0200
 
