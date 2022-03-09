@@ -1245,6 +1245,12 @@ static void usbd_fifo_initialize(PCD_HandleTypeDef * hpcd, uint_fast16_t fullsiz
 	}
 #endif /* WITHUSBHID */
 
+#if WITHUSBDMSC
+	{
+		USBx->DIEPTXF[0] = usbd_makeTXFSIZ(0x240, 0x100);
+	}
+#endif
+
 	//PRINTF(PSTR("usbd_fifo_initialize9: 4*(full4-last4)=%u\n"), 4 * (full4 - last4));
 
 	/* control endpoint TX FIFO */
