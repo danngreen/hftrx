@@ -77,6 +77,7 @@
 
 #define WITHUSBHW	1	/* Используется встроенная в процессор поддержка USB */
 
+
 //#define WITHUSBDEV_VBUSSENSE	1		/* используется предопределенный вывод OTG_VBUS */
 #define WITHUSBDEV_HSDESC	1			/* Требуется формировать дескрипторы как для HIGH SPEED */
 //#define WITHUSBDEV_HIGHSPEEDULPI	1	// ULPI
@@ -128,9 +129,10 @@
 #else
 	#define WITHUSBHW_DEVICE	USB_OTG_HS	/* на этом устройстве поддерживается функциональность DEVICE	*/
 	#define WITHUSBHW	1	/* Используется встроенная в процессор поддержка USB */
-	#define WITHCAT7_CDC	1	// сетевой интерфейс SLIP на USB CDC
-	#define WITHUSBCDCACM		1	/* ACM использовать виртуальный последовательный порт на USB соединении */
-	#define WITHUSBCDCACM_N	1	/* количество виртуальных последовательных портов */
+	//#define WITHCAT7_CDC	1	// сетевой интерфейс SLIP на USB CDC
+	//#define WITHUSBCDCACM		1	/* ACM использовать виртуальный последовательный порт на USB соединении */
+	//#define WITHUSBCDCACM_N	1	/* количество виртуальных последовательных портов */
+	#define WITHUSBDMSC 1
 
 #endif
 
