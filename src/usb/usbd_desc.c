@@ -4296,9 +4296,9 @@ static unsigned fill_Device_descriptor(uint8_t * buff, unsigned maxsize, uint_fa
 		* buff ++ = USB_DEVICE_DESCRIPTOR_TYPE;         /*  1:bDescriptorType */
 		* buff ++ = LO_BYTE(USB_FUNCTION_BCD_USB);      /*  2:bcdUSB_FUNCTION_lo */
 		* buff ++ = HI_BYTE(USB_FUNCTION_BCD_USB);		/*  3:bcdUSB_FUNCTION_hi */
-		* buff ++ = USB_DEVICE_CLASS_RESERVED; //MISCELLANEOUS;		/*  4:bDeviceClass */
-		* buff ++ = 0; //2;		                            /*  5:bDeviceSubClass - Common Class Sub Class */
-		* buff ++ = 0; //1;									/*  6:bDeviceProtocol - Interface Association Descriptor protocol */
+		* buff ++ = USB_DEVICE_CLASS_MISCELLANEOUS;		/*  4:bDeviceClass */
+		* buff ++ = 2;		                            /*  5:bDeviceSubClass - Common Class Sub Class */
+		* buff ++ = 1;									/*  6:bDeviceProtocol - Interface Association Descriptor protocol */
 		* buff ++ = USB_OTG_MAX_EP0_SIZE;               /*  7:bMaxPacketSize0 (for DCP), For 3x: 09H is the only valid value in this field when operating at Gen X speed. */
 		* buff ++ = LO_BYTE(USB_FUNCTION_VENDOR_ID);    /*  8:idVendor_lo */
 		* buff ++ = HI_BYTE(USB_FUNCTION_VENDOR_ID);	/*  9:idVendor_hi */
