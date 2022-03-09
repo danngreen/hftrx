@@ -4804,30 +4804,30 @@ void usbd_descriptors_initialize(uint_fast8_t HSdesc)
 		DeviceQualifierTbl [0].data = alldescbuffer + score;
 		score += partlen;
 
-#if 0
-		/*
-			The other_speed_configuration descriptor shown in Table 9-11 describes a 
-			configuration of a highspeed capable device if it were operating at its 
-			other possible speed.  
-			The structure of the other_speed_configuration is identical to a 
-			configuration descriptor.
-		*/
-		{
-			// Other Speed Configuration descriptors list
-			unsigned partlen;
-			uint_fast8_t index;
-			score += fill_align4(alldescbuffer + score, ARRAY_SIZE(alldescbuffer) - score);
-			partlen = 0;
-			for (index = 0; index < bNumConfigurations; ++ index)
-			{
-				// Configuration Descriptor
-				partlen = fill_Configuration_descriptor(alldescbuffer + score, ARRAY_SIZE(alldescbuffer) - score, ! HSdesc, funcs [index].confvalue, funcs [index].count, funcs [index].fp);
-				OtherSpeedConfigurationTbl [0].size = partlen;
-				OtherSpeedConfigurationTbl [0].data = alldescbuffer + score;
-				score += partlen;
-			}
-		}
-#endif
+// #if 0
+// 		/*
+// 			The other_speed_configuration descriptor shown in Table 9-11 describes a 
+// 			configuration of a highspeed capable device if it were operating at its 
+// 			other possible speed.  
+// 			The structure of the other_speed_configuration is identical to a 
+// 			configuration descriptor.
+// 		*/
+// 		{
+// 			// Other Speed Configuration descriptors list
+// 			unsigned partlen;
+// 			uint_fast8_t index;
+// 			score += fill_align4(alldescbuffer + score, ARRAY_SIZE(alldescbuffer) - score);
+// 			partlen = 0;
+// 			for (index = 0; index < bNumConfigurations; ++ index)
+// 			{
+// 				// Configuration Descriptor
+// 				partlen = fill_Configuration_descriptor(alldescbuffer + score, ARRAY_SIZE(alldescbuffer) - score, ! HSdesc, funcs [index].confvalue, funcs [index].count, funcs [index].fp);
+// 				OtherSpeedConfigurationTbl [0].size = partlen;
+// 				OtherSpeedConfigurationTbl [0].data = alldescbuffer + score;
+// 				score += partlen;
+// 			}
+// 		}
+// #endif
 	}
 	else
 	{
