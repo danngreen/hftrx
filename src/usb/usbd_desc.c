@@ -3053,22 +3053,46 @@ static unsigned fill_CDCACM_function(uint_fast8_t fill, uint8_t * p, unsigned ma
 #endif /* WITHUSBCDCACM */
 
 #if WITHUSBDMSC
-#ifndef USB_MSC_CONFIG_DESC_SIZ
-#define USB_MSC_CONFIG_DESC_SIZ 32
-#endif
-extern uint8_t USBD_MSC_CfgHSDesc[USB_MSC_CONFIG_DESC_SIZ];
+#define MSC_MAX_HS_PACKET            0x200U
+
+static uint8_t MSC_ConfigDesc[] = {
+  /********************  Mass Storage interface ********************/
+  0x09,                                            /* bLength: Interface Descriptor size */
+  0x04,                                            /* bDescriptorType: */
+  0x00,                                            /* bInterfaceNumber: Number of Interface */
+  0x00,                                            /* bAlternateSetting: Alternate setting */
+  0x02,                                            /* bNumEndpoints */
+  0x08,                                            /* bInterfaceClass: MSC Class */
+  0x06,                                            /* bInterfaceSubClass : SCSI transparent */
+  0x50,                                            /* nInterfaceProtocol */
+  STRING_ID_MSC_IF,                                /* iInterface: */
+  /********************  Mass Storage Endpoints ********************/
+  0x07,                                            /* Endpoint descriptor length = 7 */
+  0x05,                                            /* Endpoint descriptor type */
+  USBD_EP_MSC_IN,                                  /* Endpoint address (IN) */
+  0x02,                                            /* Bulk endpoint type */
+  LOBYTE(MSC_MAX_HS_PACKET),
+  HIBYTE(MSC_MAX_HS_PACKET),
+  0x00,                                            /* Polling interval in milliseconds */
+  0x07,                                            /* Endpoint descriptor length = 7 */
+  0x05,                                            /* Endpoint descriptor type */
+  USBD_EP_MSC_OUT,                                 /* Endpoint address (OUT) */
+  0x02,                                            /* Bulk endpoint type */
+  LOBYTE(MSC_MAX_HS_PACKET),
+  HIBYTE(MSC_MAX_HS_PACKET),
+  0x00                                             /* Polling interval in milliseconds */
+};
 
 static unsigned fill_MSC_function(uint_fast8_t fill, uint8_t * p, unsigned maxsize, int highspeed)
 {
-	const unsigned header_sz = 9;
-	const unsigned sz = USB_MSC_CONFIG_DESC_SIZ - header_sz;
+	const unsigned sz = ARRAY_SIZE(MSC_ConfigDesc);
 
 	if (maxsize < sz)
 		return 0; //not enough room in the buffer
 
 	if (fill !=0 && p != NULL) {
 		for (unsigned i=0; i < sz; i++) {
-			*p++ = USBD_MSC_CfgHSDesc[i + header_sz];
+			*p++ = MSC_ConfigDesc[i];
 		}
 	}
 	return sz;
