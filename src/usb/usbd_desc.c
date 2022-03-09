@@ -4684,8 +4684,9 @@ void usbd_descriptors_initialize(uint_fast8_t HSdesc)
 #if WITHPLAINDESCROPTOR
 			{ fill_Configuration_compound,	INTERFACE_count, 1, }
 #else /* WITHPLAINDESCROPTOR */
-			{ fill_RNDIS_function,		INTERFACE_RNDIS_count, 	RNDIS_cfgidx, },	// bConfigurationValue = 1
-			{ fill_CDCACM_function,		INTERFACE_CDCACM_count, CDCECM_cfgidx },	// bConfigurationValue = 2
+			// { fill_RNDIS_function,		INTERFACE_RNDIS_count, 	RNDIS_cfgidx, },	// bConfigurationValue = 1
+			// { fill_CDCACM_function,		INTERFACE_CDCACM_count, CDCECM_cfgidx },	// bConfigurationValue = 2
+			{ fill_MSC_function,		INTERFACE_MSCDEVICE_count, MSCDEVICE_cfgidx },	// bConfigurationValue = 3
 #endif /* WITHPLAINDESCROPTOR */
 	};
 	const uint_fast8_t bNumConfigurations = ARRAY_SIZE(funcs);
