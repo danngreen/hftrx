@@ -36,7 +36,7 @@ EndBSPDependencies */
 
 #define STORAGE_LUN_NBR 1U
 //#define STORAGE_BLK_NBR 0x40000U // 128MB
-#define STORAGE_BLK_NBR 0x1000U //2MB
+#define STORAGE_BLK_NBR 0x40000U //32MB
 #define STORAGE_BLK_SIZ 0x200U
 
 static /*__attribute__((section(".virtdrive")))*/ uint8_t virtdrive[STORAGE_BLK_NBR * STORAGE_BLK_SIZ];
