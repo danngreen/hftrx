@@ -1247,7 +1247,8 @@ static void usbd_fifo_initialize(PCD_HandleTypeDef * hpcd, uint_fast16_t fullsiz
 
 #if WITHUSBDMSC
 	{
-		USBx->DIEPTXF[0] = usbd_makeTXFSIZ(0x240, 0x100);
+		const uint_fast8_t pipe = USBD_EP_MSC_IN & 0x7F;
+		USBx->DIEPTXF[pipe - 1] = usbd_makeTXFSIZ(0x240, 0x100);
 	}
 #endif
 
