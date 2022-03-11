@@ -15,135 +15,29 @@
 #include "gpio.h"
 
 
-static VLIST_ENTRY tickers;
-static VLIST_ENTRY adcdones;
-
-void ticker_initialize(ticker_t * p, unsigned nticks, void (* cb)(void *), void * ctx)
-{
-	p->period = nticks;
-	//p->fired = nowtick;
-	p->ticks = 0;
-	p->cb = cb;
-	p->ctx = ctx;
-}
-
 void ticker_add(ticker_t * p)
 {
-	InsertHeadVList(& tickers, & p->item);
 }
 
-static void tickers_spool(void)
-{
 
-	//++ nowtick;
-	PVLIST_ENTRY t;
-	for (t = tickers.Blink; t != & tickers; t = t->Blink)
-	{
-		ticker_t * const p = CONTAINING_RECORD(t, ticker_t, item);
-	
-		//if (p->next <= nowtick)
-		if (++ p->ticks >= p->period)
-		{
-			//p->fired = nowtick;
-			p->ticks = 0;
-			if (p->cb != NULL)
-				(p->cb)(p->ctx);
-		}
-	}
-}
 
-void tickers_initialize(void)
-{
-	InitializeListHead(& tickers);
-
-}
-
-// инициализация списка обработчиков конца преобразования АЦП
-//void adcdones_initialize(void)
-//{
-//	InitializeListHead(& adcdones);
-//}
-
-//// регистрируются обработчики конца преобразования АЦП
-//void adcdone_initialize(adcdone_t * p, void (* cb)(void *), void * ctx)
-//{
-//	p->cb = cb;
-//	p->ctx = ctx;
-//}
-
-//// регистрируется обработчик конца преобразования АЦП
-//void adcdone_add(adcdone_t * p)
-//{
-//	InsertHeadVList(& adcdones, & p->item);
-//}
-
-//static void adcdones_spool(void)
-//{
-
-//	//++ nowtick;
-//	PVLIST_ENTRY t;
-//	for (t = adcdones.Blink; t != & adcdones; t = t->Blink)
-//	{
-//		adcdone_t * const p = CONTAINING_RECORD(t, adcdone_t, item);
-
-//		if (p->cb != NULL)
-//			(p->cb)(p->ctx);
-//	}
-//}
-
-#if 1//WITHLWIP
 static volatile uint32_t sys_now_counter;
 uint32_t sys_now(void)
 {
 	return sys_now_counter;
 }
-#endif /* WITHLWIP */
 
-/* Машинно-независимый обработчик прерываний. */
-// Функции с побочным эффектом - отсчитывание времени.
-// При возможности вызываются столько раз, сколько произошло таймерных прерываний.
 RAMFUNC void spool_systimerbundle1(void)
 {
-	//beacon_255();
-#ifdef USE_HAL_DRIVER
 	HAL_IncTick();
-#endif /* USE_HAL_DRIVER */
 
-#if 1//WITHLWIP
 	sys_now_counter += (1000 / TICKS_FREQUENCY);
-#endif /* WITHLWIP */
-
-	//spool_lfm();
-	tickers_spool();
-
-// #if ! WITHCPUADCHW
-// 	adcdones_spool();
-// #endif /* ! WITHCPUADCHW */
 }
 
-/* Машинно-независимый обработчик прерываний. */
-// Функции с побочным эффектом редиспетчеризации.
-// Если пропущены прерывания, компенсировать дополнительными вызовами нет смысла.
 RAMFUNC void spool_systimerbundle2(void)
 {
-
-// #if WITHCPUADCHW
-// 	hardware_adc_startonescan();	// хотя бы один вход (s-метр) есть.
-// #endif /* WITHCPUADCHW */
 }
 
-#if WITHCPUADCHW
-/* 
-	Машинно-независимый обработчик прерываний.
-	Вызывается с периодом 1/TIMETICKS по окончании получения данных всех каналов АЦП,
-	перечисленных в таблице adcinputs.
-*/
-
-// RAMFUNC void spool_adcdonebundle(void)
-// {
-// 	adcdones_spool();
-// }
-#endif /* WITHCPUADCHW */
 
 
 #if CPUSTYLE_STM32MP1 || CPUSTYLE_STM32F
