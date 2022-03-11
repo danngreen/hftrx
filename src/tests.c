@@ -6283,7 +6283,7 @@ static uint_fast32_t adis161xx_read32(unsigned page, unsigned addr)
 void hightests(void)
 {
 #if WITHLTDCHW && LCDMODE_LTDC
-	arm_hardware_ltdc_main_set((uintptr_t) colmain_fb_draw());
+	// arm_hardware_ltdc_main_set((uintptr_t) colmain_fb_draw());
 #endif /* WITHLTDCHW && LCDMODE_LTDC */
 #if 0
 	{
@@ -9104,7 +9104,7 @@ void hightests(void)
 		}
 	}
 #endif
-	display_nextfb();	// Скрыть резулбтаты теста, разнести рисуемый и ообрадаемый буферы
+	// display_nextfb();	// Скрыть резулбтаты теста, разнести рисуемый и ообрадаемый буферы
 }
 
 // Вызывается перед инициализацией NVRAM, но после инициализации SPI

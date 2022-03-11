@@ -4899,8 +4899,8 @@ static void board_update_initial(void)
 #else
 	board_update_ctrlreg();
 #endif
-	prog_dsplreg();				// обновление регистров DSP
-	prog_fltlreg();				// обновление регистров DSP
+	//prog_dsplreg();				// обновление регистров DSP
+	//prog_fltlreg();				// обновление регистров DSP
 }
 
 // Обновление непосредственно подключенных к процессору сигналов
@@ -4971,9 +4971,9 @@ board_update(void)
 	}
 #endif
 
-	prog_dsplreg_update();		// услолвное обновление регистров DSP
-	prog_fltlreg_update();		// услолвное обновление регистров DSP
-	prog_codecreg_update();		// услолвное обновление регистров аудио кодека
+	// prog_dsplreg_update();		// услолвное обновление регистров DSP
+	// prog_fltlreg_update();		// услолвное обновление регистров DSP
+	// prog_codecreg_update();		// услолвное обновление регистров аудио кодека
 	//PRINTF(PSTR("board_update done.\n"));
 }
 
@@ -7502,7 +7502,7 @@ void board_initialize(void)
 	hardware_spi_slave_initialize();
 #endif /* WITHSPISLAVE */
 
-	hardware_channels_initialize();	// SAI, I2S и подключенная на них периферия
+	//hardware_channels_initialize();	// SAI, I2S и подключенная на них периферия
 
 #if WITHCPUDACHW
 	hardware_dac_initialize();	/* инициализация DAC на STM32F4xx */
@@ -7763,7 +7763,7 @@ void board_init_chips(void)
 #endif /* defined (RTC1_TYPE) */
 
 #if defined (TSC1_TYPE)
-	board_tsc_initialize();
+	// board_tsc_initialize();
 #endif /* defined (TSC1_TYPE) */
 
 #if defined(CODEC1_TYPE)

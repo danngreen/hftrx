@@ -1,4 +1,4 @@
-/* $Id$ */
+
 //
 // Проект HF Dream Receiver (КВ приёмник мечты)
 // автор Гена Завидовский mgs2001@mail.ru
@@ -367,8 +367,8 @@ static uint_fast8_t getbankindex_pathi(uint_fast8_t pathi);
 static uint_fast8_t getbankindex_tx(uint_fast8_t tx);
 static uint_fast8_t getbankindex_ab_fordisplay(uint_fast8_t ab);
 //static void updateboard(uint_fast8_t full, uint_fast8_t mute);
-static void updateboardZZZ(uint_fast8_t full, uint_fast8_t mute, const char * file, int line);
-#define updateboard(full, mute) do { updateboardZZZ((full), (mute), __FILE__, __LINE__); } while (0)
+// static void updateboardZZZ(uint_fast8_t full, uint_fast8_t mute, const char * file, int line);
+// #define updateboard(full, mute) do { updateboardZZZ((full), (mute), __FILE__, __LINE__); } while (0)
 static uint_fast8_t getsubmode(uint_fast8_t bi);		/* bi: vfo bank index */
 static uint_fast8_t getactualmainsubrx(void);
 
@@ -964,25 +964,25 @@ loadvfy8up(
 	nvramaddress_t place, 
 	uint_fast8_t bottom, uint_fast8_t upper, uint_fast8_t def)	// upper - inclusive limit
 {
-#if HARDWARE_IGNORENONVRAM
+// #if HARDWARE_IGNORENONVRAM
 	return def;
-#endif /* HARDWARE_IGNORENONVRAM */
+// #endif /* HARDWARE_IGNORENONVRAM */
 
-	if (place == MENUNONVRAM)
-		return def;
+	// if (place == MENUNONVRAM)
+	// 	return def;
 
-	const uint_fast8_t v = restore_i8(place);
+	// const uint_fast8_t v = restore_i8(place);
 
-	// pre-chechk default value added for mode row switching with same column as default
-	if (def > upper || def < bottom)
-		def = bottom;
+	// // pre-chechk default value added for mode row switching with same column as default
+	// if (def > upper || def < bottom)
+	// 	def = bottom;
 
-	if (v > upper || v < bottom)
-	{
-		save_i8(place, def);
-		return def;
-	}
-	return v;
+	// if (v > upper || v < bottom)
+	// {
+	// 	save_i8(place, def);
+	// 	return def;
+	// }
+	// return v;
 }
 
 // Интерфейсные функции доступа к NVRAM
@@ -993,24 +993,24 @@ loadvfy16up(
 	nvramaddress_t place, 
 	uint_fast16_t bottom, uint_fast16_t upper, uint_fast16_t def)	// upper - inclusive limit
 {
-#if HARDWARE_IGNORENONVRAM
+// #if HARDWARE_IGNORENONVRAM
 	return def;
-#endif /* HARDWARE_IGNORENONVRAM */
+// #endif /* HARDWARE_IGNORENONVRAM */
 
-	if (place == MENUNONVRAM)
-		return def;
+	// if (place == MENUNONVRAM)
+	// 	return def;
 
-	const uint_fast16_t v = restore_i16(place);
+	// const uint_fast16_t v = restore_i16(place);
 
-	if (def > upper || def < bottom)
-		def = bottom;
+	// if (def > upper || def < bottom)
+	// 	def = bottom;
 	
-	if (v > upper || v < bottom)
-	{
-		save_i16(place, def);
-		return def;
-	}
-	return v;
+	// if (v > upper || v < bottom)
+	// {
+	// 	save_i16(place, def);
+	// 	return def;
+	// }
+	// return v;
 }
 
 // проверка и приведение в допустимый диапазон значений, считанных из eeprom или принятых по CAT. Или при autosplit
@@ -1034,24 +1034,24 @@ loadvfy32(
 	nvramaddress_t place, 
 	uint_fast32_t bottom, uint_fast32_t top, uint_fast32_t def)
 {
-#if HARDWARE_IGNORENONVRAM
+// #if HARDWARE_IGNORENONVRAM
 	return def;
-#endif /* HARDWARE_IGNORENONVRAM */
+// #endif /* HARDWARE_IGNORENONVRAM */
 
-	if (place == MENUNONVRAM)
-		return def;
+	// if (place == MENUNONVRAM)
+	// 	return def;
 
-	const uint_fast32_t v = restore_i32(place);
+	// const uint_fast32_t v = restore_i32(place);
 
-	if (def >= top || def < bottom)
-		def = bottom;
+	// if (def >= top || def < bottom)
+	// 	def = bottom;
 	
-	if (v >= top || v < bottom)
-	{
-		save_i32(place, def);
-		return def;
-	}
-	return v;
+	// if (v >= top || v < bottom)
+	// {
+	// 	save_i32(place, def);
+	// 	return def;
+	// }
+	// return v;
 }
 
 #if WITHIF4DSP
@@ -4261,8 +4261,8 @@ static uint_fast8_t sleepflag;	/* не-0: выключить дисплей и �
 
 static uint_fast8_t amenuset(void)
 {
-	if ((dimmflag || sleepflag || dimmmode))
-		return display_getpagesleep();
+	// if ((dimmflag || sleepflag || dimmmode))
+	// 	return display_getpagesleep();
 	return menuset;
 }
 
@@ -6170,9 +6170,9 @@ static void
 savebandfreq(const vindex_t b, const uint_fast8_t bi)
 {
 	//PRINTF(PSTR("savebandfreq: b=%d, bi=%d, freq=%ld\n"), b, bi, (unsigned long) gfreqs [bi]);
-	verifyband(b);
+	// verifyband(b);
 
-	save_i32(RMT_BFREQ_BASE(b), gfreqs [bi]);	/* сохранить в области диапазона частоту */
+	// save_i32(RMT_BFREQ_BASE(b), gfreqs [bi]);	/* сохранить в области диапазона частоту */
 }
 
 /* сохранить все параметры настройки (кроме частоты) в соответствующий диапазон, ячейку памяти или VFO. */
@@ -7110,7 +7110,7 @@ loadsavedstate(void)
 	enc2pos = loadvfy8up(RMT_ENC2POS_BASE, 0, ENC2POS_COUNT - 1, enc2pos);	/* вытаскиваем номер параметра для редактирования вторым валкодером */
 #endif /* WITHENCODER2 */
 #endif /* WITHNOTCHONOFF */
-	menuset = loadvfy8up(RMT_MENUSET_BASE, 0, display_getpagesmax(), menuset);		/* вытаскиваем номер субменю, с которым работаем сейчас */
+	// menuset = loadvfy8up(RMT_MENUSET_BASE, 0, display_getpagesmax(), menuset);		/* вытаскиваем номер субменю, с которым работаем сейчас */
 #if WITHSPLIT
 	gsplitmode = loadvfy8up(RMT_SPLITMODE_BASE, 0, VFOMODES_COUNT - 1, gsplitmode); /* (vfo/vfoa/vfob/mem) */
 	gvfoab = loadvfy8up(RMT_VFOAB_BASE, 0, VFOS_COUNT - 1, gvfoab); /* (vfoa/vfob) */
@@ -7254,28 +7254,28 @@ setgsubmode(
 	uint_fast8_t submode
    )
 {
-	/* подправить фильтр, АРУ и шаг перестройки в соответствии с новым режимим работы */
-	/* выбор фильтра */
-	const FLASHMEM struct modetempl * const pmodet = getmodetempl(submode);
-	const uint_fast8_t mode = submodes [submode].mode;
-	const uint_fast8_t deffilter = getdefflt(mode, 0);	/* получить индекс фильтра "по умолчанию" для режима */
+	// /* подправить фильтр, АРУ и шаг перестройки в соответствии с новым режимим работы */
+	// /* выбор фильтра */
+	// const FLASHMEM struct modetempl * const pmodet = getmodetempl(submode);
+	// const uint_fast8_t mode = submodes [submode].mode;
+	// const uint_fast8_t deffilter = getdefflt(mode, 0);	/* получить индекс фильтра "по умолчанию" для режима */
 	
-	gsubmode = submode;
-	gmode = mode;
-	gfi = getsuitablerx(mode, loadvfy8up(RMT_FILTER_BASE(mode), 0, getgfasize() - 1, deffilter));	/* фильтр для режима приёма */
-#if ! WITHAGCMODENONE
-	gagcmode = loadvfy8up(RMT_AGC_BASE(mode), 0, AGCMODE_COUNT - 1, pmodet->defagcmode);
-#endif /* ! WITHAGCMODENONE */
-	if (gusefast || gbigstep)
-	{
-		gstep = pmodet->step10 [1] * 10;
-		gencderate = 1;
-	}
-	else
-	{
-		gstep = pmodet->step10 [0] * 10;
-		gencderate = gstep / STEP_MINIMAL;
-	}
+	// gsubmode = submode;
+	// gmode = mode;
+	// gfi = getsuitablerx(mode, loadvfy8up(RMT_FILTER_BASE(mode), 0, getgfasize() - 1, deffilter));	/* фильтр для режима приёма */
+// #if ! WITHAGCMODENONE
+	// gagcmode = loadvfy8up(RMT_AGC_BASE(mode), 0, AGCMODE_COUNT - 1, pmodet->defagcmode);
+// #endif /* ! WITHAGCMODENONE */
+	// if (gusefast || gbigstep)
+	// {
+	// 	gstep = pmodet->step10 [1] * 10;
+	// 	gencderate = 1;
+	// }
+	// else
+	// {
+	// 	gstep = pmodet->step10 [0] * 10;
+	// 	gencderate = gstep / STEP_MINIMAL;
+	// }
 }
 #if ! WITHAGCMODENONE
 #endif /* ! WITHAGCMODENONE */
@@ -9894,1830 +9894,1830 @@ flagne_u32_cat(dualctl32_t * oldval, uint_fast32_t v, uint_fast8_t catindex)
  tx - не-0: переключение аппаратуры в режим передачи
  Учитывается состояние tunemode - режим настройки передатчика, при этом параметр tx не-ноль.
  */
-static void
-updateboardZZZ(
-	uint_fast8_t full, 
-	uint_fast8_t mute,
-	const char * file,
-	int line
-	)
-{
-	/* параметры, вычисляемые по updateboard(full=1) */
-	static const FLASHMEM struct modetempl * pamodetempl;	/* Режим, используемый при передаче */
-
-	/* Параметры, которые могут измениться при перестройке частоты и вызвать необходимость full=1 */
-	static uint_fast8_t lo0side = LOCODE_INVALID;
-	static uint_fast32_t lo0hint = UINT32_MAX;
-	static uint_fast8_t lo1side [2] = { LOCODE_INVALID, LOCODE_INVALID };
-	const uint_fast8_t lo2side = LO2_SIDE;
-	static uint_fast8_t lo2hint [2];
-	const uint_fast8_t lo3side = LO3_SIDE;
-	static uint_fast8_t forcelsb [2];
-#if WITHDCDCFREQCTL
-	static uint_fast32_t bldividerout = UINT32_MAX;
-#endif /* WITHDCDCFREQCTL */
-#if CTLSTYLE_IGOR
-	static uint_fast16_t bandf100khint = UINT16_MAX;
-#else /* CTLSTYLE_IGOR */
-	static uint_fast8_t bandfhint = UINT8_MAX;
-	static uint_fast8_t bandf2hint = UINT8_MAX;
-	static uint_fast8_t bandf3hint = UINT8_MAX;	// управление через разъем ACC
-#endif /* CTLSTYLE_IGOR */
-
-	uint_fast8_t full2 = full; 
-
-	uint_fast8_t pathi;
-	ASSERT(gtx < 2);
-	const uint_fast8_t pathn = gtx ? 1 : NTRX;
-	/* +++ проверка необходимости полной перенастройки из-за сменившихся условий выбора частот. */
-	for (pathi = 0; pathi < pathn; ++ pathi)
-	{
-		const uint_fast8_t bi = getbankindex_pathi(pathi);
-		const int_fast32_t freq = gfreqs [bi];
-		/* "Эти параметры для расчёта частот выясняем здесь, так как они (могут) зависить от частоты */
-		full2 |= flagne_u8(& lo1side [pathi], getsidelo1(freq));	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
-		full2 |= flagne_u8(& lo2hint [pathi], gethintlo2(freq));
-		full2 |= flagne_u8(& forcelsb [pathi], getforcelsb(freq));
-#if WITHDCDCFREQCTL
-		full2 |= flagne_u32(& bldividerout, hardware_dcdc_calcdivider(freq));	// управление частотой dc-dc преобразователя
-#endif /* WITHDCDCFREQCTL */
-	}
-	// параметры, не имеющие специфики для разных приемников
-	{
-		const uint_fast8_t bi = getbankindex_pathi(0); //getbankindex_tx(gtx);
-		const int_fast32_t freq = gfreqs [bi];
-	#if CTLSTYLE_IGOR
-		full2 |= flagne_u16(& bandf100khint, freq / 100000uL);
-	#else /* CTLSTYLE_IGOR */
-		full2 |= flagne_u8(& bandfhint, bandf_calc(nyquistadj(freq)));
-		full2 |= flagne_u8(& bandf2hint, bandf2_calc(nyquistadj2(freq)));
-		full2 |= flagne_u8(& bandf3hint, bandf3_calc(nyquistadj3(freq)));
-	#endif /* CTLSTYLE_IGOR */
-		full2 |= flagne_u8(& lo0side, getsidelo0(freq));	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
-		full2 |= flagne_u32(& lo0hint, gethintlo0(freq, lo0side));
-	}
-	/* --- проверка необходимости полной перенастройки из-за сменившихся условий выбора частот. */
-
-//	if (full2 != 0 && full == 0)
-//	{
-//		PRINTF("full2 added from %s/%d\n", file, line);
-//	}
-//	if (full != 0)
-//	{
-//		PRINTF("full passed from %s/%d\n", file, line);
-//	}
-#if WITHCAT
-	if (aistate != 0)
-	{
-		if (full)
-		{
-			cat_answer_request(CAT_IF_INDEX);
-			cat_answer_request(CAT_MD_INDEX);
-			cat_answer_request(CAT_FA_INDEX);	// добавлено для обновления индикатора частоты в ACRP-590 при переходе по диапазонам клавишами на устройстве. И помогло при нажатиях на цифры дисплея.
-			cat_answer_request(gtx ? CAT_TX_INDEX : CAT_RX_INDEX);	// ignore main/sub rx selection (0 - main. 1 - sub);
-#if WITHIF4DSP
-			cat_answer_request(CAT_NR_INDEX);
-#endif /* WITHIF4DSP */
-		}
-		else
-		{
-			cat_answer_request(CAT_FA_INDEX);
-		}
-	}
-#endif /* WITHCAT */
-	
-	if (full)
-	{
-		const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-		/* преустановка всех параметров приемника или передатчика под новый режим */
-		setgsubmode(getsubmode(bi));		/* установка gsubmode, gagc, gfi и так далее */
-	}
-
-	if (full2)
-	{
-#if WITHTOUCHGUI
-		gui_update();
-#endif /* WITHTOUCHGUI */
-
-		/* Полная перенастройка. Изменился режим (или одно из значений hint). */
-		if (gtx == 0)
-		{
-			board_set_tx(0);	/* перед всеми перенастройками выключаем передатчик */
-			board_update();		/* вывести забуферированные изменения в регистры */
-			// todo: убрать после решения проблем с переходом между приёмом и передачей в FPGA
-		}
-
-		const uint_fast8_t rxbi = getbankindex_tx(0);
-		const uint_fast8_t txbi = getbankindex_tx(1);
-		const uint_fast8_t txsubmode = getsubmode(txbi);		/* код режима, который будет при передаче */
-		const uint_fast8_t txmode = submodes [txsubmode].mode;
-
-		for (pathi = 0; pathi < pathn; ++ pathi)
-		{
-			const uint_fast8_t asubmode = getasubmode(pathi);	// SUBMODE_CWZ/SUBMODE_CWZSMART for tune
-			pamodetempl = getmodetempl(asubmode);
-			const uint_fast8_t amode = submodes [asubmode].mode;
-			const uint_fast8_t alsbmode = getsubmodelsb(asubmode, forcelsb [pathi]);	// Принимаемая модуляция на нижней боковой
-			//
-			// lo2side - определяется конфигурацией
-			// lo3side - определяется конфигурацией
-			//const static uint_fast8_t lo2side = LO2_SIDE;
-			//const static uint_fast8_t lo3side = LO3_SIDE;
-			//const uint_fast8_t lo4side = getsidelo4();	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
-			//const uint_fast8_t lo5side = getsidelo5(amode, gtx);	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
-			//const uint_fast8_t lo6side = getsidelo6(amode, gtx);	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
-			//
-			const uint_fast8_t sides [7] = { lo0side, lo1side [pathi], lo2side, lo3side, getsidelo4(), getsidelo5(amode, gtx), getsidelo6(amode, gtx) };
-			uint_fast8_t mixXlsbs [sizeof sides / sizeof sides [0]];
-			uint_fast8_t i;
-			for (i = 0; i < sizeof sides / sizeof sides [0]; ++ i)
-			{
-				mixXlsbs [i] = getlsbloX(alsbmode, i, sides, sizeof sides / sizeof sides [0]);
-			}
-			// расчёт частот в тракте
-			// 
-		#if defined (IF3_MODEL) && (IF3_MODEL == IF3_TYPE_DCRX)
-			enum { dc = 1 };	/* работа в режиме прямого преобразования со всегда нулевой частотой LO4 */
-		#else
-			const uint_fast8_t dc = dctxmodecw && gtx && pamodetempl->txcw;	// на передачу формируем первым гетеродином
-		#endif
-
-			const filter_t * workfilter;
-			if (gtx != 0)
-			{
-				workfilter = gettxfilter(asubmode, getsuitabletx(amode, 0));	/* получаем по gfi/gfitx, хранится фильтр, включенный для данного режима */
-			}
-			else
-			{
-				workfilter = getrxfilter(asubmode, gfi);	/* получаем по gfi/gfitx, хранится фильтр, включенный для данного режима */
-			}
-			ASSERT(workfilter != NULL);
-	#if WITHIF4DSP
-			// Так же, здесь можно решать, какой фильтр ПЧ требуется для данного фильтра dsp.
-			// В случае DUC/DDC, используется "заглушка" - IF3_TYPE_BYPASS.
-			const uint_fast8_t bwseti = mdt [amode].bwsetis [gtx];
-			const uint_fast8_t wide = bwseti_getwide(bwseti);
-	#else /* WITHIF4DSP */
-			const uint_fast8_t wide = workfilter->widefilter;
-	#endif /* WITHIF4DSP */
-			//
-#if WITHDUMBIF
-			{
-				const int_fast32_t freqif1 = WITHDUMBIF;
-				synth_if1 [pathi] = UPPERTOSIGN(mixXlsbs [1], freqif1);	// Запоминается для последующего преобразования рабочей частоты к частоте гетеродина.
-			}
-#else /* WITHDUMBIF */
-			const int_fast16_t pbt = getpbt(workfilter, amode, gtx);
-			const int_fast16_t ifshift = getifshift(workfilter, amode, gtx);	/* положительные значения - повышение тембра (фильтр сдвигается "выше"). */
-
-			const int_fast32_t freqif6 = getif6(amode, gtx, wide); // Positive number: ssb:0, cw=700, drm=12k
-			const int_fast32_t freqlo6 = UPPERTOSIGN(! mixXlsbs [6], getlo6(amode, gtx, wide, ifshift));
-			const int_fast32_t freqif5 = freqlo6 + UPPERTOSIGN(mixXlsbs [6], freqif6); 	// в режиме CW должно быть 0 для DDC/DUC
-			const int_fast32_t freqlo5 = UPPERTOSIGN(mixXlsbs [5], getlo5(amode, gtx));	// 0 or DSP IF freq (12 kHz)
-			const int_fast32_t freqif4 = freqlo5 + UPPERTOSIGN(mixXlsbs [5], freqif5);
-			const int_fast32_t freqlo4ref = getlo4ref(workfilter, amode, mixXlsbs [4], gtx);
-
-			// Возможно две стратегии переноса частоты - с согласованием частот среза
-			// и с согласованием центральных частот полос пропускания.
-			// Вариант с согласованием центральных частот - это случай включённого узкого фильтра ПЧ и телеграфного режима.
-			// Или, случай WITHIF4DSP.
-	#if WITHFIXEDBFO || WITHDUALFLTR
-			// Выравнивание IF с привязкой к скату фильтра основной селекции
-			// расчёт использует freqif4, freqlo5 == 0
-			const int_fast32_t freqlo4 = freqlo4ref - freqlo5;	// если гетеродин один
-			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4 + UPPERTOSIGN(mixXlsbs [4], freqif4));
-	#elif WITHDUALBFO
-			// Выравнивание IF с привязкой к скату фильтра основной селекции
-			// расчёт использует freqif4, freqlo5 == 0
-			const int_fast32_t freqlo4 = freqlo4ref - freqlo5;	// гетеродинов два - для разных скатов фильтра
-			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4 + UPPERTOSIGN(mixXlsbs [4], freqif4));
-	#elif WITHIF4DSP
-			// Выравнивание IF с привязкой к центру фильтра основной селекции
-			// расчёт использует freqif4, freqlo5
-			const int_fast32_t freqlo4 = freqlo4ref - freqlo5;	// Надо согласовать центр фильтра с частотой переноса на baseband
-			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4 + UPPERTOSIGN(mixXlsbs [4], freqif4));
-	#elif 0
-			// todo: не работает сохранение картины приёма при переключении SSB->CW, зато работает IF SHIFT
-			// Выравнивание IF с привязкой к скату фильтра основной селекции
-			// расчёт использует freqif4, freqif5 = - ifshift
-			const int_fast32_t freqlo4 = dc ? 0 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], freqif4));	// used for programming BFO
-			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], freqif5));
-
-	#elif 0
-			// todo: работает сохранение картины приёма при переключении SSB->CW, но IF SHIFT меняет частоту приёма
-			// Выравнивание IF с привязкой к скату фильтра основной селекции
-			// расчёт использует freqif4, freqif5 = - ifshift
-			const int_fast32_t freqlo4 = dc ? 0 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], freqif4));	// used for programming BFO
-			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4ref + UPPERTOSIGN(mixXlsbs [4], freqif4) - UPPERTOSIGN(mixXlsbs [4], freqif5));
-	#else
-			// Убран возврат ifshif в getlo6
-			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], ifshift));
-			const int_fast32_t freqlo4 = dc ? 0 : (freqif3 - UPPERTOSIGN(mixXlsbs [4], freqif4));	// used for programming BFO
-	#endif
-
-			// Взаимным смещением LO1 и LO2 производится "подрезание" полосы пропускания - PBTs
-			const int_fast32_t freqlo3 = getlo3(amode, mixXlsbs [3], gtx) + UPPERTOSIGN16(mixXlsbs [3], pbt);	/* частота для гетеродина, осуществляющего passband tuning = PBT */
-			const int_fast32_t freqif2 = freqlo3 + UPPERTOSIGN(mixXlsbs [3], freqif3);
-			const int_fast32_t freqlo2 = getlo2(workfilter, amode, mixXlsbs [2], gtx, lo2hint [pathi]);
-			const int_fast32_t freqif1 = freqlo2 + UPPERTOSIGN(mixXlsbs [2], freqif2);
-			const int_fast32_t freqlo0 = getlo0(lo0hint);
-			synth_if1 [pathi] = UPPERTOSIGN(mixXlsbs [1], freqif1) - UPPERTOSIGN(mixXlsbs [0], freqlo0);	// Запоминается для последующего преобразования рабочей частоты к частоте гетеродина.
-#endif /* WITHDUMBIF */
-
-	#if 0 && WITHDEBUG
-			{
-				const uint_fast8_t bi = getbankindex_pathi(pathi);
-				const int_fast32_t freq = gfreqs [bi];
-				PRINTF(submodes [asubmode].qlabel);
-				PRINTF(PSTR(" pathi=%d"), pathi);
-				PRINTF(PSTR(" f="));	printfreq(freq);
-				PRINTF(PSTR(" lo0="));	printfreq(freqlo0);
-				PRINTF(PSTR(" lo1="));	printfreq(synth_freq2lo1(freq, pathi));
-				PRINTF(PSTR(" pbt="));	printfreq(pbt);
-				PRINTF(PSTR(" ifshift="));	printfreq(ifshift);
-				PRINTF(PSTR(" bw="));	PRINTF(workfilter->labelf3);
-				PRINTF(PSTR(" dbw="));	PRINTF(hamradio_get_rxbw_value_P());
-				PRINTF(PSTR("\n"));
-				PRINTF(
-					PSTR("mixXlsbs[0]=%d, [1]=%d, [2]=%d, [3]=%d, [4]=%d, [5]=%d, [6]=%d dc=%d tx=%d\n"),
-						mixXlsbs [0], mixXlsbs [1], mixXlsbs [2], mixXlsbs [3], mixXlsbs [4], mixXlsbs [5], mixXlsbs [6], dc, gtx
-					);
-				PRINTF(PSTR(" [lo1="));	printfreq(synth_freq2lo1(freq, pathi));
-				PRINTF(PSTR("]if1="));	printfreq(freqif1);
-				PRINTF(PSTR(" [lo2="));	printfreq(freqlo2);
-				PRINTF(PSTR("]if2="));	printfreq(freqif2);
-				PRINTF(PSTR(" [lo3="));	printfreq(freqlo3);
-				PRINTF(PSTR("]if3="));	printfreq(freqif3);
-
-				//PRINTF(PSTR("\n"));
-
-				PRINTF(PSTR(" [lo4=%d*"), getlo4enable(amode, gtx));	printfreq(freqlo4);
-				PRINTF(PSTR("]if4="));	printfreq(freqif4);
-				PRINTF(PSTR(" ["));	printfreq(freqlo5);
-				PRINTF(PSTR("]if5="));	printfreq(freqif5);
-				PRINTF(PSTR(" ["));	printfreq(freqlo6);
-				PRINTF(PSTR("]if6="));	printfreq(freqif6);
-
-				PRINTF(PSTR("\n"));
-			}
-
-	#endif /* WITHDEBUG */
-		
-			board_set_trxpath(pathi);	/* Тракт, к которому относятся все последующие вызовы. При перередаяе используется индекс 0 */
-			if (gtx == 0)
-			{
-			#if WITHNOTCHONOFF
-				board_set_notch(gnotch && notchmodes [gnotchtype].code != BOARD_NOTCH_OFF);
-				board_set_notchnarrow(gnotch && notchmodes [gnotchtype].code != BOARD_NOTCH_OFF && pamodetempl->nar);
-			#elif WITHNOTCHFREQ
-				board_set_notch_mode(gnotch == 0 ? BOARD_NOTCH_OFF : notchmodes [gnotchtype].code);
-				board_set_notch_width(gnotchwidth.value);
-				board_set_notch_freq(gnotchfreq.value);	// TODO: при AUTONOTCH ставить INT16_MAX ?
-			#endif /* WITHNOTCHFREQ */
-			#if WITHIF4DSP
-				const uint_fast8_t agcseti = pamodetempl->agcseti;
-				board_set_agcrate(gagc [agcseti].rate);			/* на n децибел изменения входного сигнала 1 дБ выходного. UINT8_MAX - "плоская" АРУ */
-				board_set_agc_scale(gagc [agcseti].scale);		/* Для эксперементов по улучшению приема АМ */
-				board_set_agc_t0(gagc [agcseti].t0);
-				board_set_agc_t1(gagc [agcseti].t1);
-				board_set_agc_t2(gagc [agcseti].release10);		// время разряда медленной цепи АРУ
-				board_set_agc_t4(gagc [agcseti].t4);			// время разряда быстрой цепи АРУ
-				board_set_agc_thung(gagc [agcseti].thung10);	// hold time (hung time) in 0.1 sec
-				board_set_squelch(pamodetempl->dspmode [gtx] == DSPCTL_MODE_RX_NFM ? ulmax(gsquelch.value, gsquelchNFM) : gsquelch.value);
-				board_set_gainnfmrx(ggainnfmrx10 * 10);	/* дополнительное усиление по НЧ в режиме приёма NFM 100..1000% */
-			#endif /* WITHIF4DSP */
-			} /* tx == 0 */
-
-		#if WITHIF4DSP
-			#if WITHTX && WITHSUBTONES
-				board_set_subtonelevel(gctssenable && gtx && getmodetempl(txsubmode)->subtone ? gsubtonelevel : 0);	/* Уровень сигнала CTCSS в процентах - 0%..100% */
-			#endif /* WITHTX && WITHSUBTONES */
-			board_set_aflowcutrx(bwseti_getlow(bwseti));	/* Нижняя частота среза фильтра НЧ по приему */
-			board_set_afhighcutrx(bwseti_gethigh(bwseti));	/* Верхняя частота среза фильтра НЧ по приему */
-			board_set_afresponcerx(bwseti_getafresponce(bwseti));	/* изменение тембра звука в приемнике - на Samplerate/2 АЧХ становится на столько децибел  */
-
-			board_set_lo6(freqlo6);	/* иначе, в случае WITHIF4DSP - управление знаком частоты */
-			board_set_fullbw6(getif6bw(amode, gtx, wide));	/* Установка частоты среза фильтров ПЧ в алгоритме Уивера - параметр полная полоса пропускания */
-			//board_set_fltsofter(gtx ? WITHFILTSOFTMIN : bwseti_getfltsofter(bwseti));	/* Код управления сглаживанием скатов фильтра основной селекции на приёме */
-			board_set_dspmode(pamodetempl->dspmode [gtx]);
-			#if WITHDSPEXTDDC	/* "Воронёнок" с DSP и FPGA */
-				board_set_dactest(gdactest);		/* вместо выхода интерполятора к ЦАП передатчика подключается выход NCO */
-				board_set_dacstraight(gdacstraight);	/* Требуется формирование кода для ЦАП в режиме беззнакового кода */
-				board_set_tx_inh_enable(gtxinhenable);				/* разрешение реакции на вход tx_inh */
-				board_set_tx_bpsk_enable(pamodetempl->dspmode [gtx] == DSPCTL_MODE_TX_BPSK);	/* разрешение прямого формирования модуляции в FPGA */				/* разрешение прямого формирования модуляции в FPGA  */
-				board_set_mode_wfm(pamodetempl->dspmode [gtx] == DSPCTL_MODE_RX_WFM);	/* разрешение прямого формирования модуляции в FPGA */				/* разрешение прямого формирования модуляции в FPGA  */
-			#endif /* WITHDSPEXTDDC */
-		#else /* WITHIF4DSP */
-			board_set_if4lsb(mixXlsbs [4]);	/* для прямого преобразования - управление детектором - или выбор фильтра LSB для конфигураций с фиксированным 3-м гетеродином */
-			//board_set_detector((mute && ! gtx) ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);		// режим берётся из gsubmode
-			board_set_detector(sleepflag ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);
-		#endif /* WITHIF4DSP */
-
-		board_set_filter(workfilter->code [gtx]);	/* В случае WITHDUALFLTR формирование управляющего слова в зависимости от mixXlsbs [4] происходит при выдаче управляющих кодов в аппаратуру. */
-		board_set_nfm(amode == MODE_NFM);
-
-		#if WITHTX
-			/* переносить эти параметры под условие перенастройки в режиме приёма не стал, так как меню может быть вызвано и при передаче */
-			board_set_txcw(pamodetempl->txcw);	// при передаче будет режим без SSB модулятора
-			board_set_vox(gvoxenable && getmodetempl(txsubmode)->vox);	// включение внешних схем VOX
-			#if WITHSUBTONES
-				// Установка параметров  Continuous Tone-Coded Squelch System or CTCSS
-				board_subtone_setfreq(gsubtones [gsubtonei]);	// частота subtone (до десятых долей герца).
-				board_subtone_enable_user(gctssenable && gtx && getmodetempl(txsubmode)->subtone);
-			#endif /* WITHSUBTONES */
-			#if WITHVOX
-				vox_enable(gvoxenable && getmodetempl(txsubmode)->vox, voxdelay);		/* разрешение голосового управления переходом на передачу */
-				vox_set_levels(gvoxlevel, gavoxlevel);		/* установка параметров vox */
-			#endif /* WITHVOX */
-			board_set_mikemute(gmuteall || getactualtune() || getmodetempl(txsubmode)->mute);	/* отключить микрофонный усилитель */
-			seq_set_txgate_P(pamodetempl->txgfva, pamodetempl->sdtnva);		/* как должен переключаться тракт на передачу */
-			board_set_opowerlevel(getactualpower());	/* WITHPOWERTRIMMIN..WITHPOWERTRIMMAX */
-
-		#if WITHPABIASTRIM
-			board_set_pabias(gpabias);	/* регулировка тока покоя оконечного каскада передатчика */
-		#endif /* WITHPABIASTRIM */
-			// установка параметров Speech processor
-			//board_speech_set_mode(speechmode);
-			//board_speech_set_width(speechwidth);
-			seq_set_cw_enable(getmodetempl(txsubmode)->wbkin);	/* разрешение передачи CW */
-		#endif /* WITHTX */
-
-
-		#if CTLREGMODE_RA4YBO
-
-			prog_dac1_a_value(gtxpower [amode]);		// power level
-			prog_dac1_b_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
-
-		#elif KEYBSTYLE_RA4YBO_AM0
-
-			board_set_user1(guser1);
-			board_set_user2(guser2);
-			board_set_user3(guser3);
-
-		#elif CTLREGMODE_RA4YBO_V1
-
-			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
-			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
-			board_set_user1(guser1);
-			board_set_user2(guser2);
-			board_set_user3(guser3);
-			board_set_user4(guser4);
-
-		#elif CTLREGMODE_RA4YBO_V2
-
-			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
-			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
-			board_set_user1(guser1);
-			board_set_user2(guser2);
-			board_set_user3(guser3);
-			board_set_user4(guser4);
-
-
-		#elif CTLREGMODE_RA4YBO_V3
-
-			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
-			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
-			board_set_user1(guser1);
-			board_set_user4(guser4);
-			board_set_user5(guser5);
-
-		#elif CTLREGMODE_RA4YBO_V3A
-
-			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
-			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
-			board_set_user1(guser1);
-			board_set_user2(guser2);
-			board_set_user3(guser3);
-			board_set_user4(guser4);
-			board_set_user5(guser5);
-
-		#endif /* CTLREGMODE_RA4YBO_V1 || CTLSTYLE_RA4YBO_V2 */
-
-		/* Этот блок (установка опорной частоты DDS) вызывать до настроек частот */
-		#if defined(PLL1_TYPE) && (PLL1_TYPE == PLL_TYPE_SI570)
-			synth_lo1_setreference(si570_get_xtall_base() + si570_xtall_offset);
-		#else
-			synth_lo1_setreference(getsynthref(amode));	// расчет коэфф. для работы синтезаторв
-		#endif
-			synth_setreference(getsynthref(amode));	// расчет коэфф. для работы синтезаторв
-
-		/* А теперь настраиваем частоты. */
-	#if ! WITHDUMBIF
-			update_lo2(pathi, workfilter, amode, mixXlsbs [2], freqlo2, getlo2div(gtx), gtx, lo2hint [pathi]);
-			update_lo3(pathi, amode, mixXlsbs [3], freqlo3, getlo3div(gtx), gtx);
-
-			synth_lo4_setfreq(pathi, freqlo4, getlo4div(gtx), getlo4enable(amode, gtx));	/* утстановка третьего гетеродина */
-	#endif /* ! WITHDUMBIF */
-
-		} // pathi
-
-		// параметры, не имеющие специфики для разных приемников
-		update_lo0(lo0hint, lo0side);
-		board_set_sleep(sleepflag);
-
-		if (gtx == 0)
-		{
-			/* при переходе в режим передачи эти параметры не трогаем -
-			- возможно, передача будет идти cross-band, но нам не нужно,
-			чтобы хлопали реле аттенюатора.
-			*/
-			/* при переходе в режим передачи эти параметры не трогаем -
-			- возможно, передача будет идти cross-band, но нам не нужно,
-			чтобы хлопали реле аттенюатора.
-			*/
-		#if WITHNOATTNOPREAMP
-			// без управления аттенюатором и УВЧ
-		#elif WITHONEATTONEAMP
-			board_set_att(attmodes [gatts [rxbi]].codeatt);
-			board_set_preamp(attmodes [gatts [rxbi]].codepre);
-		#else /* WITHONEATTONEAMP */
-			board_set_att(attmodes [gatts [rxbi]].code);
-			board_set_preamp(pampmodes [gpamps [rxbi]].code);
-		#endif /* WITHONEATTONEAMP */
-		#if ! WITHAGCMODENONE
-			board_set_boardagc(gagcoff ? BOARD_AGCCODE_OFF : agcmodes [gagcmode].code);
-			board_set_dspagc(gagcoff ? BOARD_AGCCODE_OFF : agcmodes [gagcmode].code);
-		#endif /* ! WITHAGCMODENONE */
-		#if CTLSTYLE_RA4YBO || CTLSTYLE_RA4YBO_V3
-			board_set_affilter(gaffilter);
-		#endif /* CTLSTYLE_RA4YBO || CTLSTYLE_RA4YBO_V3 */
-		#if WITHDSPEXTDDC	/* "Воронёнок" с DSP и FPGA */
-			board_set_dither(gdither);	/* управление зашумлением в LTC2208 */
-			board_set_adcrand(gadcrand);	/* управление интерфейсом в LTC2208 */
-			board_set_adcfifo(gadcfifo);
-			board_set_adcoffset(gadcoffset + getadcoffsbase()); /* смещение для выходного сигнала с АЦП */
-		#endif /* WITHDSPEXTDDC */
-		} /* (gtx == 0) */
-	#if WITHIF4DSP
-		speex_update_rx();
-	#endif /* WITHIF4DSP */
-
-	#if defined (RTC1_TYPE)
-		board_setrtcstrobe(grtcstrobe);
-	#endif /* defined (RTC1_TYPE) */
-	#if WITHANTSELECT
-		board_set_antenna(antmodes [gantennas [rxbi]].code [gtx]);
-	#endif /* WITHANTSELECT */
-	#if WITHELKEY
-		#if ! WITHOPERA4BEACON
-			board_set_wpm(elkeywpm.value);	/* скорость электронного ключа */
-		#endif /* ! WITHOPERA4BEACON */
-		#if WITHVIBROPLEX
-			elkey_set_slope(elkeyslopeenable ? elkeyslope : 0);	/* скорость уменьшения длительности точки и паузы - имитация виброплекса */
-		#endif /* WITHVIBROPLEX */
-		#if ELKEY328
-			elkey_set_format(elkeyslopeenable ? 27 : dashratio, spaceratio);	/* соотношение тире к точке (в десятках процентов) */
-		#else
-			elkey_set_format(dashratio, spaceratio);	/* соотношение тире к точке (в десятках процентов) */
-		#endif
-			elkey_set_mode(elkeymode, elkeyreverse);	/* режим электронного ключа - 0 - ACS, 1 - electronic key, 2 - straight key, 3 - BUG key */
-		#if WITHTX && WITHELKEY
-			seq_set_bkin_enable(bkinenable, bkindelay);			/* параметры BREAK-IN */
-			/*seq_rgbeep(0); */								/* формирование roger beep */
-		#endif /* WITHTX && WITHELKEY */
-	#endif /* WITHELKEY */
-
-	#if WITHIF4DSP
-		board_set_afgain(sleepflag == 0 ? afgain1.value : BOARD_AFGAIN_MIN);	// Параметр для регулировки уровня на выходе аудио-ЦАП
-		board_set_ifgain(sleepflag == 0  ? rfgain1.value : BOARD_IFGAIN_MIN);	// Параметр для регулировки усиления ПЧ
-
-		const uint_fast8_t txaprofile = gtxaprofiles [getmodetempl(txsubmode)->txaprofgp];	// значения 0..NMICPROFILES-1
-
-		#if ! defined (CODEC1_TYPE) && WITHUSBHW && WITHUSBUAC
-			/* если конфигурация без автнонмного аудиокодека - все входы модулятора получают звук с USB AUDIO */
-			const uint_fast8_t txaudio = BOARD_TXAUDIO_USB;
-		#elif WITHBBOX && defined (WITHBBOXMIKESRC)
-			const uint_fast8_t txaudio = WITHBBOXMIKESRC;
-		#else /* defined (WITHBBOXMIKESRC) */
-			const uint_fast8_t txaudio = gtxaudio [txmode];
-		#endif /* defined (WITHBBOXMIKESRC) */
-		board_set_lineinput(txaudio == BOARD_TXAUDIO_LINE);
-		board_set_detector(BOARD_DETECTOR_SSB);		/* Всегда смесительный детектор */
-		board_set_digigainmax(gdigigainmax);
-		board_set_gvad605(gvad605);			/* напряжение на AD605 (управление усилением тракта ПЧ */
-		board_set_fsadcpower10((int_fast16_t) gfsadcpower10 [lo0side != LOCODE_INVALID] - (int_fast16_t) FSADCPOWEROFFSET10 + gerflossdb10(lo0side != LOCODE_INVALID, gatts [rxbi], gpamps [rxbi]));	/*	Мощность, соответствующая full scale от IF ADC */
-		#if WITHUSEDUALWATCH
-			board_set_mainsubrxmode(getactualmainsubrx());		// Левый/правый, A - main RX, B - sub RX
-		#endif /* WITHUSEDUALWATCH */
-		#if WITHUSBUAC
-			board_set_uacmike(gdatamode || getcattxdata() || txaudio == BOARD_TXAUDIO_USB);	/* на вход трансивера берутся аудиоданные с USB виртуальной платы, а не с микрофона */
-			board_set_uacplayer((gtx && gdatamode) || guacplayer);	/* режим прослушивания выхода компьютера в наушниках трансивера - отладочный режим */
-			#if WITHRTS96 || WITHRTS192 || WITHTRANSPARENTIQ
-				board_set_swapiq(gswapiq);	/* Поменять местами I и Q сэмплы в потоке RTS96 */
-			#endif /* WITHRTS96 || WITHRTS192 || WITHTRANSPARENTIQ */
-			#if WITHTX
-				board_set_datavox(gdatavox);	/* автоматический переход на передачу при появлении звука со стороны компьютера */
-			#endif /* WITHTX */
-		#endif /* WITHUSBUAC */
-		board_set_mikebust20db(gmikebust20db);	// Включение предусилителя за микрофоном
-		board_set_lineamp(glineamp);	/* усиление с линейного входа */
-		board_set_txaudio(txaudio);	// Альтернативные источники сигнала при передаче
-		board_set_mikeagc(gmikeagc);	/* Включение программной АРУ перед модулятором */
-		board_set_mikeagcgain(gmikeagcgain);	/* Максимальное усидение АРУ микрофона */
-		board_set_mikehclip(gmikehclip);	/* Ограничитель */
-#if WITHREVERB
-		board_set_reverb(greverb, greverbdelay, greverbloss);	/* ревербератор */
-#endif /* WITHREVERB */
-		board_set_cwedgetime(gcwedgetime);	/* Время нарастания/спада огибающей телеграфа при передаче - в 1 мс */
-		board_set_sidetonelevel(gsidetonelevel);	/* Уровень сигнала самоконтроля в процентах - 0%..100% */
-		board_set_moniflag(gmoniflag);	/* glob_moniflag */
-		#if WITHSPECTRUMWF
-			const uint8_t bi_main = getbankindex_ab_fordisplay(0);	/* VFO A modifications */
-			board_set_topdb(gtxloopback && gtx ? WITHTOPDBMIN : gtopdbspe [bi_main]);		/* верхний предел FFT */
-			board_set_bottomdb(gtxloopback && gtx ? WITHBOTTOMDBTX : gbottomdbspe [bi_main]);		/* нижний предел FFT */
-			board_set_topdbwf(gtxloopback && gtx ? WITHTOPDBMIN : gtopdbwfl [bi_main]);		/* верхний предел FFT для водопада */
-			board_set_bottomdbwf(gtxloopback && gtx ? WITHBOTTOMDBTX : gbottomdbwfl [bi_main]);		/* нижний предел FFT для водопада */
-			board_set_zoomxpow2(gzoomxpow2 [bi_main]);	/* уменьшение отображаемого участка спектра */
-			board_set_wflevelsep(gwflevelsep);	/* чувствительность водопада регулируется отдельной парой параметров */
-			board_set_lvlgridstep(glvlgridstep);	/* Шаг сетки уровней в децибелах */
-			board_set_view_style(gviewstyle);			/* стиль отображения спектра и панорамы */
-			board_set_view3dss_mark(gview3dss_mark);	/* Для VIEW_3DSS - индикация полосы пропускания на спектре */
-			board_set_tx_loopback(gtxloopback && gtx);	/* включение спектроанализатора сигнала передачи */
-			board_set_afspeclow(gafspeclow);	// нижняя частота отображения спектроанализатора
-			board_set_afspechigh(gafspechigh);	// верхняя частота отображения спектроанализатора
-			display2_set_filter_spe(gspecbeta100);	/* beta - парамеры видеофильтра спектра */
-			display2_set_filter_wfl(gwflbeta100);	/* beta - парамеры видеофильтра водопада */
-		#endif /* WITHSPECTRUMWF */
-		board_set_showdbm(gshowdbm);		// Отображение уровня сигнала в dBm или S-memter (в зависимости от настроек)
-	#endif /* WITHIF4DSP */
-	#if WITHAFEQUALIZER
-		board_set_equalizer_rx(geqrx);
-		board_set_equalizer_tx(geqtx);
-		board_set_equalizer_rx_gains(geqrxparams);
-		board_set_equalizer_tx_gains(geqtxparams);
-	#endif /* WITHAFEQUALIZER */
-
-	#if WITHTX
-		#if defined (CODEC1_TYPE) && WITHAFCODEC1HAVEPROC
-			board_set_mikeequal(gmikeequalizer);	// включение обработки сигнала с микрофона (эффекты, эквалайзер, ...)
-			board_set_mikeequalparams(gmikeequalizerparams);	// Эквалайзер 80Hz 230Hz 650Hz 	1.8kHz 5.3kHz
-		#endif /* defined (CODEC1_TYPE) && WITHAFCODEC1HAVEPROC */
-		#if WITHIF4DSP
-		{
-			const uint_fast8_t asubmode = getasubmode(0);	// SUBMODE_CWZ/SUBMODE_CWZSMART for tune
-			const uint_fast8_t amode = submodes [asubmode].mode;
-			const uint_fast8_t bwseti = mdt [amode].bwsetis [1];	// индекс банка полос пропускания для данного режима на передаче
-			board_set_aflowcuttx(bwseti_getlow(bwseti));	/* Нижняя частота среза фильтра НЧ по передаче */
-			board_set_afhighcuttx(bwseti_gethigh(bwseti));	/* Верхняя частота среза фильтра НЧ по передаче */
-			board_set_afresponcetx(bwseti_getafresponce(bwseti));	/* коррекция АЧХ НЧ тракта передатчика */
-			board_set_nfmdeviation100(gnfmdeviation);	/* Девиация при передаче в NFM - в сотнях герц */
-		#if WITHNOTXDACCONTROL
-			/* мощность регулируется умножнением выходных значений в потоке к FPGA / IF CODEC */
-			// 0..10000
-			board_set_dacscale(getbandf2adjust(bandf3hint) * (unsigned long) gdacscale * (unsigned long) (getactualpower() - WITHPOWERTRIMMIN) / (WITHPOWERTRIMMAX - WITHPOWERTRIMMIN));
-		#else /* CPUDAC */
-			/* мощность регулируется постоянны напряжением на ЦАП */
-			// 0..10000
-			board_set_dacscale(getbandf2adjust(bandf3hint) * (unsigned long) gdacscale);
-		#endif /* CPUDAC */
-			board_set_digiscale(ggaindigitx);	/* Увеличение усиления при передаче в цифровых режимах 100..300% */
-			board_set_cwscale(ggaincwtx);	/* Увеличение усиления при передаче в CW режимах 50..100% */
-			board_set_designscale(gdesignscale);	/* используется при калибровке параметров интерполятора */
-			board_set_amdepth(gamdepth);	/* Глубина модуляции в АМ - 0..100% */
-			board_rgrbeep_setfreq(1000);	/* roger beep - установка тона */
-		}
-		#endif /* WITHIF4DSP */
-		seq_set_rgbeep(grgbeep);	/* разрешение (не-0) или запрещение (0) формирования roger beep */
-		seq_set_rxtxdelay(rxtxdelay, txrxdelay, pretxdelay ? txrxdelay : 0);	/* установить задержку пре переходе на передачу и обратно. */
-		board_sidetone_setfreq(gcwpitch10 * CWPITCHSCALE);	// Минимум - 400 герц (определено набором команд CAT Kenwood).
-		board_set_classamode(gclassamode);	/* использование режима клвсс А при передаче */
-		board_set_txgate(gtxgate);		/* разрешение драйвера и оконечного усилителя */
-		#if WITHMIC1LEVEL
-			board_set_mik1level(gmik1level);
-		#endif /* WITHMIC1LEVEL */
-		board_set_autotune(reqautotune);
-	#endif /* WITHTX */
-
-	#if CTLSTYLE_IGOR
-		board_set_bcdfreq100k(bandf100khint);
-	#else /* CTLSTYLE_IGOR */
-		board_set_bandf(bandfhint);		/* включение нужного полосового фильтра - возможно переключение УВЧ */
-		board_set_bandf2(bandf2hint);	/* включение нужного полосового фильтра (ФНЧ) передатчика */
-		board_set_bandf3(bandf3hint);	/* управление через разъем ACC */
-	#endif /* CTLSTYLE_IGOR */
-		board_keybeep_setfreq(gkeybeep10 * 10);	// Частота озвучивания нажатий клавиш
-
-	#if defined (DEFAULT_LCD_CONTRAST)
-		display_set_contrast(gcontrast);
-	#endif /* defined (DEFAULT_LCD_CONTRAST) */
-
-	#if WITHFANTIMER
-		board_setfanflag(! fanpaflag);	// fanpaflag - сигнал выключения вентилятора
-		#if WITHFANPWM
-				board_setfanpwm(! fanpaflag ? gfanpapwm : 0);
-		#endif /* WITHFANPWM */
-	#endif /* WITHFANTIMER */
-	#if WITHDCDCFREQCTL
-		board_set_bldivider(bldividerout);
-	#endif /* WITHDCDCFREQCTL */
-	#if WITHLCDBACKLIGHT
-		board_set_bglight(dimmflag || sleepflag || dimmmode, gbglight);		/* подсветка дисплея  */
-	#endif /* WITHLCDBACKLIGHT */
-	#if WITHKBDBACKLIGHT
-		board_set_kblight((dimmflag || sleepflag || dimmmode) ? 0 : gkblight);			/* подсвтка клавиатуры */
-	#endif /* WITHKBDBACKLIGHT */
-	#if WITHPWBUTTON
-		board_set_poweron(gpoweronhold);
-	#endif /* WITHPWBUTTON */
-	#if WITHNBONOFF
-		board_set_nfmnbon(lockmode);	/* Включние noise blanker на SW2014FM */
-	#endif /* WITHNBONOFF */
-
-	#if WITHSPKMUTE
-		board_set_loudspeaker(gmutespkr); /*  выключение динамика */
-		board_set_dsploudspeaker(gmutespkr); /*  выключение динамика (управление кодеком) */
-	#endif /* WITHSPKMUTE */
-
-	#if WITHAUTOTUNER
-		board_set_tuner_group();
-	#else /* WITHAUTOTUNER */
-		board_set_tuner_bypass(1);
-	#endif /* WITHAUTOTUNER */
-
-		/* просто настройки тракта и не относящиеся к приёму-пеердаче. */
-	#if WITHCAT
-		processcat_enable(catenable);
-		cat_set_speed(catbr2int [catbaudrate] * BRSCALE);
-	#endif	/* WITHCAT */
-
-	#if WITHMODEM
-		board_set_modem_speed100(modembr2int100 [gmodemspeed]);	// скорость передачи (модуляция, не последовательный порт) с точностью 1/100 бод
-		board_set_modem_mode(gmodemmode);	// применяемая модуляция
-	#endif /* WITHMODEM */
-
-	#if WITHLFM
-		synth_lfm_setparams(lfmstart100k * 100000ul, lfmstop100k * 100000ul, lfmspeed1k * 1000ul, getlo1div(gtx));
-	#endif /* WITHLFM */
-
-	#if WITHLO1LEVELADJ
-		prog_dds1_setlevel(lo1level);
-	#endif /* WITHLO1LEVELADJ */
-	#if defined (DAC1_TYPE)
-		board_set_dac1(dac1level);	/* подстройка частоты опорного генератора */
-	#endif /* defined (DAC1_TYPE) */
-
-	#if (WITHSWRMTR || WITHSHOWSWRPWR)
-		display2_set_smetertype(gsmetertype);
-	#endif /* (WITHSWRMTR || WITHSHOWSWRPWR) */
-
-#if defined(CODEC1_TYPE) && (CODEC1_TYPE == CODEC_TYPE_NAU8822L)
-		{
-			// nau8822 experements
-
-			// ALC
-//			unsigned ALCEN = 0;	// only left channel ALC enabled
-//			unsigned ALCMXGAIN = 7;	// Set maximum gain limit for PGA volume setting changes under ALC control
-//			unsigned ALCMNGAIN = 0;	// Set minimum gain value limit for PGA volume setting changes under ALC control
-			unsigned alcctl1 =
-					((ALCEN ? 0x02 : 0x00) << 7) |	// only left channel ALC enabled
-					(ALCMXGAIN << 3) |
-					(ALCMNGAIN << 0) |
-					0;
-			nau8822_setreg(NAU8822_ALC_CONTROL_1, alcctl1);
-
-			// Noise gate
-//			unsigned ALCNEN = 0;	// ALC noise gate function control bit
-//			unsigned ALCNTH = 0;	// ALC noise gate threshold level
-			unsigned ngctl1 =
-					(1 << 4) |	// reserved
-					(ALCNEN << 3) |
-					(ALCNTH << 0) |
-					0;
-			nau8822_setreg(NAU8822_NOISE_GATE, ngctl1);
-
-		}
-#endif /* defined(CODEC1_TYPE) && (CODEC1_TYPE == CODEC_TYPE_NAU8822L) */
-		board_update();		/* вывести забуферированные изменения в регистры */
-	} // full2 != 0
-	
-#if CTLSTYLE_RA4YBO_AM0
-	{
-		const int pathi = 0;
-		const uint_fast8_t bi = getbankindex_pathi(pathi);
-		const int_fast32_t freq = gfreqs [bi];
-		const uint_fast32_t lo1 = synth_freq2lo1(freq, pathi);	
-		if (gtx)
-		{
-			synth_lo1_setfreq(pathi, 0, getlo1div(gtx)); /* установка частоты первого гетеродина */
-			synth_lo4_setfreq(pathi, getlo0(lo0hint) - freq, getlo1div(gtx), 1);
-		}
-		else
-		{
-			synth_lo1_setfreq(pathi, lo1, getlo1div(gtx)); /* установка частоты первого гетеродина */
-			synth_lo4_setfreq(pathi, 0, getlo1div(gtx), 0);
-		}
-	}
-#else /* CTLSTYLE_RA4YBO_AM0 */
-
-	if (userfsg)
-	{
-		const uint_fast8_t bi = getbankindex_tx(gtx);
-		const int_fast32_t freq = gfreqs [bi];
-		synth_lo1_setfrequ(0, freq, getlo1div(gtx));
-		//synth_bfo_setfreq(0);
-		//synth_lopbt_setfreq(0);
-	}
-	else
-	{
-		for (pathi = 0; pathi < pathn; ++ pathi)
-		{
-			const uint_fast8_t bi = getbankindex_pathi(pathi);
-			const int_fast32_t freq = gfreqs [bi];
-
-			/* частота первого гетеродина может оказхаться отрицательной */
-			const uint_fast32_t lo1 = synth_freq2lo1(freq, pathi);	
-			synth_lo1_setfreq(pathi, lo1, getlo1div(gtx)); /* установка частоты первого гетеродина */
-			synth_rts1_setfreq(pathi, getlo0(lo0hint) - freq);	// Установка центральной частоты панорамного индикатора
-		}
-	}
-#endif /* CTLSTYLE_RA4YBO_AM0 */
-	if (full2 != 0 && (mute != 0 || gtx != 0))
-	{
-		for (pathi = 0; pathi < pathn; ++ pathi)
-		{
-			//const uint_fast8_t bi = getbankindex_pathi(pathi);
-			//const int_fast32_t freq = gfreqs [bi];
-
-		}
-		//local_delay_ms(20.0);		/* подождать установки частоты */
-	#if ! WITHIF4DSP
-		//board_set_detector((mute && ! gtx) ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);		// режим берётся из gsubmode
-		board_set_detector(sleepflag ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);	// включить звук, если приём
-		board_update();		/* вывести забуферированные изменения в регистры */
-	#endif /* WITHIF4DSP */
-			// todo: убрать после решения проблем с переходом между приёмом и передачей в FPGA
-	#if WITHTX
-		//board_set_tx(gtx);		/* в конце выдаём сигнал разрешения передачи */
-		//board_update();		/* вывести забуферированные изменения в регистры */
-	#endif /* WITHTX */
-	}
-
-	/* после всех перенастроек включаем передатчик */
-#if WITHTX
-	board_set_tx(gtx);		/* в конце выдаём сигнал разрешения передачи */
-	board_update();		/* вывести забуферированные изменения в регистры */
-#endif /* WITHTX */
-}
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-
-//////////////////////////
-#if WITHELKEY && WITHTX
-
-void uif_key_bkintoggle(void)
-{
-	bkinenable = calc_next(bkinenable, 0, 1);
-	save_i8(offsetof(struct nvmap, bkinenable), bkinenable);
-	updateboard(1, 0);
-}
-
-uint_fast8_t hamradio_get_bkin_value(void)
-{
-	return bkinenable;
-}
-
-#else
-
-uint_fast8_t hamradio_get_bkin_value(void)
-{
-	return 0;
-}
-
-#endif /* WITHELKEY */
-
-#if WITHVOX && WITHTX
-
-static void 
-uif_key_voxtoggle(void)
-{
-	gvoxenable = calc_next(gvoxenable, 0, 1);
-	save_i8(offsetof(struct nvmap, gvoxenable), gvoxenable);
-	updateboard(1, 0);
-}
-
-// текущее состояние VOX
-uint_fast8_t hamradio_get_voxvalue(void)
-{
-	return gvoxenable;
-}
-
-#else /* WITHVOX && WITHTX */
-// текущее состояние VOX
-uint_fast8_t hamradio_get_voxvalue(void)
-{
-	return 0;
-}
-
-#endif /* WITHVOX && WITHTX */
-
-
-#if WITHANTSELECT
-
-// antenna
-const FLASHMEM char * hamradio_get_ant5_value_P(void)
-{
-	return antmodes [gantennas [getbankindex_tx(gtx)]].label5;
-}
-
-#endif /* WITHANTSELECT */
-
-// включение режима split (возможо, с расстройко от текущей частоты)
-static void 
-uif_key_spliton(uint_fast8_t holded)
-{
-#if WITHSPLIT
-
-	const uint_fast8_t srbi = getbankindex_raw(0);
-	const uint_fast8_t tgbi = getbankindex_raw(1);
-	const vindex_t tgvi = getvfoindex(tgbi);
-
-	copybankstate(srbi, tgbi, holded == 0 ? 0 : getmodetempl(getsubmode(srbi))->autosplitK * 1000L);	/* копируем состояние текущего банка в противоположный */
-	gsplitmode = VFOMODES_VFOSPLIT;
-
-	savebandstate(tgvi, tgbi); // записать все параметры настройки (кроме частоты) в область данных VFO */
-	savebandfreq(tgvi, tgbi);
-
-	save_i8(RMT_SPLITMODE_BASE, gsplitmode);
-	updateboard(1, 1);
-
-#elif WITHSPLITEX
-
-	if (holded != 0)
-	{
-		const uint_fast8_t srbi = getbankindex_raw(0);
-		const uint_fast8_t tgbi = getbankindex_raw(1);
-		const vindex_t tgvi = getvfoindex(tgbi);
-
-		copybankstate(srbi, tgbi, getmodetempl(getsubmode(srbi))->autosplitK * 1000L);	/* копируем состояние текущего банка в противоположный */
-	
-		savebandstate(tgvi, tgbi); // записать все параметры настройки (кроме частоты) в область данных VFO */
-		savebandfreq(tgvi, tgbi);
-	}
-	gsplitmode = VFOMODES_VFOSPLIT;
-
-	save_i8(RMT_SPLITMODE_BASE, gsplitmode);
-	updateboard(1, 1);
-
-#else
-
-#endif /* WITHSPLIT */
-}
-
-/* копирование в VFO B состояния VFO A */
-// for WITHSPLITEX
-static void 
-uif_key_click_b_from_a(void)
-{
-#if (WITHSPLIT || WITHSPLITEX)
-
-	const uint_fast8_t sbi = getbankindex_ab(0);	// bank index исходных данных
-	const uint_fast8_t tbi = getbankindex_ab(1);	// bank index куда копируются данные
-	const vindex_t tgvi = getvfoindex(tbi);		// vfo index куда копируются данные
-
-	copybankstate(sbi, tbi, 0);
-	savebandstate(tgvi, tbi); // записать все параметры настройки (кроме частоты) в область данных VFO */
-	savebandfreq(tgvi, tbi); // записать частоту в область данных VFO */
-	updateboard(1, 1);
-
-#endif /* (WITHSPLIT || WITHSPLITEX) */
-}
-
-// вылючение режима split
-static void 
-uif_key_splitoff(void)
-{
-#if (WITHSPLIT || WITHSPLITEX)
-
-	gsplitmode = VFOMODES_VFOINIT;
-	save_i8(RMT_SPLITMODE_BASE, gsplitmode);
-
-	updateboard(1, 1);
-
-#endif /* (WITHSPLIT || WITHSPLITEX) */
-}
-
-/* обмен частотой между VFO */
-// for WITHSPLITEX
-static void 
-uif_key_click_a_ex_b(void)
-{
-#if (WITHSPLIT || WITHSPLITEX)
-
-	gvfoab = ! gvfoab;	/* меняем текущий VFO на протвоположный */
-	save_i8(RMT_VFOAB_BASE, gvfoab);
-	updateboard(1, 1);
-
-#endif /* (WITHSPLIT || WITHSPLITEX) */
-}
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-/* Переход между режимами фиксированных частот
-   или плавной настройки.
-  */
-//static void 
-//uif_key_memmode(uint_fast8_t tx)
+//static void
+//updateboardZZZ(
+//	uint_fast8_t full, 
+//	uint_fast8_t mute,
+//	const char * file,
+//	int line
+//	)
 //{
-//while (repeat --)
-//	gsplitmode = calc_next(gsplitmode, 0, VFOMODES_COUNT - 1); /* (vfo/vfoa/vfob/mem) */
-//save_i8(RMT_SPLITMODE_BASE, gsplitmode);
-//updateboard(1, 0);
+//	/* параметры, вычисляемые по updateboard(full=1) */
+//	static const FLASHMEM struct modetempl * pamodetempl;	/* Режим, используемый при передаче */
+
+//	/* Параметры, которые могут измениться при перестройке частоты и вызвать необходимость full=1 */
+//	static uint_fast8_t lo0side = LOCODE_INVALID;
+//	static uint_fast32_t lo0hint = UINT32_MAX;
+//	static uint_fast8_t lo1side [2] = { LOCODE_INVALID, LOCODE_INVALID };
+//	const uint_fast8_t lo2side = LO2_SIDE;
+//	static uint_fast8_t lo2hint [2];
+//	const uint_fast8_t lo3side = LO3_SIDE;
+//	static uint_fast8_t forcelsb [2];
+//#if WITHDCDCFREQCTL
+//	static uint_fast32_t bldividerout = UINT32_MAX;
+//#endif /* WITHDCDCFREQCTL */
+//#if CTLSTYLE_IGOR
+//	static uint_fast16_t bandf100khint = UINT16_MAX;
+//#else /* CTLSTYLE_IGOR */
+//	static uint_fast8_t bandfhint = UINT8_MAX;
+//	static uint_fast8_t bandf2hint = UINT8_MAX;
+//	static uint_fast8_t bandf3hint = UINT8_MAX;	// управление через разъем ACC
+//#endif /* CTLSTYLE_IGOR */
+
+//	uint_fast8_t full2 = full; 
+
+//	uint_fast8_t pathi;
+//	ASSERT(gtx < 2);
+//	const uint_fast8_t pathn = gtx ? 1 : NTRX;
+//	/* +++ проверка необходимости полной перенастройки из-за сменившихся условий выбора частот. */
+//	for (pathi = 0; pathi < pathn; ++ pathi)
+//	{
+//		const uint_fast8_t bi = getbankindex_pathi(pathi);
+//		const int_fast32_t freq = gfreqs [bi];
+//		/* "Эти параметры для расчёта частот выясняем здесь, так как они (могут) зависить от частоты */
+//		full2 |= flagne_u8(& lo1side [pathi], getsidelo1(freq));	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
+//		full2 |= flagne_u8(& lo2hint [pathi], gethintlo2(freq));
+//		full2 |= flagne_u8(& forcelsb [pathi], getforcelsb(freq));
+//#if WITHDCDCFREQCTL
+//		full2 |= flagne_u32(& bldividerout, hardware_dcdc_calcdivider(freq));	// управление частотой dc-dc преобразователя
+//#endif /* WITHDCDCFREQCTL */
+//	}
+//	// параметры, не имеющие специфики для разных приемников
+//	{
+//		const uint_fast8_t bi = getbankindex_pathi(0); //getbankindex_tx(gtx);
+//		const int_fast32_t freq = gfreqs [bi];
+//	#if CTLSTYLE_IGOR
+//		full2 |= flagne_u16(& bandf100khint, freq / 100000uL);
+//	#else /* CTLSTYLE_IGOR */
+//		full2 |= flagne_u8(& bandfhint, bandf_calc(nyquistadj(freq)));
+//		full2 |= flagne_u8(& bandf2hint, bandf2_calc(nyquistadj2(freq)));
+//		full2 |= flagne_u8(& bandf3hint, bandf3_calc(nyquistadj3(freq)));
+//	#endif /* CTLSTYLE_IGOR */
+//		full2 |= flagne_u8(& lo0side, getsidelo0(freq));	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
+//		full2 |= flagne_u32(& lo0hint, gethintlo0(freq, lo0side));
+//	}
+//	/* --- проверка необходимости полной перенастройки из-за сменившихся условий выбора частот. */
+
+////	if (full2 != 0 && full == 0)
+////	{
+////		PRINTF("full2 added from %s/%d\n", file, line);
+////	}
+////	if (full != 0)
+////	{
+////		PRINTF("full passed from %s/%d\n", file, line);
+////	}
+//#if WITHCAT
+//	if (aistate != 0)
+//	{
+//		if (full)
+//		{
+//			cat_answer_request(CAT_IF_INDEX);
+//			cat_answer_request(CAT_MD_INDEX);
+//			cat_answer_request(CAT_FA_INDEX);	// добавлено для обновления индикатора частоты в ACRP-590 при переходе по диапазонам клавишами на устройстве. И помогло при нажатиях на цифры дисплея.
+//			cat_answer_request(gtx ? CAT_TX_INDEX : CAT_RX_INDEX);	// ignore main/sub rx selection (0 - main. 1 - sub);
+//#if WITHIF4DSP
+//			cat_answer_request(CAT_NR_INDEX);
+//#endif /* WITHIF4DSP */
+//		}
+//		else
+//		{
+//			cat_answer_request(CAT_FA_INDEX);
+//		}
+//	}
+//#endif /* WITHCAT */
+	
+//	if (full)
+//	{
+//		const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//		/* преустановка всех параметров приемника или передатчика под новый режим */
+//		setgsubmode(getsubmode(bi));		/* установка gsubmode, gagc, gfi и так далее */
+//	}
+
+//	if (full2)
+//	{
+//#if WITHTOUCHGUI
+//		gui_update();
+//#endif /* WITHTOUCHGUI */
+
+//		/* Полная перенастройка. Изменился режим (или одно из значений hint). */
+//		if (gtx == 0)
+//		{
+//			board_set_tx(0);	/* перед всеми перенастройками выключаем передатчик */
+//			board_update();		/* вывести забуферированные изменения в регистры */
+//			// todo: убрать после решения проблем с переходом между приёмом и передачей в FPGA
+//		}
+
+//		const uint_fast8_t rxbi = getbankindex_tx(0);
+//		const uint_fast8_t txbi = getbankindex_tx(1);
+//		const uint_fast8_t txsubmode = getsubmode(txbi);		/* код режима, который будет при передаче */
+//		const uint_fast8_t txmode = submodes [txsubmode].mode;
+
+//		for (pathi = 0; pathi < pathn; ++ pathi)
+//		{
+//			const uint_fast8_t asubmode = getasubmode(pathi);	// SUBMODE_CWZ/SUBMODE_CWZSMART for tune
+//			pamodetempl = getmodetempl(asubmode);
+//			const uint_fast8_t amode = submodes [asubmode].mode;
+//			const uint_fast8_t alsbmode = getsubmodelsb(asubmode, forcelsb [pathi]);	// Принимаемая модуляция на нижней боковой
+//			//
+//			// lo2side - определяется конфигурацией
+//			// lo3side - определяется конфигурацией
+//			//const static uint_fast8_t lo2side = LO2_SIDE;
+//			//const static uint_fast8_t lo3side = LO3_SIDE;
+//			//const uint_fast8_t lo4side = getsidelo4();	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
+//			//const uint_fast8_t lo5side = getsidelo5(amode, gtx);	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
+//			//const uint_fast8_t lo6side = getsidelo6(amode, gtx);	// LOCODE_UPPER, LOCODE_LOWER or LOCODE_TARGETED
+//			//
+//			const uint_fast8_t sides [7] = { lo0side, lo1side [pathi], lo2side, lo3side, getsidelo4(), getsidelo5(amode, gtx), getsidelo6(amode, gtx) };
+//			uint_fast8_t mixXlsbs [sizeof sides / sizeof sides [0]];
+//			uint_fast8_t i;
+//			for (i = 0; i < sizeof sides / sizeof sides [0]; ++ i)
+//			{
+//				mixXlsbs [i] = getlsbloX(alsbmode, i, sides, sizeof sides / sizeof sides [0]);
+//			}
+//			// расчёт частот в тракте
+//			// 
+//		#if defined (IF3_MODEL) && (IF3_MODEL == IF3_TYPE_DCRX)
+//			enum { dc = 1 };	/* работа в режиме прямого преобразования со всегда нулевой частотой LO4 */
+//		#else
+//			const uint_fast8_t dc = dctxmodecw && gtx && pamodetempl->txcw;	// на передачу формируем первым гетеродином
+//		#endif
+
+//			const filter_t * workfilter;
+//			if (gtx != 0)
+//			{
+//				workfilter = gettxfilter(asubmode, getsuitabletx(amode, 0));	/* получаем по gfi/gfitx, хранится фильтр, включенный для данного режима */
+//			}
+//			else
+//			{
+//				workfilter = getrxfilter(asubmode, gfi);	/* получаем по gfi/gfitx, хранится фильтр, включенный для данного режима */
+//			}
+//			ASSERT(workfilter != NULL);
+//	#if WITHIF4DSP
+//			// Так же, здесь можно решать, какой фильтр ПЧ требуется для данного фильтра dsp.
+//			// В случае DUC/DDC, используется "заглушка" - IF3_TYPE_BYPASS.
+//			const uint_fast8_t bwseti = mdt [amode].bwsetis [gtx];
+//			const uint_fast8_t wide = bwseti_getwide(bwseti);
+//	#else /* WITHIF4DSP */
+//			const uint_fast8_t wide = workfilter->widefilter;
+//	#endif /* WITHIF4DSP */
+//			//
+//#if WITHDUMBIF
+//			{
+//				const int_fast32_t freqif1 = WITHDUMBIF;
+//				synth_if1 [pathi] = UPPERTOSIGN(mixXlsbs [1], freqif1);	// Запоминается для последующего преобразования рабочей частоты к частоте гетеродина.
+//			}
+//#else /* WITHDUMBIF */
+//			const int_fast16_t pbt = getpbt(workfilter, amode, gtx);
+//			const int_fast16_t ifshift = getifshift(workfilter, amode, gtx);	/* положительные значения - повышение тембра (фильтр сдвигается "выше"). */
+
+//			const int_fast32_t freqif6 = getif6(amode, gtx, wide); // Positive number: ssb:0, cw=700, drm=12k
+//			const int_fast32_t freqlo6 = UPPERTOSIGN(! mixXlsbs [6], getlo6(amode, gtx, wide, ifshift));
+//			const int_fast32_t freqif5 = freqlo6 + UPPERTOSIGN(mixXlsbs [6], freqif6); 	// в режиме CW должно быть 0 для DDC/DUC
+//			const int_fast32_t freqlo5 = UPPERTOSIGN(mixXlsbs [5], getlo5(amode, gtx));	// 0 or DSP IF freq (12 kHz)
+//			const int_fast32_t freqif4 = freqlo5 + UPPERTOSIGN(mixXlsbs [5], freqif5);
+//			const int_fast32_t freqlo4ref = getlo4ref(workfilter, amode, mixXlsbs [4], gtx);
+
+//			// Возможно две стратегии переноса частоты - с согласованием частот среза
+//			// и с согласованием центральных частот полос пропускания.
+//			// Вариант с согласованием центральных частот - это случай включённого узкого фильтра ПЧ и телеграфного режима.
+//			// Или, случай WITHIF4DSP.
+//	#if WITHFIXEDBFO || WITHDUALFLTR
+//			// Выравнивание IF с привязкой к скату фильтра основной селекции
+//			// расчёт использует freqif4, freqlo5 == 0
+//			const int_fast32_t freqlo4 = freqlo4ref - freqlo5;	// если гетеродин один
+//			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4 + UPPERTOSIGN(mixXlsbs [4], freqif4));
+//	#elif WITHDUALBFO
+//			// Выравнивание IF с привязкой к скату фильтра основной селекции
+//			// расчёт использует freqif4, freqlo5 == 0
+//			const int_fast32_t freqlo4 = freqlo4ref - freqlo5;	// гетеродинов два - для разных скатов фильтра
+//			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4 + UPPERTOSIGN(mixXlsbs [4], freqif4));
+//	#elif WITHIF4DSP
+//			// Выравнивание IF с привязкой к центру фильтра основной селекции
+//			// расчёт использует freqif4, freqlo5
+//			const int_fast32_t freqlo4 = freqlo4ref - freqlo5;	// Надо согласовать центр фильтра с частотой переноса на baseband
+//			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4 + UPPERTOSIGN(mixXlsbs [4], freqif4));
+//	#elif 0
+//			// todo: не работает сохранение картины приёма при переключении SSB->CW, зато работает IF SHIFT
+//			// Выравнивание IF с привязкой к скату фильтра основной селекции
+//			// расчёт использует freqif4, freqif5 = - ifshift
+//			const int_fast32_t freqlo4 = dc ? 0 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], freqif4));	// used for programming BFO
+//			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], freqif5));
+
+//	#elif 0
+//			// todo: работает сохранение картины приёма при переключении SSB->CW, но IF SHIFT меняет частоту приёма
+//			// Выравнивание IF с привязкой к скату фильтра основной селекции
+//			// расчёт использует freqif4, freqif5 = - ifshift
+//			const int_fast32_t freqlo4 = dc ? 0 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], freqif4));	// used for programming BFO
+//			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4ref + UPPERTOSIGN(mixXlsbs [4], freqif4) - UPPERTOSIGN(mixXlsbs [4], freqif5));
+//	#else
+//			// Убран возврат ifshif в getlo6
+//			const int_fast32_t freqif3 = dc ? freqif4 : (freqlo4ref - UPPERTOSIGN(mixXlsbs [4], ifshift));
+//			const int_fast32_t freqlo4 = dc ? 0 : (freqif3 - UPPERTOSIGN(mixXlsbs [4], freqif4));	// used for programming BFO
+//	#endif
+
+//			// Взаимным смещением LO1 и LO2 производится "подрезание" полосы пропускания - PBTs
+//			const int_fast32_t freqlo3 = getlo3(amode, mixXlsbs [3], gtx) + UPPERTOSIGN16(mixXlsbs [3], pbt);	/* частота для гетеродина, осуществляющего passband tuning = PBT */
+//			const int_fast32_t freqif2 = freqlo3 + UPPERTOSIGN(mixXlsbs [3], freqif3);
+//			const int_fast32_t freqlo2 = getlo2(workfilter, amode, mixXlsbs [2], gtx, lo2hint [pathi]);
+//			const int_fast32_t freqif1 = freqlo2 + UPPERTOSIGN(mixXlsbs [2], freqif2);
+//			const int_fast32_t freqlo0 = getlo0(lo0hint);
+//			synth_if1 [pathi] = UPPERTOSIGN(mixXlsbs [1], freqif1) - UPPERTOSIGN(mixXlsbs [0], freqlo0);	// Запоминается для последующего преобразования рабочей частоты к частоте гетеродина.
+//#endif /* WITHDUMBIF */
+
+//	#if 0 && WITHDEBUG
+//			{
+//				const uint_fast8_t bi = getbankindex_pathi(pathi);
+//				const int_fast32_t freq = gfreqs [bi];
+//				PRINTF(submodes [asubmode].qlabel);
+//				PRINTF(PSTR(" pathi=%d"), pathi);
+//				PRINTF(PSTR(" f="));	printfreq(freq);
+//				PRINTF(PSTR(" lo0="));	printfreq(freqlo0);
+//				PRINTF(PSTR(" lo1="));	printfreq(synth_freq2lo1(freq, pathi));
+//				PRINTF(PSTR(" pbt="));	printfreq(pbt);
+//				PRINTF(PSTR(" ifshift="));	printfreq(ifshift);
+//				PRINTF(PSTR(" bw="));	PRINTF(workfilter->labelf3);
+//				PRINTF(PSTR(" dbw="));	PRINTF(hamradio_get_rxbw_value_P());
+//				PRINTF(PSTR("\n"));
+//				PRINTF(
+//					PSTR("mixXlsbs[0]=%d, [1]=%d, [2]=%d, [3]=%d, [4]=%d, [5]=%d, [6]=%d dc=%d tx=%d\n"),
+//						mixXlsbs [0], mixXlsbs [1], mixXlsbs [2], mixXlsbs [3], mixXlsbs [4], mixXlsbs [5], mixXlsbs [6], dc, gtx
+//					);
+//				PRINTF(PSTR(" [lo1="));	printfreq(synth_freq2lo1(freq, pathi));
+//				PRINTF(PSTR("]if1="));	printfreq(freqif1);
+//				PRINTF(PSTR(" [lo2="));	printfreq(freqlo2);
+//				PRINTF(PSTR("]if2="));	printfreq(freqif2);
+//				PRINTF(PSTR(" [lo3="));	printfreq(freqlo3);
+//				PRINTF(PSTR("]if3="));	printfreq(freqif3);
+
+//				//PRINTF(PSTR("\n"));
+
+//				PRINTF(PSTR(" [lo4=%d*"), getlo4enable(amode, gtx));	printfreq(freqlo4);
+//				PRINTF(PSTR("]if4="));	printfreq(freqif4);
+//				PRINTF(PSTR(" ["));	printfreq(freqlo5);
+//				PRINTF(PSTR("]if5="));	printfreq(freqif5);
+//				PRINTF(PSTR(" ["));	printfreq(freqlo6);
+//				PRINTF(PSTR("]if6="));	printfreq(freqif6);
+
+//				PRINTF(PSTR("\n"));
+//			}
+
+//	#endif /* WITHDEBUG */
+		
+//			board_set_trxpath(pathi);	/* Тракт, к которому относятся все последующие вызовы. При перередаяе используется индекс 0 */
+//			if (gtx == 0)
+//			{
+//			#if WITHNOTCHONOFF
+//				board_set_notch(gnotch && notchmodes [gnotchtype].code != BOARD_NOTCH_OFF);
+//				board_set_notchnarrow(gnotch && notchmodes [gnotchtype].code != BOARD_NOTCH_OFF && pamodetempl->nar);
+//			#elif WITHNOTCHFREQ
+//				board_set_notch_mode(gnotch == 0 ? BOARD_NOTCH_OFF : notchmodes [gnotchtype].code);
+//				board_set_notch_width(gnotchwidth.value);
+//				board_set_notch_freq(gnotchfreq.value);	// TODO: при AUTONOTCH ставить INT16_MAX ?
+//			#endif /* WITHNOTCHFREQ */
+//			#if WITHIF4DSP
+//				const uint_fast8_t agcseti = pamodetempl->agcseti;
+//				board_set_agcrate(gagc [agcseti].rate);			/* на n децибел изменения входного сигнала 1 дБ выходного. UINT8_MAX - "плоская" АРУ */
+//				board_set_agc_scale(gagc [agcseti].scale);		/* Для эксперементов по улучшению приема АМ */
+//				board_set_agc_t0(gagc [agcseti].t0);
+//				board_set_agc_t1(gagc [agcseti].t1);
+//				board_set_agc_t2(gagc [agcseti].release10);		// время разряда медленной цепи АРУ
+//				board_set_agc_t4(gagc [agcseti].t4);			// время разряда быстрой цепи АРУ
+//				board_set_agc_thung(gagc [agcseti].thung10);	// hold time (hung time) in 0.1 sec
+//				board_set_squelch(pamodetempl->dspmode [gtx] == DSPCTL_MODE_RX_NFM ? ulmax(gsquelch.value, gsquelchNFM) : gsquelch.value);
+//				board_set_gainnfmrx(ggainnfmrx10 * 10);	/* дополнительное усиление по НЧ в режиме приёма NFM 100..1000% */
+//			#endif /* WITHIF4DSP */
+//			} /* tx == 0 */
+
+//		#if WITHIF4DSP
+//			#if WITHTX && WITHSUBTONES
+//				board_set_subtonelevel(gctssenable && gtx && getmodetempl(txsubmode)->subtone ? gsubtonelevel : 0);	/* Уровень сигнала CTCSS в процентах - 0%..100% */
+//			#endif /* WITHTX && WITHSUBTONES */
+//			board_set_aflowcutrx(bwseti_getlow(bwseti));	/* Нижняя частота среза фильтра НЧ по приему */
+//			board_set_afhighcutrx(bwseti_gethigh(bwseti));	/* Верхняя частота среза фильтра НЧ по приему */
+//			board_set_afresponcerx(bwseti_getafresponce(bwseti));	/* изменение тембра звука в приемнике - на Samplerate/2 АЧХ становится на столько децибел  */
+
+//			board_set_lo6(freqlo6);	/* иначе, в случае WITHIF4DSP - управление знаком частоты */
+//			board_set_fullbw6(getif6bw(amode, gtx, wide));	/* Установка частоты среза фильтров ПЧ в алгоритме Уивера - параметр полная полоса пропускания */
+//			//board_set_fltsofter(gtx ? WITHFILTSOFTMIN : bwseti_getfltsofter(bwseti));	/* Код управления сглаживанием скатов фильтра основной селекции на приёме */
+//			board_set_dspmode(pamodetempl->dspmode [gtx]);
+//			#if WITHDSPEXTDDC	/* "Воронёнок" с DSP и FPGA */
+//				board_set_dactest(gdactest);		/* вместо выхода интерполятора к ЦАП передатчика подключается выход NCO */
+//				board_set_dacstraight(gdacstraight);	/* Требуется формирование кода для ЦАП в режиме беззнакового кода */
+//				board_set_tx_inh_enable(gtxinhenable);				/* разрешение реакции на вход tx_inh */
+//				board_set_tx_bpsk_enable(pamodetempl->dspmode [gtx] == DSPCTL_MODE_TX_BPSK);	/* разрешение прямого формирования модуляции в FPGA */				/* разрешение прямого формирования модуляции в FPGA  */
+//				board_set_mode_wfm(pamodetempl->dspmode [gtx] == DSPCTL_MODE_RX_WFM);	/* разрешение прямого формирования модуляции в FPGA */				/* разрешение прямого формирования модуляции в FPGA  */
+//			#endif /* WITHDSPEXTDDC */
+//		#else /* WITHIF4DSP */
+//			board_set_if4lsb(mixXlsbs [4]);	/* для прямого преобразования - управление детектором - или выбор фильтра LSB для конфигураций с фиксированным 3-м гетеродином */
+//			//board_set_detector((mute && ! gtx) ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);		// режим берётся из gsubmode
+//			board_set_detector(sleepflag ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);
+//		#endif /* WITHIF4DSP */
+
+//		board_set_filter(workfilter->code [gtx]);	/* В случае WITHDUALFLTR формирование управляющего слова в зависимости от mixXlsbs [4] происходит при выдаче управляющих кодов в аппаратуру. */
+//		board_set_nfm(amode == MODE_NFM);
+
+//		#if WITHTX
+//			/* переносить эти параметры под условие перенастройки в режиме приёма не стал, так как меню может быть вызвано и при передаче */
+//			board_set_txcw(pamodetempl->txcw);	// при передаче будет режим без SSB модулятора
+//			board_set_vox(gvoxenable && getmodetempl(txsubmode)->vox);	// включение внешних схем VOX
+//			#if WITHSUBTONES
+//				// Установка параметров  Continuous Tone-Coded Squelch System or CTCSS
+//				board_subtone_setfreq(gsubtones [gsubtonei]);	// частота subtone (до десятых долей герца).
+//				board_subtone_enable_user(gctssenable && gtx && getmodetempl(txsubmode)->subtone);
+//			#endif /* WITHSUBTONES */
+//			#if WITHVOX
+//				vox_enable(gvoxenable && getmodetempl(txsubmode)->vox, voxdelay);		/* разрешение голосового управления переходом на передачу */
+//				vox_set_levels(gvoxlevel, gavoxlevel);		/* установка параметров vox */
+//			#endif /* WITHVOX */
+//			board_set_mikemute(gmuteall || getactualtune() || getmodetempl(txsubmode)->mute);	/* отключить микрофонный усилитель */
+//			seq_set_txgate_P(pamodetempl->txgfva, pamodetempl->sdtnva);		/* как должен переключаться тракт на передачу */
+//			board_set_opowerlevel(getactualpower());	/* WITHPOWERTRIMMIN..WITHPOWERTRIMMAX */
+
+//		#if WITHPABIASTRIM
+//			board_set_pabias(gpabias);	/* регулировка тока покоя оконечного каскада передатчика */
+//		#endif /* WITHPABIASTRIM */
+//			// установка параметров Speech processor
+//			//board_speech_set_mode(speechmode);
+//			//board_speech_set_width(speechwidth);
+//			seq_set_cw_enable(getmodetempl(txsubmode)->wbkin);	/* разрешение передачи CW */
+//		#endif /* WITHTX */
+
+
+//		#if CTLREGMODE_RA4YBO
+
+//			prog_dac1_a_value(gtxpower [amode]);		// power level
+//			prog_dac1_b_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
+
+//		#elif KEYBSTYLE_RA4YBO_AM0
+
+//			board_set_user1(guser1);
+//			board_set_user2(guser2);
+//			board_set_user3(guser3);
+
+//		#elif CTLREGMODE_RA4YBO_V1
+
+//			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
+//			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
+//			board_set_user1(guser1);
+//			board_set_user2(guser2);
+//			board_set_user3(guser3);
+//			board_set_user4(guser4);
+
+//		#elif CTLREGMODE_RA4YBO_V2
+
+//			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
+//			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
+//			board_set_user1(guser1);
+//			board_set_user2(guser2);
+//			board_set_user3(guser3);
+//			board_set_user4(guser4);
+
+
+//		#elif CTLREGMODE_RA4YBO_V3
+
+//			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
+//			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
+//			board_set_user1(guser1);
+//			board_set_user4(guser4);
+//			board_set_user5(guser5);
+
+//		#elif CTLREGMODE_RA4YBO_V3A
+
+//			prog_dac1_b_value(255 - gtxpower [amode]);		// power level
+//			prog_dac1_a_value(gtx ? gtxcompr [amode] : 0x00);		// compression level
+//			board_set_user1(guser1);
+//			board_set_user2(guser2);
+//			board_set_user3(guser3);
+//			board_set_user4(guser4);
+//			board_set_user5(guser5);
+
+//		#endif /* CTLREGMODE_RA4YBO_V1 || CTLSTYLE_RA4YBO_V2 */
+
+//		/* Этот блок (установка опорной частоты DDS) вызывать до настроек частот */
+//		#if defined(PLL1_TYPE) && (PLL1_TYPE == PLL_TYPE_SI570)
+//			synth_lo1_setreference(si570_get_xtall_base() + si570_xtall_offset);
+//		#else
+//			synth_lo1_setreference(getsynthref(amode));	// расчет коэфф. для работы синтезаторв
+//		#endif
+//			synth_setreference(getsynthref(amode));	// расчет коэфф. для работы синтезаторв
+
+//		/* А теперь настраиваем частоты. */
+//	#if ! WITHDUMBIF
+//			update_lo2(pathi, workfilter, amode, mixXlsbs [2], freqlo2, getlo2div(gtx), gtx, lo2hint [pathi]);
+//			update_lo3(pathi, amode, mixXlsbs [3], freqlo3, getlo3div(gtx), gtx);
+
+//			synth_lo4_setfreq(pathi, freqlo4, getlo4div(gtx), getlo4enable(amode, gtx));	/* утстановка третьего гетеродина */
+//	#endif /* ! WITHDUMBIF */
+
+//		} // pathi
+
+//		// параметры, не имеющие специфики для разных приемников
+//		update_lo0(lo0hint, lo0side);
+//		board_set_sleep(sleepflag);
+
+//		if (gtx == 0)
+//		{
+//			/* при переходе в режим передачи эти параметры не трогаем -
+//			- возможно, передача будет идти cross-band, но нам не нужно,
+//			чтобы хлопали реле аттенюатора.
+//			*/
+//			/* при переходе в режим передачи эти параметры не трогаем -
+//			- возможно, передача будет идти cross-band, но нам не нужно,
+//			чтобы хлопали реле аттенюатора.
+//			*/
+//		#if WITHNOATTNOPREAMP
+//			// без управления аттенюатором и УВЧ
+//		#elif WITHONEATTONEAMP
+//			board_set_att(attmodes [gatts [rxbi]].codeatt);
+//			board_set_preamp(attmodes [gatts [rxbi]].codepre);
+//		#else /* WITHONEATTONEAMP */
+//			board_set_att(attmodes [gatts [rxbi]].code);
+//			board_set_preamp(pampmodes [gpamps [rxbi]].code);
+//		#endif /* WITHONEATTONEAMP */
+//		#if ! WITHAGCMODENONE
+//			board_set_boardagc(gagcoff ? BOARD_AGCCODE_OFF : agcmodes [gagcmode].code);
+//			board_set_dspagc(gagcoff ? BOARD_AGCCODE_OFF : agcmodes [gagcmode].code);
+//		#endif /* ! WITHAGCMODENONE */
+//		#if CTLSTYLE_RA4YBO || CTLSTYLE_RA4YBO_V3
+//			board_set_affilter(gaffilter);
+//		#endif /* CTLSTYLE_RA4YBO || CTLSTYLE_RA4YBO_V3 */
+//		#if WITHDSPEXTDDC	/* "Воронёнок" с DSP и FPGA */
+//			board_set_dither(gdither);	/* управление зашумлением в LTC2208 */
+//			board_set_adcrand(gadcrand);	/* управление интерфейсом в LTC2208 */
+//			board_set_adcfifo(gadcfifo);
+//			board_set_adcoffset(gadcoffset + getadcoffsbase()); /* смещение для выходного сигнала с АЦП */
+//		#endif /* WITHDSPEXTDDC */
+//		} /* (gtx == 0) */
+//	#if WITHIF4DSP
+//		speex_update_rx();
+//	#endif /* WITHIF4DSP */
+
+//	#if defined (RTC1_TYPE)
+//		board_setrtcstrobe(grtcstrobe);
+//	#endif /* defined (RTC1_TYPE) */
+//	#if WITHANTSELECT
+//		board_set_antenna(antmodes [gantennas [rxbi]].code [gtx]);
+//	#endif /* WITHANTSELECT */
+//	#if WITHELKEY
+//		#if ! WITHOPERA4BEACON
+//			board_set_wpm(elkeywpm.value);	/* скорость электронного ключа */
+//		#endif /* ! WITHOPERA4BEACON */
+//		#if WITHVIBROPLEX
+//			elkey_set_slope(elkeyslopeenable ? elkeyslope : 0);	/* скорость уменьшения длительности точки и паузы - имитация виброплекса */
+//		#endif /* WITHVIBROPLEX */
+//		#if ELKEY328
+//			elkey_set_format(elkeyslopeenable ? 27 : dashratio, spaceratio);	/* соотношение тире к точке (в десятках процентов) */
+//		#else
+//			elkey_set_format(dashratio, spaceratio);	/* соотношение тире к точке (в десятках процентов) */
+//		#endif
+//			elkey_set_mode(elkeymode, elkeyreverse);	/* режим электронного ключа - 0 - ACS, 1 - electronic key, 2 - straight key, 3 - BUG key */
+//		#if WITHTX && WITHELKEY
+//			seq_set_bkin_enable(bkinenable, bkindelay);			/* параметры BREAK-IN */
+//			/*seq_rgbeep(0); */								/* формирование roger beep */
+//		#endif /* WITHTX && WITHELKEY */
+//	#endif /* WITHELKEY */
+
+//	#if WITHIF4DSP
+//		board_set_afgain(sleepflag == 0 ? afgain1.value : BOARD_AFGAIN_MIN);	// Параметр для регулировки уровня на выходе аудио-ЦАП
+//		board_set_ifgain(sleepflag == 0  ? rfgain1.value : BOARD_IFGAIN_MIN);	// Параметр для регулировки усиления ПЧ
+
+//		const uint_fast8_t txaprofile = gtxaprofiles [getmodetempl(txsubmode)->txaprofgp];	// значения 0..NMICPROFILES-1
+
+//		#if ! defined (CODEC1_TYPE) && WITHUSBHW && WITHUSBUAC
+//			/* если конфигурация без автнонмного аудиокодека - все входы модулятора получают звук с USB AUDIO */
+//			const uint_fast8_t txaudio = BOARD_TXAUDIO_USB;
+//		#elif WITHBBOX && defined (WITHBBOXMIKESRC)
+//			const uint_fast8_t txaudio = WITHBBOXMIKESRC;
+//		#else /* defined (WITHBBOXMIKESRC) */
+//			const uint_fast8_t txaudio = gtxaudio [txmode];
+//		#endif /* defined (WITHBBOXMIKESRC) */
+//		board_set_lineinput(txaudio == BOARD_TXAUDIO_LINE);
+//		board_set_detector(BOARD_DETECTOR_SSB);		/* Всегда смесительный детектор */
+//		board_set_digigainmax(gdigigainmax);
+//		board_set_gvad605(gvad605);			/* напряжение на AD605 (управление усилением тракта ПЧ */
+//		board_set_fsadcpower10((int_fast16_t) gfsadcpower10 [lo0side != LOCODE_INVALID] - (int_fast16_t) FSADCPOWEROFFSET10 + gerflossdb10(lo0side != LOCODE_INVALID, gatts [rxbi], gpamps [rxbi]));	/*	Мощность, соответствующая full scale от IF ADC */
+//		#if WITHUSEDUALWATCH
+//			board_set_mainsubrxmode(getactualmainsubrx());		// Левый/правый, A - main RX, B - sub RX
+//		#endif /* WITHUSEDUALWATCH */
+//		#if WITHUSBUAC
+//			board_set_uacmike(gdatamode || getcattxdata() || txaudio == BOARD_TXAUDIO_USB);	/* на вход трансивера берутся аудиоданные с USB виртуальной платы, а не с микрофона */
+//			board_set_uacplayer((gtx && gdatamode) || guacplayer);	/* режим прослушивания выхода компьютера в наушниках трансивера - отладочный режим */
+//			#if WITHRTS96 || WITHRTS192 || WITHTRANSPARENTIQ
+//				board_set_swapiq(gswapiq);	/* Поменять местами I и Q сэмплы в потоке RTS96 */
+//			#endif /* WITHRTS96 || WITHRTS192 || WITHTRANSPARENTIQ */
+//			#if WITHTX
+//				board_set_datavox(gdatavox);	/* автоматический переход на передачу при появлении звука со стороны компьютера */
+//			#endif /* WITHTX */
+//		#endif /* WITHUSBUAC */
+//		board_set_mikebust20db(gmikebust20db);	// Включение предусилителя за микрофоном
+//		board_set_lineamp(glineamp);	/* усиление с линейного входа */
+//		board_set_txaudio(txaudio);	// Альтернативные источники сигнала при передаче
+//		board_set_mikeagc(gmikeagc);	/* Включение программной АРУ перед модулятором */
+//		board_set_mikeagcgain(gmikeagcgain);	/* Максимальное усидение АРУ микрофона */
+//		board_set_mikehclip(gmikehclip);	/* Ограничитель */
+//#if WITHREVERB
+//		board_set_reverb(greverb, greverbdelay, greverbloss);	/* ревербератор */
+//#endif /* WITHREVERB */
+//		board_set_cwedgetime(gcwedgetime);	/* Время нарастания/спада огибающей телеграфа при передаче - в 1 мс */
+//		board_set_sidetonelevel(gsidetonelevel);	/* Уровень сигнала самоконтроля в процентах - 0%..100% */
+//		board_set_moniflag(gmoniflag);	/* glob_moniflag */
+//		#if WITHSPECTRUMWF
+//			const uint8_t bi_main = getbankindex_ab_fordisplay(0);	/* VFO A modifications */
+//			board_set_topdb(gtxloopback && gtx ? WITHTOPDBMIN : gtopdbspe [bi_main]);		/* верхний предел FFT */
+//			board_set_bottomdb(gtxloopback && gtx ? WITHBOTTOMDBTX : gbottomdbspe [bi_main]);		/* нижний предел FFT */
+//			board_set_topdbwf(gtxloopback && gtx ? WITHTOPDBMIN : gtopdbwfl [bi_main]);		/* верхний предел FFT для водопада */
+//			board_set_bottomdbwf(gtxloopback && gtx ? WITHBOTTOMDBTX : gbottomdbwfl [bi_main]);		/* нижний предел FFT для водопада */
+//			board_set_zoomxpow2(gzoomxpow2 [bi_main]);	/* уменьшение отображаемого участка спектра */
+//			board_set_wflevelsep(gwflevelsep);	/* чувствительность водопада регулируется отдельной парой параметров */
+//			board_set_lvlgridstep(glvlgridstep);	/* Шаг сетки уровней в децибелах */
+//			board_set_view_style(gviewstyle);			/* стиль отображения спектра и панорамы */
+//			board_set_view3dss_mark(gview3dss_mark);	/* Для VIEW_3DSS - индикация полосы пропускания на спектре */
+//			board_set_tx_loopback(gtxloopback && gtx);	/* включение спектроанализатора сигнала передачи */
+//			board_set_afspeclow(gafspeclow);	// нижняя частота отображения спектроанализатора
+//			board_set_afspechigh(gafspechigh);	// верхняя частота отображения спектроанализатора
+//			display2_set_filter_spe(gspecbeta100);	/* beta - парамеры видеофильтра спектра */
+//			display2_set_filter_wfl(gwflbeta100);	/* beta - парамеры видеофильтра водопада */
+//		#endif /* WITHSPECTRUMWF */
+//		board_set_showdbm(gshowdbm);		// Отображение уровня сигнала в dBm или S-memter (в зависимости от настроек)
+//	#endif /* WITHIF4DSP */
+//	#if WITHAFEQUALIZER
+//		board_set_equalizer_rx(geqrx);
+//		board_set_equalizer_tx(geqtx);
+//		board_set_equalizer_rx_gains(geqrxparams);
+//		board_set_equalizer_tx_gains(geqtxparams);
+//	#endif /* WITHAFEQUALIZER */
+
+//	#if WITHTX
+//		#if defined (CODEC1_TYPE) && WITHAFCODEC1HAVEPROC
+//			board_set_mikeequal(gmikeequalizer);	// включение обработки сигнала с микрофона (эффекты, эквалайзер, ...)
+//			board_set_mikeequalparams(gmikeequalizerparams);	// Эквалайзер 80Hz 230Hz 650Hz 	1.8kHz 5.3kHz
+//		#endif /* defined (CODEC1_TYPE) && WITHAFCODEC1HAVEPROC */
+//		#if WITHIF4DSP
+//		{
+//			const uint_fast8_t asubmode = getasubmode(0);	// SUBMODE_CWZ/SUBMODE_CWZSMART for tune
+//			const uint_fast8_t amode = submodes [asubmode].mode;
+//			const uint_fast8_t bwseti = mdt [amode].bwsetis [1];	// индекс банка полос пропускания для данного режима на передаче
+//			board_set_aflowcuttx(bwseti_getlow(bwseti));	/* Нижняя частота среза фильтра НЧ по передаче */
+//			board_set_afhighcuttx(bwseti_gethigh(bwseti));	/* Верхняя частота среза фильтра НЧ по передаче */
+//			board_set_afresponcetx(bwseti_getafresponce(bwseti));	/* коррекция АЧХ НЧ тракта передатчика */
+//			board_set_nfmdeviation100(gnfmdeviation);	/* Девиация при передаче в NFM - в сотнях герц */
+//		#if WITHNOTXDACCONTROL
+//			/* мощность регулируется умножнением выходных значений в потоке к FPGA / IF CODEC */
+//			// 0..10000
+//			board_set_dacscale(getbandf2adjust(bandf3hint) * (unsigned long) gdacscale * (unsigned long) (getactualpower() - WITHPOWERTRIMMIN) / (WITHPOWERTRIMMAX - WITHPOWERTRIMMIN));
+//		#else /* CPUDAC */
+//			/* мощность регулируется постоянны напряжением на ЦАП */
+//			// 0..10000
+//			board_set_dacscale(getbandf2adjust(bandf3hint) * (unsigned long) gdacscale);
+//		#endif /* CPUDAC */
+//			board_set_digiscale(ggaindigitx);	/* Увеличение усиления при передаче в цифровых режимах 100..300% */
+//			board_set_cwscale(ggaincwtx);	/* Увеличение усиления при передаче в CW режимах 50..100% */
+//			board_set_designscale(gdesignscale);	/* используется при калибровке параметров интерполятора */
+//			board_set_amdepth(gamdepth);	/* Глубина модуляции в АМ - 0..100% */
+//			board_rgrbeep_setfreq(1000);	/* roger beep - установка тона */
+//		}
+//		#endif /* WITHIF4DSP */
+//		seq_set_rgbeep(grgbeep);	/* разрешение (не-0) или запрещение (0) формирования roger beep */
+//		seq_set_rxtxdelay(rxtxdelay, txrxdelay, pretxdelay ? txrxdelay : 0);	/* установить задержку пре переходе на передачу и обратно. */
+//		board_sidetone_setfreq(gcwpitch10 * CWPITCHSCALE);	// Минимум - 400 герц (определено набором команд CAT Kenwood).
+//		board_set_classamode(gclassamode);	/* использование режима клвсс А при передаче */
+//		board_set_txgate(gtxgate);		/* разрешение драйвера и оконечного усилителя */
+//		#if WITHMIC1LEVEL
+//			board_set_mik1level(gmik1level);
+//		#endif /* WITHMIC1LEVEL */
+//		board_set_autotune(reqautotune);
+//	#endif /* WITHTX */
+
+//	#if CTLSTYLE_IGOR
+//		board_set_bcdfreq100k(bandf100khint);
+//	#else /* CTLSTYLE_IGOR */
+//		board_set_bandf(bandfhint);		/* включение нужного полосового фильтра - возможно переключение УВЧ */
+//		board_set_bandf2(bandf2hint);	/* включение нужного полосового фильтра (ФНЧ) передатчика */
+//		board_set_bandf3(bandf3hint);	/* управление через разъем ACC */
+//	#endif /* CTLSTYLE_IGOR */
+//		board_keybeep_setfreq(gkeybeep10 * 10);	// Частота озвучивания нажатий клавиш
+
+//	#if defined (DEFAULT_LCD_CONTRAST)
+//		display_set_contrast(gcontrast);
+//	#endif /* defined (DEFAULT_LCD_CONTRAST) */
+
+//	#if WITHFANTIMER
+//		board_setfanflag(! fanpaflag);	// fanpaflag - сигнал выключения вентилятора
+//		#if WITHFANPWM
+//				board_setfanpwm(! fanpaflag ? gfanpapwm : 0);
+//		#endif /* WITHFANPWM */
+//	#endif /* WITHFANTIMER */
+//	#if WITHDCDCFREQCTL
+//		board_set_bldivider(bldividerout);
+//	#endif /* WITHDCDCFREQCTL */
+//	#if WITHLCDBACKLIGHT
+//		board_set_bglight(dimmflag || sleepflag || dimmmode, gbglight);		/* подсветка дисплея  */
+//	#endif /* WITHLCDBACKLIGHT */
+//	#if WITHKBDBACKLIGHT
+//		board_set_kblight((dimmflag || sleepflag || dimmmode) ? 0 : gkblight);			/* подсвтка клавиатуры */
+//	#endif /* WITHKBDBACKLIGHT */
+//	#if WITHPWBUTTON
+//		board_set_poweron(gpoweronhold);
+//	#endif /* WITHPWBUTTON */
+//	#if WITHNBONOFF
+//		board_set_nfmnbon(lockmode);	/* Включние noise blanker на SW2014FM */
+//	#endif /* WITHNBONOFF */
+
+//	#if WITHSPKMUTE
+//		board_set_loudspeaker(gmutespkr); /*  выключение динамика */
+//		board_set_dsploudspeaker(gmutespkr); /*  выключение динамика (управление кодеком) */
+//	#endif /* WITHSPKMUTE */
+
+//	#if WITHAUTOTUNER
+//		board_set_tuner_group();
+//	#else /* WITHAUTOTUNER */
+//		board_set_tuner_bypass(1);
+//	#endif /* WITHAUTOTUNER */
+
+//		/* просто настройки тракта и не относящиеся к приёму-пеердаче. */
+//	#if WITHCAT
+//		processcat_enable(catenable);
+//		cat_set_speed(catbr2int [catbaudrate] * BRSCALE);
+//	#endif	/* WITHCAT */
+
+//	#if WITHMODEM
+//		board_set_modem_speed100(modembr2int100 [gmodemspeed]);	// скорость передачи (модуляция, не последовательный порт) с точностью 1/100 бод
+//		board_set_modem_mode(gmodemmode);	// применяемая модуляция
+//	#endif /* WITHMODEM */
+
+//	#if WITHLFM
+//		synth_lfm_setparams(lfmstart100k * 100000ul, lfmstop100k * 100000ul, lfmspeed1k * 1000ul, getlo1div(gtx));
+//	#endif /* WITHLFM */
+
+//	#if WITHLO1LEVELADJ
+//		prog_dds1_setlevel(lo1level);
+//	#endif /* WITHLO1LEVELADJ */
+//	#if defined (DAC1_TYPE)
+//		board_set_dac1(dac1level);	/* подстройка частоты опорного генератора */
+//	#endif /* defined (DAC1_TYPE) */
+
+//	#if (WITHSWRMTR || WITHSHOWSWRPWR)
+//		display2_set_smetertype(gsmetertype);
+//	#endif /* (WITHSWRMTR || WITHSHOWSWRPWR) */
+
+//#if defined(CODEC1_TYPE) && (CODEC1_TYPE == CODEC_TYPE_NAU8822L)
+//		{
+//			// nau8822 experements
+
+//			// ALC
+////			unsigned ALCEN = 0;	// only left channel ALC enabled
+////			unsigned ALCMXGAIN = 7;	// Set maximum gain limit for PGA volume setting changes under ALC control
+////			unsigned ALCMNGAIN = 0;	// Set minimum gain value limit for PGA volume setting changes under ALC control
+//			unsigned alcctl1 =
+//					((ALCEN ? 0x02 : 0x00) << 7) |	// only left channel ALC enabled
+//					(ALCMXGAIN << 3) |
+//					(ALCMNGAIN << 0) |
+//					0;
+//			nau8822_setreg(NAU8822_ALC_CONTROL_1, alcctl1);
+
+//			// Noise gate
+////			unsigned ALCNEN = 0;	// ALC noise gate function control bit
+////			unsigned ALCNTH = 0;	// ALC noise gate threshold level
+//			unsigned ngctl1 =
+//					(1 << 4) |	// reserved
+//					(ALCNEN << 3) |
+//					(ALCNTH << 0) |
+//					0;
+//			nau8822_setreg(NAU8822_NOISE_GATE, ngctl1);
+
+//		}
+//#endif /* defined(CODEC1_TYPE) && (CODEC1_TYPE == CODEC_TYPE_NAU8822L) */
+//		board_update();		/* вывести забуферированные изменения в регистры */
+//	} // full2 != 0
+	
+//#if CTLSTYLE_RA4YBO_AM0
+//	{
+//		const int pathi = 0;
+//		const uint_fast8_t bi = getbankindex_pathi(pathi);
+//		const int_fast32_t freq = gfreqs [bi];
+//		const uint_fast32_t lo1 = synth_freq2lo1(freq, pathi);	
+//		if (gtx)
+//		{
+//			synth_lo1_setfreq(pathi, 0, getlo1div(gtx)); /* установка частоты первого гетеродина */
+//			synth_lo4_setfreq(pathi, getlo0(lo0hint) - freq, getlo1div(gtx), 1);
+//		}
+//		else
+//		{
+//			synth_lo1_setfreq(pathi, lo1, getlo1div(gtx)); /* установка частоты первого гетеродина */
+//			synth_lo4_setfreq(pathi, 0, getlo1div(gtx), 0);
+//		}
+//	}
+//#else /* CTLSTYLE_RA4YBO_AM0 */
+
+//	if (userfsg)
+//	{
+//		const uint_fast8_t bi = getbankindex_tx(gtx);
+//		const int_fast32_t freq = gfreqs [bi];
+//		synth_lo1_setfrequ(0, freq, getlo1div(gtx));
+//		//synth_bfo_setfreq(0);
+//		//synth_lopbt_setfreq(0);
+//	}
+//	else
+//	{
+//		for (pathi = 0; pathi < pathn; ++ pathi)
+//		{
+//			const uint_fast8_t bi = getbankindex_pathi(pathi);
+//			const int_fast32_t freq = gfreqs [bi];
+
+//			/* частота первого гетеродина может оказхаться отрицательной */
+//			const uint_fast32_t lo1 = synth_freq2lo1(freq, pathi);	
+//			synth_lo1_setfreq(pathi, lo1, getlo1div(gtx)); /* установка частоты первого гетеродина */
+//			synth_rts1_setfreq(pathi, getlo0(lo0hint) - freq);	// Установка центральной частоты панорамного индикатора
+//		}
+//	}
+//#endif /* CTLSTYLE_RA4YBO_AM0 */
+//	if (full2 != 0 && (mute != 0 || gtx != 0))
+//	{
+//		for (pathi = 0; pathi < pathn; ++ pathi)
+//		{
+//			//const uint_fast8_t bi = getbankindex_pathi(pathi);
+//			//const int_fast32_t freq = gfreqs [bi];
+
+//		}
+//		//local_delay_ms(20.0);		/* подождать установки частоты */
+//	#if ! WITHIF4DSP
+//		//board_set_detector((mute && ! gtx) ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);		// режим берётся из gsubmode
+//		board_set_detector(sleepflag ? BOARD_DETECTOR_MUTE : pamodetempl->detector [gtx]);	// включить звук, если приём
+//		board_update();		/* вывести забуферированные изменения в регистры */
+//	#endif /* WITHIF4DSP */
+//			// todo: убрать после решения проблем с переходом между приёмом и передачей в FPGA
+//	#if WITHTX
+//		//board_set_tx(gtx);		/* в конце выдаём сигнал разрешения передачи */
+//		//board_update();		/* вывести забуферированные изменения в регистры */
+//	#endif /* WITHTX */
+//	}
+
+//	/* после всех перенастроек включаем передатчик */
+//#if WITHTX
+//	board_set_tx(gtx);		/* в конце выдаём сигнал разрешения передачи */
+//	board_update();		/* вывести забуферированные изменения в регистры */
+//#endif /* WITHTX */
 //}
 
 ///////////////////////////
 // обработчики кнопок клавиатуры
+
 //////////////////////////
-/* переход по "строке" режимов - удержанное нажатие */
-// step to next modecol
-static void 
-uif_key_hold_modecol(void)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const uint_fast8_t moderow = gmoderows [bi];	/* строка таблицы запомненных режимов */
-
-	uint_fast8_t modecol = getmodecol(moderow, modes [moderow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
-	modecol = calc_next(modecol, 0, modes [moderow][0] - 1);
-	putmodecol(moderow, modecol, bi);	/* внести новое значение в битовую маску */
-	/* переустановка частот всех гетеродинов после смены режимов */
-	/* gband должен быть уже известен */
-	gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
-	updateboard(1, 1);
-}
-
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-/* переход по "столбцу" режимов - быстрое нажатие */
-/* switch to next moderow */
-static void 
-uif_key_click_moderow(void)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	uint_fast8_t defrow = gmoderows [bi];		/* строка таблицы режимов, которую покидаем */
-	uint_fast8_t defcol = getmodecol(defrow, modes [defrow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
-	const uint_fast8_t forcelsb = getforcelsb(gfreqs [bi]);
-
-	gmoderows [bi] = calc_next(gmoderows [bi], 0, MODEROW_COUNT - 1);		/* идём на следующую строку таблицы запомненых режимов */
-
-#if WITHMODESETSMART
-	defcol = locatesubmode(SUBMODE_SSBSMART, & defrow);
-#else /* WITHMODESETSMART */
-	if (gsubmode == SUBMODE_USB)		// если текущий режим USB - ищемм CW
-		defcol = locatesubmode(SUBMODE_CW, & defrow);
-	else if (gsubmode == SUBMODE_LSB)	// если текущий режим LSB - ищемм CWR
-		defcol = locatesubmode(SUBMODE_CWR, & defrow);
-	else if (gsubmode == SUBMODE_DGU)	// если текущий режим LSB - ищемм CWR
-		defcol = locatesubmode(SUBMODE_USB, & defrow);
-	else if (gsubmode == SUBMODE_DGL)	// если текущий режим LSB - ищемм CWR
-		defcol = locatesubmode(SUBMODE_LSB, & defrow);
-	#if WITHMODESETFULLNFM
-	else if (gsubmode == SUBMODE_AM)	// если текущий режим AM - ищемм FM
-		defcol = locatesubmode(SUBMODE_NFM, & defrow);
-	#endif
-	else								// в остальных случаях ищем режим по умолчанию для данного диапазона частот
-		defcol = locatesubmode(forcelsb ? SUBMODE_LSB : SUBMODE_USB, & defrow);
-#endif /* WITHMODESETSMART */	
-	/* если переходим не на строку с найденными режимаим */
-	if (defrow != gmoderows [bi])
-		defcol = 0;	/* default value (other cases, then switch from usb to cw, from lsb to cwr) */
-	/* пытаемся обратиться за битами - они, взоможно, заменяться значением defcol */
-	(void) getmodecol(gmoderows [bi], modes [gmoderows [bi]][0] - 1, defcol, bi); /* Возможно, значение modecolmap бует откорректировано. */
-
-	/* переустановка частот всех гетеродинов после смены режимов */
-	/* gband должен быть уже известен */
-	gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
-	updateboard(1, 1);
-}
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-/* переход по "столбцу" режимов - быстрое нажатие */
-/* switch to next moderow */
-static void 
-uif_key_click_moderows(uint_fast8_t moderow)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const uint_fast8_t rowchanged = (gmoderows [bi] != moderow);
-	uint_fast8_t defrow = gmoderows [bi] = moderow;		/* строка таблицы режимов, которую покидаем */
-	uint_fast8_t defcol = getmodecol(defrow, modes [defrow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
-	const uint_fast8_t forcelsb = getforcelsb(gfreqs [bi]);
-
-#if WITHMODESETSMART
-	defcol = locatesubmode(SUBMODE_SSBSMART, & defrow);
-#else /* WITHMODESETSMART */
-	if (gsubmode == SUBMODE_USB)		// если текущий режим USB - ищемм CW
-		defcol = locatesubmode(SUBMODE_CW, & defrow);
-	else if (gsubmode == SUBMODE_LSB)	// если текущий режим LSB - ищемм CWR
-		defcol = locatesubmode(SUBMODE_CWR, & defrow);
-	else if (gsubmode == SUBMODE_DGU)	// если текущий режим LSB - ищемм CWR
-		defcol = locatesubmode(SUBMODE_USB, & defrow);
-	else if (gsubmode == SUBMODE_DGL)	// если текущий режим LSB - ищемм CWR
-		defcol = locatesubmode(SUBMODE_LSB, & defrow);
-	#if WITHMODESETFULLNFM
-	else if (gsubmode == SUBMODE_AM)	// если текущий режим AM - ищемм FM
-		defcol = locatesubmode(SUBMODE_NFM, & defrow);
-	#endif
-	else								// в остальных случаях ищем режим по умолчанию для данного диапазона частот
-		defcol = locatesubmode(forcelsb ? SUBMODE_LSB : SUBMODE_USB, & defrow);
-#endif /* WITHMODESETSMART */	
-	/* если переходим не на строку с найденными режимаим */
-	if (defrow != gmoderows [bi])
-		defcol = 0;	/* default value (other cases, then switch from usb to cw, from lsb to cwr) */
-	/* пытаемся обратиться за битами - они, взоможно, заменяться значением defcol */
-	(void) getmodecol(gmoderows [bi], modes [gmoderows [bi]][0] - 1, defcol, bi); /* Возможно, значение modecolmap бует откорректировано. */
-
-	/* переустановка частот всех гетеродинов после смены режимов */
-	/* gband должен быть уже известен */
-	gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
-	updateboard(1, 1);
-}
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-/* переход по "строке" режимов - удержанное нажатие */
-// step to next modecol
-static void 
-uif_key_hold_modecols(uint_fast8_t moderow)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	if (gmoderows [bi] != moderow)	/* строка таблицы запомненных режимов */
-	{
-		uif_key_click_moderows(moderow);
-		return;
-	}
-
-	uint_fast8_t modecol = getmodecol(moderow, modes [moderow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
-	modecol = calc_next(modecol, 0, modes [moderow][0] - 1);
-	putmodecol(moderow, modecol, bi);	/* внести новое значение в битовую маску */
-	/* переустановка частот всех гетеродинов после смены режимов */
-	/* gband должен быть уже известен */
-	gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
-	updateboard(1, 1);
-}
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-
-// короткое нажатие кнопки BAND UP
-/* переход на следующий (с большей частотой) диапазон */
-static void 
-uif_key_click_bandup(void)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const vindex_t vi = getvfoindex(bi);
-	const vindex_t b = getfreqband(gfreqs [bi]);	/* определяем по частоте, в каком диапазоне находимся */
-	verifyband(b);
-	savebandstate(b, bi); // записать все параметры настройки (кроме частоты) в область данных диапазона */
-	savebandfreq(b, bi);
-	const vindex_t bn = getnext_ham_band(b, gfreqs [bi]);
-	loadnewband(bn, bi);	/* загрузка всех параметров (и частоты) нового режима */
-	savebandgroup(bn);
-	savebandfreq(vi, bi);	/* сохранение частоты в текущем VFO */
-	savebandstate(vi, bi); // записать все параметры настройки (кроме частоты)  в текущем VFO */
-	updateboard(1, 1);
-}
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-// короткое нажатие кнопки BAND DOWN
-/* переход на предыдущий (с меньшей частотой) диапазон */
-static void 
-uif_key_click_banddown(void)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const vindex_t vi = getvfoindex(bi);
-	const vindex_t b = getfreqband(gfreqs [bi]);	/* определяем по частоте, в каком диапазоне находимся */
-	verifyband(b);
-	savebandstate(b, bi); // записать все параметры настройки (кроме частоты) в область данных диапазона */
-	savebandfreq(b, bi);
-	const uint_fast8_t bn = getprev_ham_band(b, gfreqs [bi]);
-	loadnewband(bn, bi);	/* загрузка всех параметров (и частоты) нового режима */
-	savebandgroup(bn);
-	savebandfreq(vi, bi);	/* сохранение частоты в текущем VFO */
-	savebandstate(vi, bi); // записать все параметры настройки (кроме частоты)  в текущем VFO */
-	updateboard(1, 1);
-}
-
-
-/* переход на диапазон, содержащий указанную частоту */
-static void 
-uif_key_click_banddjump(uint_fast32_t f)
-{
-#if	WITHDIRECTBANDS
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const vindex_t vi = getvfoindex(bi);
-	const vindex_t b = getfreqband(gfreqs [bi]);	/* определяем по частоте, в каком диапазоне находимся */
-	vindex_t bn = getfreqband(f);
-	const uint_fast8_t bandgroup = bandsmap [bn].bandgroup;
-	verifyband(b);
-	verifyband(bn);
-	savebandstate(b, bi); // записать все параметры настройки (кроме частоты) в область данных диапазона */
-	savebandfreq(b, bi);
-	// 
-	//
-	if (bandgroup != BANDGROUP_COUNT)
-	{
-		// новый поддиапазон является частью группы
-		bn = loadvfy8up(RMT_BANDGROUP(bandgroup), 0, HBANDS_COUNT - 1, bn);
-		verifyband(bn);
-		if (bandgroup == bandsmap [b].bandgroup)
-		{
-			// переключение в диапазон той же группы - переход в пределах группы
-			bn = getnextbandingroup(bn, bandgroup);
-			verifyband(bn);
-			save_i8(RMT_BANDGROUP(bandgroup), bn);
-		}
-	}
-	loadnewband(bn, bi);	/* загрузка всех параметров (и частоты) нового режима */
-	savebandfreq(vi, bi);	/* сохранение частоты в текущем VFO */
-	savebandstate(vi, bi); // записать все параметры настройки (кроме частоты)  в текущем VFO */
-	updateboard(1, 1);
-#endif /* WITHDIRECTBANDS */
-}
-
-/* AGC mode switch
-	 - вызывает сохранение состояния режима */
-static void 
-uif_key_click_agcmode(void)
-{
-	gagcmode = calc_next(gagcmode, 0, AGCMODE_COUNT - 1);
-	save_i8(RMT_AGC_BASE(submodes [gsubmode].mode), gagcmode);
-	updateboard(1, 0);
-}
-
-#if WITHANTSELECT
-
-/* Antenna switch
-	  */
-static void 
-uif_key_click_antenna(void)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const vindex_t vi = getvfoindex(bi);
-
-	verifyband(vi);
-
-	gantennas [bi] = calc_next(gantennas [bi], 0, ANTMODE_COUNT - 1);
-	savebandstate(vi, bi);	// запись всех режимов в область памяти диапазона
-	updateboard(1, 0);
-}
-
-#endif /* WITHANTSELECT */
-
-#if ! WITHONEATTONEAMP
-/* переключение режима предусилителя  */
-static void 
-uif_key_click_pamp(void)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const vindex_t vi = getvfoindex(bi);
-
-	verifyband(vi);
-
-	gpamps [bi] = calc_next(gpamps [bi], 0, PAMPMODE_COUNT - 1);
-	savebandstate(vi, bi);	// запись всех режимов в область памяти диапазона
-	updateboard(1, 0);
-}
-#endif /* ! WITHONEATTONEAMP */
-
-
-/* переключение режима аттенюатора  */
-static void 
-uif_key_click_attenuator(void)
-{
-	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
-	const vindex_t vi = getvfoindex(bi);
-
-	verifyband(vi);
-
-	gatts [bi] = calc_next(gatts [bi], 0, ATTMODE_COUNT - 1);
-	savebandstate(vi, bi);	// запись всех режимов в область памяти диапазона
-	updateboard(1, 0);
-}
-
-#if WITHPOWERLPHP
-/* переключение режима мощности  */
-static void 
-uif_key_click_pwr(void)
-{
-	gpwri = calc_next(gpwri, 0, PWRMODE_COUNT - 1);
-	save_i8(RMT_PWR_BASE, gpwri);
-
-	updateboard(1, 0);
-}
-#endif /* WITHPOWERLPHP */
-
-#if WITHNOTCHONOFF || WITHNOTCHFREQ
-/* включение/выключение NOTCH  */
-static void 
-uif_key_click_notch(void)
-{
-	gnotch = calc_next(gnotch, 0, 1);
-	save_i8(RMT_NOTCH_BASE, gnotch);
-
-	updateboard(1, 0);
-}
-
-#endif /* WITHNOTCHONOFF || WITHNOTCHFREQ */
-
-#if ELKEY328
-
-static void 
-uif_key_click_vibroplex(void)
-{
-	elkeyslopeenable = calc_next(elkeyslopeenable, 0, 1);
-	updateboard(1, 0);
-}
-
-#endif /* ELKEY328 */
-
-/* блокировка енкодера */
-static void 
-uif_key_lockencoder(void)
-{
-	lockmode = calc_next(lockmode, 0, 1);
-	save_i8(RMT_LOCKMODE_BASE, lockmode);
-	updateboard(1, 0);
-}
-
-#if WITHBCBANDS
-/* переход в режим переключения по вещательным диапазонам */
-static void
-uif_key_genham(void)
-{
-	gbandsetbcast = calc_next(gbandsetbcast, 0, 1);
-	save_i8(offsetof(struct nvmap, gbandsetbcast), gbandsetbcast);
-	updateboard(1, 0);
-}
-
-uint_fast8_t hamradio_get_genham_value(void)
-{
-	return gbandsetbcast;
-}
-
-#endif /* WITHBCBANDS */
-
-#if WITHUSEFAST
-/* переключение в режим крупного шага */
-static void 
-uif_key_usefast(void)
-{
-	gusefast = calc_next(gusefast, 0, 1);
-	save_i8(RMT_USEFAST_BASE, gusefast);
-	updateboard(1, 0);
-}
-#endif /* WITHUSEFAST */
-
-#if WITHSPKMUTE
-
-/* Включение-выключение динамика */
-static void 
-uif_key_loudsp(void)
-{
-	gmutespkr = calc_next(gmutespkr, 0, 1);
-	save_i8(RMT_MUTELOUDSP_BASE, gmutespkr);
-	updateboard(1, 0);
-}
-
-uint_fast8_t hamradio_get_spkon_value(void)
-{
-	return ! gmutespkr;
-}
-
-#endif /* WITHSPKMUTE */
-
-#if CTLSTYLE_RA4YBO
-
-/* включение ФНЧ на приёме в аппарате RA4YBO */
-static void 
-uif_key_affilter(void)
-{
-	gaffilter = calc_next(gaffilter, 0, 1);
-	save_i8(RMT_AFFILTER_BASE, gaffilter);
-	updateboard(1, 0);
-}
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-
-#elif CTLSTYLE_RA4YBO_V1 || CTLSTYLE_RA4YBO_V2 || CTLSTYLE_RA4YBO_V3 || KEYBSTYLE_RA4YBO_AM0
-
-static void 
-uif_key_user1(void)
-{
-	guser1 = calc_next(guser1, 0, 1);
-	save_i8(RMT_USER1_BASE, guser1);
-	updateboard(1, 0);
-}
-
-static void 
-uif_key_user2(void)
-{
-	guser2 = calc_next(guser2, 0, 1);
-	save_i8(RMT_USER2_BASE, guser2);
-	updateboard(1, 0);
-}
-static void 
-uif_key_user3(void)
-{
-	guser3 = calc_next(guser3, 0, 1);
-	save_i8(RMT_USER3_BASE, guser3);
-	updateboard(1, 0);
-}
-
-static void 
-uif_key_user4(void)
-{
-	guser4 = calc_next(guser4, 0, 1);
-	save_i8(RMT_USER4_BASE, guser4);
-	updateboard(1, 0);
-}
-static void 
-uif_key_user5(void)
-{
-	guser5 = calc_next(guser5, 0, 1);
-	save_i8(RMT_USER5_BASE, guser5);
-	updateboard(1, 0);
-}
-
-/* включение ФНЧ на приёме в аппарате RA4YBO */
-static void 
-uif_key_affilter(void)
-{
-	gaffilter = calc_next(gaffilter, 0, 1);
-	save_i8(RMT_AFFILTER_BASE, gaffilter);
-	updateboard(1, 0);
-}
-
-#endif /* CTLSTYLE_RA4YBO_V1 || CTLSTYLE_RA4YBO_V2 */
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-#if WITHIF4DSP
-/* Переключение полос пропускания в CW приёмника
-	 - не вызывает сохранение состояния диапазона */
-
-static void 
-uif_key_changebw(void)
-{
-	const uint_fast8_t bwseti = mdt [gmode].bwsetis [0];	// индекс банка полос пропускания для данного режима на приеме
-
-	bwsetpos [bwseti] = calc_next(bwsetpos [bwseti], 0, bwsetsc [bwseti].last);
-	save_i8(RMT_BWSETPOS_BASE(bwseti), bwsetpos [bwseti]);	/* только здесь сохраняем новый фильтр для режима */
-	updateboard(1, 1);
-}
-
-/* Переключение шумоподавления
-	 - не вызывает сохранение состояния диапазона */
-
-static void 
-uif_key_changenr(void)
-{
-	gnoisereducts [gmode] = calc_next(gnoisereducts [gmode], 0, 1);
-	save_i8(RMT_NR_BASE(gmode), gnoisereducts [gmode]);
-	updateboard(1, 1);
-}
-
-#if WITHUSBUAC
-
-/* переключение источника звука с USB или обычного для данного режима */
-static void 
-uif_key_click_datamode(void)
-{
-	gdatamode = calc_next(gdatamode, 0, 1);
-	save_i8(RMT_DATAMODE_BASE, gdatamode);
-	updateboard(1, 0);
-}
-
-#endif /* WITHUSBUAC */
-
-
-#else /* WITHIF4DSP */
-/* Переключение фильтров приёмника
-	 - не вызывает сохранение состояния диапазона */
-static void 
-uif_key_changefilter(void)
-{
-	gfi = getsuitablerx(gmode, calc_next(gfi, 0, getgfasize() - 1));
-	save_i8(RMT_FILTER_BASE(gmode), gfi);	/* только здесь сохраняем новый фильтр для режима */
-	updateboard(1, 1);
-}
-
-#endif /* WITHIF4DSP */
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-#if WITHTX
-/* включение режима настройки */
-static void 
-uif_key_tuneoff(void)
-{
-	if (getactualtune() || moxmode)
-	{
-		moxmode = 0;
-		tunemode = 0;		/* не важно, по какой причине переходил на передачу - выход из режима при настройке */
-#if WITHCAT
-		cattunemode = 0;
-#endif /* WITHCAT */
-	}
-	else
-	{
-		moxmode = calc_next(moxmode, 0, 1);
-	}
-	updateboard(1, 1);
-}
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-/* включение режима настройки */
-
-static void 
-uif_key_tune(void)
-{
-	tunemode = calc_next(tunemode, 0, 1);
-	updateboard(1, 1);
-}
-
-#endif /* WITHTX */
-
-#if WITHKEYBOARD
-#endif /* WITHKEYBOARD */
-
-
-#if WITHAUTOTUNER
-
-static void 
-uif_key_bypasstoggle(void)
-{
-	const uint_fast8_t tx = 1;
-	const uint_fast8_t bi = getbankindex_tx(tx);
-	const vindex_t b = getvfoindex(bi);
-
-	tunerwork = calc_next(tunerwork, 0, 1);	// переключаем в противоположное состояние
-	save_i8(offsetof(struct nvmap, bands[b].tunerwork), 1);
-	if (tunerwork == 0)
-		reqautotune = 0;	// сброс идущей настройки
-	updateboard(1, 0);
-}
-
-static void 
-uif_key_atunerstart(void)
-{
-	const uint_fast8_t tx = 1;
-	const uint_fast8_t bi = getbankindex_tx(tx);
-	const vindex_t b = getvfoindex(bi);
-
-	reqautotune = 1;
-	// отработка перехода в режим передачи делается в основном цикле
-	tunerwork = 1;
-	save_i8(offsetof(struct nvmap, bands[b].tunerwork), 1);
-	updateboard(1, 0);
-}
-
-uint_fast8_t
-hamradio_get_bypvalue(void)
-{
-	return ! tunerwork;
-}
-
-uint_fast8_t
-hamradio_get_atuvalue(void)
-{
-	return reqautotune;
-}
-#endif /* WITHAUTOTUNER */
-
-#if WITHNOTCHONOFF || WITHNOTCHFREQ
-
-uint_fast8_t hamradio_get_notchvalue(int_fast32_t * p)
-{
-#if WITHNOTCHFREQ
-	* p = gnotchfreq.value;
-#else /* WITHNOTCHFREQ */
-	* p = 0;
-#endif /* WITHNOTCHFREQ */
-	return gnotch && notchmodes [gnotchtype].code != BOARD_NOTCH_OFF;
-}
-
-const FLASHMEM char * hamradio_get_notchtype5_P(void)
-{
-	return notchmodes [gnotchtype].label;
-}
-
-
-#endif /* WITHNOTCHONOFF || WITHNOTCHFREQ  */
-
-#if WITHINTEGRATEDDSP
-// NR ON/OFF
-uint_fast8_t hamradio_get_nrvalue(int_fast32_t * p)
-{
-	* p = gnoisereductvl;
-	return gnoisereducts [gmode] != 0;
-}
-#endif /* WITHINTEGRATEDDSP */
-
-// текущее состояние TUNE
-uint_fast8_t hamradio_get_tunemodevalue(void)
-{
-	return getactualtune();
-}
-
-#if WITHVOLTLEVEL
-
-// Вольты в десятых долях
-uint_fast8_t hamradio_get_volt_value(void)
-{
-#if WITHTDIRECTDATA
-
-	return (sadcvalholder_t) board_getadc_filtered_truevalue(VOLTMRRIX) / 100;	// миливольты в 0.1 вольта
-
-#elif WITHTARGETVREF
-
-	unsigned Vref_mV = board_getadc_unfiltered_truevalue(VREFMVMRRIX); //WITHTARGETVREF;//ADCVREF_CPU * 100;
-	if (Vref_mV == 0)
-		Vref_mV = WITHTARGETVREF;
-	const unsigned voltcalibr_mV = (Vref_mV * (VOLTLEVEL_UPPER + VOLTLEVEL_LOWER) + VOLTLEVEL_LOWER / 2) / VOLTLEVEL_LOWER;		// Напряжение fullscale - что показать при ADCVREF_CPU вольт на входе АЦП
-	const uint_fast16_t mv = board_getadc_filtered_u16(VOLTMRRIX, 0, voltcalibr_mV);
-	//PRINTF(PSTR("hamradio_get_volt_value: ref=%u, VrefmV=%u, v=%u, out=%u\n"), ref, Vref_mV, mv, (mv + 50) / 100);
-	return (mv + 50) / 100;	// Приводим к десятым долям вольта
-
-#elif WITHREFSENSOR
-	// Измерение опрного напряжения
-	const uint_fast8_t vrefi = VREFIX;
-	const adcvalholder_t ref = board_getadc_unfiltered_truevalue(vrefi);	// текущее значение данного АЦП
-	if (ref != 0)
-	{
-		//const unsigned Vref_mV = ADCVREF_CPU * 100;
-		const unsigned Vref_mV = (uint_fast32_t) board_getadc_fsval(vrefi) * WITHREFSENSORVAL / ref;
-		const unsigned voltcalibr_mV = (Vref_mV * (VOLTLEVEL_UPPER + VOLTLEVEL_LOWER) + VOLTLEVEL_LOWER / 2) / VOLTLEVEL_LOWER;		// Напряжение fullscale - что показать при ADCVREF_CPU вольт на входе АЦП
-		const uint_fast16_t mv = board_getadc_filtered_u16(VOLTMRRIX, 0, voltcalibr_mV);
-		//PRINTF(PSTR("hamradio_get_volt_value: ref=%u, VrefmV=%u, v=%u, out=%u\n"), ref, Vref_mV, mv, (mv + 50) / 100);
-		return (mv + 50) / 100;	// Приводим к десятым долям вольта
-	}
-	else
-	{
-		//PRINTF(PSTR("hamradio_get_volt_value: ref=%u\n"), ref);
-		return UINT8_MAX;
-	}
-
-#elif CTLSTYLE_SW2011ALL
-
-	//PRINTF(PSTR("hamradio_get_volt_value: VOLTMRRIX=%u, voltcalibr100mV=%u\n"), board_getadc_unfiltered_truevalue(VOLTMRRIX), voltcalibr100mV);
-	return board_getadc_unfiltered_u8(VOLTSOURCE, 0, voltcalibr100mV);
-
-#else /* WITHREFSENSOR */
-
-	// TODO: разобраться почему это не работает на SW20xx
-	//PRINTF(PSTR("hamradio_get_volt_value: VOLTMRRIX=%u, voltcalibr100mV=%u\n"), board_getadc_unfiltered_truevalue(VOLTMRRIX), voltcalibr100mV);
-	return board_getadc_filtered_u8(VOLTMRRIX, 0, voltcalibr100mV);
-
-#endif /* WITHREFSENSOR */
-}
-
-#endif /* WITHVOLTLEVEL */
-
-#if WITHTHERMOLEVEL
-
-// Градусы в десятых долях
-// Read from thermo sensor ST LM235Z (2 kOhm to +12)
-int_fast16_t hamradio_get_temperature_value(void)
-{
-	const int_fast16_t thermo_offset = THERMOSENSOR_OFFSET;
-
-	// XTHERMOIX - данные с АЦП напрямую
-#if WITHTDIRECTDATA
-
-	return (sadcvalholder_t) board_getadc_filtered_truevalue(XTHERMOMRRIX);	// 0.1 градуса
-
-#elif WITHTARGETVREF
-
-	unsigned Vref_mV = board_getadc_unfiltered_truevalue(VREFMVMRRIX); //WITHTARGETVREF;//ADCVREF_CPU * 100;
-	if (Vref_mV == 0)
-		Vref_mV = WITHTARGETVREF;
-	const int_fast32_t mv = (int32_t) board_getadc_filtered_u32(XTHERMOMRRIX, 0, (uint_fast64_t) Vref_mV * (THERMOSENSOR_UPPER + THERMOSENSOR_LOWER) / THERMOSENSOR_LOWER);
-	return (mv + thermo_offset) / THERMOSENSOR_DENOM;	// Приводим к десятым долям градуса
-
-#elif WITHREFSENSOR
-	// Измерение опрного напряжения
-	const uint_fast8_t vrefi = VREFIX;
-	const adcvalholder_t ref = board_getadc_unfiltered_truevalue(vrefi);	// текущее значение данного АЦП
-	if (ref != 0)
-	{
-		const unsigned Vref_mV = (uint_fast32_t) board_getadc_fsval(vrefi) * WITHREFSENSORVAL / ref;
-		const int_fast32_t mv = (int32_t) board_getadc_filtered_u32(XTHERMOMRRIX, 0, (uint_fast64_t) Vref_mV * (THERMOSENSOR_UPPER + THERMOSENSOR_LOWER) / THERMOSENSOR_LOWER);
-		return (mv + thermo_offset) / THERMOSENSOR_DENOM;	// Приводим к десятым долям градуса
-	}
-	else
-	{
-		PRINTF(PSTR("hamradio_get_temperature_value: ref=%u\n"), ref);
-		return 999;
-	}
-
-#else /* WITHREFSENSOR */
-
-	const unsigned Vref_mV = 2900;//ADCVREF_CPU * 100;
-	const int_fast32_t mv = (int32_t) board_getadc_filtered_u32(XTHERMOMRRIX, 0, (uint_fast64_t) Vref_mV * (THERMOSENSOR_UPPER + THERMOSENSOR_LOWER) / THERMOSENSOR_LOWER);
-	return (mv + thermo_offset) / THERMOSENSOR_DENOM;	// Приводим к десятым долям градуса
-
-#endif /* WITHREFSENSOR */
-}
-
-#endif /* WITHTHERMOLEVEL */
-
-#if (WITHCURRLEVEL || WITHCURRLEVEL2)
-
-// Ток в десятках милиампер (может быть отрицательным)
-// PA current sense - ACS712ELCTR-05B-T chip
-// PA current sense - ACS712ELCTR-30B-T chip
-int_fast16_t hamradio_get_pacurrent_value(void)
-{
-	// Чувствительность датчиков:
-	// x05B - 0.185 V/A
-	// x20A - 0.100 V/A
-	// x30A - 0.066 V/A
-
-#if WITHCURRLEVEL_ACS712_30A
-	// x30A - 0.066 V/A
-	enum {
-		sens = 66,			// millivolts / ampher
-		scale = 100			// результат - в сотых долях ампера
-	};
-#elif WITHCURRLEVEL_ACS712_20A
-	//  x20A - 0.100 V/A
-	enum {
-		sens = 100,			// millivolts / ampher
-		scale = 100			// результат - в сотых долях ампера
-	};
-#else /* WITHCURRLEVEL_ACS712_30A */
-	// x05B - 0.185 V/A
-	enum {
-		sens = 185,			// millivolts / ampher
-		scale = 100			// результат - в сотых долях ампера
-	};
-#endif /* CTLSTYLE_RA4YBO_V3 */
-
-#if WITHCURRLEVEL
-
-	const uint_fast8_t adci = PASENSEMRRIX;
-
-#elif WITHCURRLEVEL2
-
-#endif
-
-#if WITHTDIRECTDATA
-
-#elif WITHTARGETVREF
-
-	unsigned Vref_mV = board_getadc_unfiltered_truevalue(VREFMVMRRIX); //WITHTARGETVREF;//ADCVREF_CPU * 100;
-	if (Vref_mV == 0)
-		Vref_mV = WITHTARGETVREF;
-
-#elif WITHREFSENSOR
-	// Измерение опрного напряжения
-	const uint_fast8_t vrefi = VREFIX;
-	const adcvalholder_t ref = board_getadc_unfiltered_truevalue(vrefi);	// текущее значение данного АЦП
-	if (ref == 0)
-		return 0;
-	//const unsigned Vref_mV = ADCVREF_CPU * 100;
-	const unsigned Vref_mV = (uint_fast32_t) board_getadc_fsval(vrefi) * WITHREFSENSORVAL / ref;
-#else /* WITHREFSENSOR */
-	// опорное напряжение известно из конфигурации процессора.
-	const unsigned Vref_mV = ADCVREF_CPU * 100;
-#endif /* WITHREFSENSOR */
-
-
-#if WITHTDIRECTDATA
-
-	int curr10 = (sadcvalholder_t) board_getadc_filtered_truevalue(PASENSEMRRIX) / 10;	// милиамперы в десятки милиампер
-
-#elif WITHCURRLEVEL2
-
-	const adcvalholder_t midp = board_getadc_unfiltered_truevalue(PAREFERIX2);
-	const adcvalholder_t sense = board_getadc_unfiltered_truevalue(PASENSEIX2);
-
-	const long curr10 = ((long) midp - (long) sense) * (int_fast64_t) Vref_mV * scale / ((long) sens * board_getadc_fsval(PAREFERIX2));
-
-#else /* WITHCURRLEVEL2 */
-
-	const long vsense = board_getadc_filtered_u32(PASENSEMRRIX, 0, (uint_fast32_t) Vref_mV * scale);
-
-#if CTLSTYLE_RAVENDSP_V5
-	const long midpoint = (gtx ? 2472uL : 2442uL) * scale; // tx=247200, rx=244200
-#else
-	static const long midpoint = 2516uL * scale;
-#endif
-
-	int curr10 = ((long) midpoint - (long) vsense + sens / 2) / sens;
-
-#endif /* WITHCURRLEVEL2 */
-
-	return curr10 + (gipacali + getipacalibase());
-}
-
-#endif /* (WITHCURRLEVEL || WITHCURRLEVEL2) */
-
-uint_fast8_t hamradio_get_tx(void)
-{
-	return gtx;
-}
-
-// RX bandwidth
-#if WITHIF4DSP
-
-const FLASHMEM char * hamradio_get_rxbw_value_P(void)
-{
-	const uint_fast8_t bwseti = mdt [gmode].bwsetis [gtx];	// индекс банка полос пропускания для данного режима
-	return bwsetsc [bwseti].labels [bwsetpos[bwseti]];
-}
-
-#else /* WITHIF4DSP */
-
-const FLASHMEM char * hamradio_get_rxbw_value_P(void)
-{
-#if WITHFIXEDBFO
-	return PSTR("");
-#else /* WITHFIXEDBFO */
-	return getrxfilter(gsubmode, gfi)->labelf3;
-#endif /* WITHFIXEDBFO */
-}
-
-#endif /* WITHIF4DSP */
-
-// RX preamplifier
-const FLASHMEM char * hamradio_get_pre_value_P(void)
-{
-#if ! WITHONEATTONEAMP
-	return pampmodes [gpamps [getbankindex_tx(0)]].label;
-#else /* ! WITHONEATTONEAMP */
-	return PSTR("   ");
-#endif /* ! WITHONEATTONEAMP */
-}
-
-// RX attenuator (or att/pre).
-const FLASHMEM char * hamradio_get_att_value_P(void)
-{
-	return attmodes [gatts [getbankindex_tx(0)]].label;
-}
-
-// RX agc time - 3 символа
-const FLASHMEM char * hamradio_get_agc3_value_P(void)
-{
-#if ! WITHAGCMODENONE
-	return agcmodes [gagcmode].label3;
-#else /* ! WITHAGCMODENONE */
-	return PSTR("   ");
-#endif /* ! WITHAGCMODENONE */
-}
-
-// RX agc time - 4 символа
-const FLASHMEM char * hamradio_get_agc4_value_P(void)
-{
-#if ! WITHAGCMODENONE
-	return agcmodes [gagcmode].label4;
-#else /* ! WITHAGCMODENONE */
-	return PSTR("    ");
-#endif /* ! WITHAGCMODENONE */
-}
-
-#if WITHPOWERLPHP
-// HP/LP
-const FLASHMEM char * hamradio_get_hplp_value_P(void)
-{
-	return pwrmodes [gpwri].label;
-}
-#endif /* WITHPOWERLPHP */
-
-
-///////////////////////////
-// обработчики кнопок клавиатуры
-//////////////////////////
-#if WITHUSEDUALWATCH
-
-/* переключение основного/дополнительного приёмника */
-static void 
-uif_key_mainsubrx(void)
-{
-	mainsubrxmode = calc_next(mainsubrxmode, 0, MAINSUBRXMODE_COUNT - 1);
-	save_i8(RMT_MAINSUBRXMODE_BASE, mainsubrxmode);	// Левый/правый, A - main RX, B - sub RX
-	updateboard(1, 0);
-}
-
-// текущее состояние DUAL WATCH
-const FLASHMEM char * hamradio_get_mainsubrxmode3_value_P(void)
-{
-	return mainsubrxmodes [mainsubrxmode].label;
-}
-
-
-#endif /* WITHUSEDUALWATCH */
+//#if WITHELKEY && WITHTX
+
+//void uif_key_bkintoggle(void)
+//{
+//	bkinenable = calc_next(bkinenable, 0, 1);
+//	save_i8(offsetof(struct nvmap, bkinenable), bkinenable);
+//	updateboard(1, 0);
+//}
+
+//uint_fast8_t hamradio_get_bkin_value(void)
+//{
+//	return bkinenable;
+//}
+
+//#else
+
+//uint_fast8_t hamradio_get_bkin_value(void)
+//{
+//	return 0;
+//}
+
+//#endif /* WITHELKEY */
+
+//#if WITHVOX && WITHTX
+
+//static void 
+//uif_key_voxtoggle(void)
+//{
+//	gvoxenable = calc_next(gvoxenable, 0, 1);
+//	save_i8(offsetof(struct nvmap, gvoxenable), gvoxenable);
+//	updateboard(1, 0);
+//}
+
+//// текущее состояние VOX
+//uint_fast8_t hamradio_get_voxvalue(void)
+//{
+//	return gvoxenable;
+//}
+
+//#else /* WITHVOX && WITHTX */
+//// текущее состояние VOX
+//uint_fast8_t hamradio_get_voxvalue(void)
+//{
+//	return 0;
+//}
+
+//#endif /* WITHVOX && WITHTX */
+
+
+//#if WITHANTSELECT
+
+//// antenna
+//const FLASHMEM char * hamradio_get_ant5_value_P(void)
+//{
+//	return antmodes [gantennas [getbankindex_tx(gtx)]].label5;
+//}
+
+//#endif /* WITHANTSELECT */
+
+//// включение режима split (возможо, с расстройко от текущей частоты)
+//static void 
+//uif_key_spliton(uint_fast8_t holded)
+//{
+//#if WITHSPLIT
+
+//	const uint_fast8_t srbi = getbankindex_raw(0);
+//	const uint_fast8_t tgbi = getbankindex_raw(1);
+//	const vindex_t tgvi = getvfoindex(tgbi);
+
+//	copybankstate(srbi, tgbi, holded == 0 ? 0 : getmodetempl(getsubmode(srbi))->autosplitK * 1000L);	/* копируем состояние текущего банка в противоположный */
+//	gsplitmode = VFOMODES_VFOSPLIT;
+
+//	savebandstate(tgvi, tgbi); // записать все параметры настройки (кроме частоты) в область данных VFO */
+//	savebandfreq(tgvi, tgbi);
+
+//	save_i8(RMT_SPLITMODE_BASE, gsplitmode);
+//	updateboard(1, 1);
+
+//#elif WITHSPLITEX
+
+//	if (holded != 0)
+//	{
+//		const uint_fast8_t srbi = getbankindex_raw(0);
+//		const uint_fast8_t tgbi = getbankindex_raw(1);
+//		const vindex_t tgvi = getvfoindex(tgbi);
+
+//		copybankstate(srbi, tgbi, getmodetempl(getsubmode(srbi))->autosplitK * 1000L);	/* копируем состояние текущего банка в противоположный */
+	
+//		savebandstate(tgvi, tgbi); // записать все параметры настройки (кроме частоты) в область данных VFO */
+//		savebandfreq(tgvi, tgbi);
+//	}
+//	gsplitmode = VFOMODES_VFOSPLIT;
+
+//	save_i8(RMT_SPLITMODE_BASE, gsplitmode);
+//	updateboard(1, 1);
+
+//#else
+
+//#endif /* WITHSPLIT */
+//}
+
+///* копирование в VFO B состояния VFO A */
+//// for WITHSPLITEX
+//static void 
+//uif_key_click_b_from_a(void)
+//{
+//#if (WITHSPLIT || WITHSPLITEX)
+
+//	const uint_fast8_t sbi = getbankindex_ab(0);	// bank index исходных данных
+//	const uint_fast8_t tbi = getbankindex_ab(1);	// bank index куда копируются данные
+//	const vindex_t tgvi = getvfoindex(tbi);		// vfo index куда копируются данные
+
+//	copybankstate(sbi, tbi, 0);
+//	savebandstate(tgvi, tbi); // записать все параметры настройки (кроме частоты) в область данных VFO */
+//	savebandfreq(tgvi, tbi); // записать частоту в область данных VFO */
+//	updateboard(1, 1);
+
+//#endif /* (WITHSPLIT || WITHSPLITEX) */
+//}
+
+//// вылючение режима split
+//static void 
+//uif_key_splitoff(void)
+//{
+//#if (WITHSPLIT || WITHSPLITEX)
+
+//	gsplitmode = VFOMODES_VFOINIT;
+//	save_i8(RMT_SPLITMODE_BASE, gsplitmode);
+
+//	updateboard(1, 1);
+
+//#endif /* (WITHSPLIT || WITHSPLITEX) */
+//}
+
+///* обмен частотой между VFO */
+//// for WITHSPLITEX
+//static void 
+//uif_key_click_a_ex_b(void)
+//{
+//#if (WITHSPLIT || WITHSPLITEX)
+
+//	gvfoab = ! gvfoab;	/* меняем текущий VFO на протвоположный */
+//	save_i8(RMT_VFOAB_BASE, gvfoab);
+//	updateboard(1, 1);
+
+//#endif /* (WITHSPLIT || WITHSPLITEX) */
+//}
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+///* Переход между режимами фиксированных частот
+//   или плавной настройки.
+//  */
+////static void 
+////uif_key_memmode(uint_fast8_t tx)
+////{
+////while (repeat --)
+////	gsplitmode = calc_next(gsplitmode, 0, VFOMODES_COUNT - 1); /* (vfo/vfoa/vfob/mem) */
+////save_i8(RMT_SPLITMODE_BASE, gsplitmode);
+////updateboard(1, 0);
+////}
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+///* переход по "строке" режимов - удержанное нажатие */
+//// step to next modecol
+//static void 
+//uif_key_hold_modecol(void)
+//{
+//	// const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	// const uint_fast8_t moderow = gmoderows [bi];	/* строка таблицы запомненных режимов */
+
+//	// uint_fast8_t modecol = getmodecol(moderow, modes [moderow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
+//	// modecol = calc_next(modecol, 0, modes [moderow][0] - 1);
+//	// putmodecol(moderow, modecol, bi);	/* внести новое значение в битовую маску */
+//	// /* переустановка частот всех гетеродинов после смены режимов */
+//	// /* gband должен быть уже известен */
+//	// gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
+//	// updateboard(1, 1);
+//}
+
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+///* переход по "столбцу" режимов - быстрое нажатие */
+///* switch to next moderow */
+//static void 
+//uif_key_click_moderow(void)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	uint_fast8_t defrow = gmoderows [bi];		/* строка таблицы режимов, которую покидаем */
+//	uint_fast8_t defcol = getmodecol(defrow, modes [defrow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
+//	const uint_fast8_t forcelsb = getforcelsb(gfreqs [bi]);
+
+//	gmoderows [bi] = calc_next(gmoderows [bi], 0, MODEROW_COUNT - 1);		/* идём на следующую строку таблицы запомненых режимов */
+
+//#if WITHMODESETSMART
+//	defcol = locatesubmode(SUBMODE_SSBSMART, & defrow);
+//#else /* WITHMODESETSMART */
+//	if (gsubmode == SUBMODE_USB)		// если текущий режим USB - ищемм CW
+//		defcol = locatesubmode(SUBMODE_CW, & defrow);
+//	else if (gsubmode == SUBMODE_LSB)	// если текущий режим LSB - ищемм CWR
+//		defcol = locatesubmode(SUBMODE_CWR, & defrow);
+//	else if (gsubmode == SUBMODE_DGU)	// если текущий режим LSB - ищемм CWR
+//		defcol = locatesubmode(SUBMODE_USB, & defrow);
+//	else if (gsubmode == SUBMODE_DGL)	// если текущий режим LSB - ищемм CWR
+//		defcol = locatesubmode(SUBMODE_LSB, & defrow);
+//	#if WITHMODESETFULLNFM
+//	else if (gsubmode == SUBMODE_AM)	// если текущий режим AM - ищемм FM
+//		defcol = locatesubmode(SUBMODE_NFM, & defrow);
+//	#endif
+//	else								// в остальных случаях ищем режим по умолчанию для данного диапазона частот
+//		defcol = locatesubmode(forcelsb ? SUBMODE_LSB : SUBMODE_USB, & defrow);
+//#endif /* WITHMODESETSMART */	
+//	/* если переходим не на строку с найденными режимаим */
+//	if (defrow != gmoderows [bi])
+//		defcol = 0;	/* default value (other cases, then switch from usb to cw, from lsb to cwr) */
+//	/* пытаемся обратиться за битами - они, взоможно, заменяться значением defcol */
+//	(void) getmodecol(gmoderows [bi], modes [gmoderows [bi]][0] - 1, defcol, bi); /* Возможно, значение modecolmap бует откорректировано. */
+
+//	/* переустановка частот всех гетеродинов после смены режимов */
+//	/* gband должен быть уже известен */
+//	gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
+//	updateboard(1, 1);
+//}
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+///* переход по "столбцу" режимов - быстрое нажатие */
+///* switch to next moderow */
+//static void 
+//uif_key_click_moderows(uint_fast8_t moderow)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	const uint_fast8_t rowchanged = (gmoderows [bi] != moderow);
+//	uint_fast8_t defrow = gmoderows [bi] = moderow;		/* строка таблицы режимов, которую покидаем */
+//	uint_fast8_t defcol = getmodecol(defrow, modes [defrow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
+//	const uint_fast8_t forcelsb = getforcelsb(gfreqs [bi]);
+
+//#if WITHMODESETSMART
+//	defcol = locatesubmode(SUBMODE_SSBSMART, & defrow);
+//#else /* WITHMODESETSMART */
+//	if (gsubmode == SUBMODE_USB)		// если текущий режим USB - ищемм CW
+//		defcol = locatesubmode(SUBMODE_CW, & defrow);
+//	else if (gsubmode == SUBMODE_LSB)	// если текущий режим LSB - ищемм CWR
+//		defcol = locatesubmode(SUBMODE_CWR, & defrow);
+//	else if (gsubmode == SUBMODE_DGU)	// если текущий режим LSB - ищемм CWR
+//		defcol = locatesubmode(SUBMODE_USB, & defrow);
+//	else if (gsubmode == SUBMODE_DGL)	// если текущий режим LSB - ищемм CWR
+//		defcol = locatesubmode(SUBMODE_LSB, & defrow);
+//	#if WITHMODESETFULLNFM
+//	else if (gsubmode == SUBMODE_AM)	// если текущий режим AM - ищемм FM
+//		defcol = locatesubmode(SUBMODE_NFM, & defrow);
+//	#endif
+//	else								// в остальных случаях ищем режим по умолчанию для данного диапазона частот
+//		defcol = locatesubmode(forcelsb ? SUBMODE_LSB : SUBMODE_USB, & defrow);
+//#endif /* WITHMODESETSMART */	
+//	/* если переходим не на строку с найденными режимаим */
+//	if (defrow != gmoderows [bi])
+//		defcol = 0;	/* default value (other cases, then switch from usb to cw, from lsb to cwr) */
+//	/* пытаемся обратиться за битами - они, взоможно, заменяться значением defcol */
+//	(void) getmodecol(gmoderows [bi], modes [gmoderows [bi]][0] - 1, defcol, bi); /* Возможно, значение modecolmap бует откорректировано. */
+
+//	/* переустановка частот всех гетеродинов после смены режимов */
+//	/* gband должен быть уже известен */
+//	gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
+//	updateboard(1, 1);
+//}
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+///* переход по "строке" режимов - удержанное нажатие */
+//// step to next modecol
+//static void 
+//uif_key_hold_modecols(uint_fast8_t moderow)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	if (gmoderows [bi] != moderow)	/* строка таблицы запомненных режимов */
+//	{
+//		uif_key_click_moderows(moderow);
+//		return;
+//	}
+
+//	uint_fast8_t modecol = getmodecol(moderow, modes [moderow][0] - 1, 0, bi);	/* выборка из битовой маски. Возможно, значение modecolmap бует откорректировано.  */
+//	modecol = calc_next(modecol, 0, modes [moderow][0] - 1);
+//	putmodecol(moderow, modecol, bi);	/* внести новое значение в битовую маску */
+//	/* переустановка частот всех гетеродинов после смены режимов */
+//	/* gband должен быть уже известен */
+//	gsubmodechange(getsubmode(bi), bi); /* если надо - сохранение частоты в текущем VFO */
+//	updateboard(1, 1);
+//}
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+
+//// короткое нажатие кнопки BAND UP
+///* переход на следующий (с большей частотой) диапазон */
+//static void 
+//uif_key_click_bandup(void)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	const vindex_t vi = getvfoindex(bi);
+//	const vindex_t b = getfreqband(gfreqs [bi]);	/* определяем по частоте, в каком диапазоне находимся */
+//	verifyband(b);
+//	savebandstate(b, bi); // записать все параметры настройки (кроме частоты) в область данных диапазона */
+//	savebandfreq(b, bi);
+//	const vindex_t bn = getnext_ham_band(b, gfreqs [bi]);
+//	loadnewband(bn, bi);	/* загрузка всех параметров (и частоты) нового режима */
+//	savebandgroup(bn);
+//	savebandfreq(vi, bi);	/* сохранение частоты в текущем VFO */
+//	savebandstate(vi, bi); // записать все параметры настройки (кроме частоты)  в текущем VFO */
+//	updateboard(1, 1);
+//}
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+//// короткое нажатие кнопки BAND DOWN
+///* переход на предыдущий (с меньшей частотой) диапазон */
+//static void 
+//uif_key_click_banddown(void)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	const vindex_t vi = getvfoindex(bi);
+//	const vindex_t b = getfreqband(gfreqs [bi]);	/* определяем по частоте, в каком диапазоне находимся */
+//	verifyband(b);
+//	savebandstate(b, bi); // записать все параметры настройки (кроме частоты) в область данных диапазона */
+//	savebandfreq(b, bi);
+//	const uint_fast8_t bn = getprev_ham_band(b, gfreqs [bi]);
+//	loadnewband(bn, bi);	/* загрузка всех параметров (и частоты) нового режима */
+//	savebandgroup(bn);
+//	savebandfreq(vi, bi);	/* сохранение частоты в текущем VFO */
+//	savebandstate(vi, bi); // записать все параметры настройки (кроме частоты)  в текущем VFO */
+//	updateboard(1, 1);
+//}
+
+
+///* переход на диапазон, содержащий указанную частоту */
+//static void 
+//uif_key_click_banddjump(uint_fast32_t f)
+//{
+//#if	WITHDIRECTBANDS
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	const vindex_t vi = getvfoindex(bi);
+//	const vindex_t b = getfreqband(gfreqs [bi]);	/* определяем по частоте, в каком диапазоне находимся */
+//	vindex_t bn = getfreqband(f);
+//	const uint_fast8_t bandgroup = bandsmap [bn].bandgroup;
+//	verifyband(b);
+//	verifyband(bn);
+//	savebandstate(b, bi); // записать все параметры настройки (кроме частоты) в область данных диапазона */
+//	savebandfreq(b, bi);
+//	// 
+//	//
+//	if (bandgroup != BANDGROUP_COUNT)
+//	{
+//		// новый поддиапазон является частью группы
+//		bn = loadvfy8up(RMT_BANDGROUP(bandgroup), 0, HBANDS_COUNT - 1, bn);
+//		verifyband(bn);
+//		if (bandgroup == bandsmap [b].bandgroup)
+//		{
+//			// переключение в диапазон той же группы - переход в пределах группы
+//			bn = getnextbandingroup(bn, bandgroup);
+//			verifyband(bn);
+//			save_i8(RMT_BANDGROUP(bandgroup), bn);
+//		}
+//	}
+//	loadnewband(bn, bi);	/* загрузка всех параметров (и частоты) нового режима */
+//	savebandfreq(vi, bi);	/* сохранение частоты в текущем VFO */
+//	savebandstate(vi, bi); // записать все параметры настройки (кроме частоты)  в текущем VFO */
+//	updateboard(1, 1);
+//#endif /* WITHDIRECTBANDS */
+//}
+
+///* AGC mode switch
+//	 - вызывает сохранение состояния режима */
+//static void 
+//uif_key_click_agcmode(void)
+//{
+//	gagcmode = calc_next(gagcmode, 0, AGCMODE_COUNT - 1);
+//	save_i8(RMT_AGC_BASE(submodes [gsubmode].mode), gagcmode);
+//	updateboard(1, 0);
+//}
+
+//#if WITHANTSELECT
+
+///* Antenna switch
+//	  */
+//static void 
+//uif_key_click_antenna(void)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	const vindex_t vi = getvfoindex(bi);
+
+//	verifyband(vi);
+
+//	gantennas [bi] = calc_next(gantennas [bi], 0, ANTMODE_COUNT - 1);
+//	savebandstate(vi, bi);	// запись всех режимов в область памяти диапазона
+//	updateboard(1, 0);
+//}
+
+//#endif /* WITHANTSELECT */
+
+//#if ! WITHONEATTONEAMP
+///* переключение режима предусилителя  */
+//static void 
+//uif_key_click_pamp(void)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	const vindex_t vi = getvfoindex(bi);
+
+//	verifyband(vi);
+
+//	gpamps [bi] = calc_next(gpamps [bi], 0, PAMPMODE_COUNT - 1);
+//	savebandstate(vi, bi);	// запись всех режимов в область памяти диапазона
+//	updateboard(1, 0);
+//}
+//#endif /* ! WITHONEATTONEAMP */
+
+
+///* переключение режима аттенюатора  */
+//static void 
+//uif_key_click_attenuator(void)
+//{
+//	const uint_fast8_t bi = getbankindex_tx(gtx);	/* vfo bank index */
+//	const vindex_t vi = getvfoindex(bi);
+
+//	verifyband(vi);
+
+//	gatts [bi] = calc_next(gatts [bi], 0, ATTMODE_COUNT - 1);
+//	savebandstate(vi, bi);	// запись всех режимов в область памяти диапазона
+//	updateboard(1, 0);
+//}
+
+//#if WITHPOWERLPHP
+///* переключение режима мощности  */
+//static void 
+//uif_key_click_pwr(void)
+//{
+//	gpwri = calc_next(gpwri, 0, PWRMODE_COUNT - 1);
+//	save_i8(RMT_PWR_BASE, gpwri);
+
+//	updateboard(1, 0);
+//}
+//#endif /* WITHPOWERLPHP */
+
+//#if WITHNOTCHONOFF || WITHNOTCHFREQ
+///* включение/выключение NOTCH  */
+//static void 
+//uif_key_click_notch(void)
+//{
+//	gnotch = calc_next(gnotch, 0, 1);
+//	save_i8(RMT_NOTCH_BASE, gnotch);
+
+//	updateboard(1, 0);
+//}
+
+//#endif /* WITHNOTCHONOFF || WITHNOTCHFREQ */
+
+//#if ELKEY328
+
+//static void 
+//uif_key_click_vibroplex(void)
+//{
+//	elkeyslopeenable = calc_next(elkeyslopeenable, 0, 1);
+//	updateboard(1, 0);
+//}
+
+//#endif /* ELKEY328 */
+
+///* блокировка енкодера */
+//static void 
+//uif_key_lockencoder(void)
+//{
+//	lockmode = calc_next(lockmode, 0, 1);
+//	save_i8(RMT_LOCKMODE_BASE, lockmode);
+//	updateboard(1, 0);
+//}
+
+//#if WITHBCBANDS
+///* переход в режим переключения по вещательным диапазонам */
+//static void
+//uif_key_genham(void)
+//{
+//	gbandsetbcast = calc_next(gbandsetbcast, 0, 1);
+//	save_i8(offsetof(struct nvmap, gbandsetbcast), gbandsetbcast);
+//	updateboard(1, 0);
+//}
+
+//uint_fast8_t hamradio_get_genham_value(void)
+//{
+//	return gbandsetbcast;
+//}
+
+//#endif /* WITHBCBANDS */
+
+//#if WITHUSEFAST
+///* переключение в режим крупного шага */
+//static void 
+//uif_key_usefast(void)
+//{
+//	gusefast = calc_next(gusefast, 0, 1);
+//	save_i8(RMT_USEFAST_BASE, gusefast);
+//	updateboard(1, 0);
+//}
+//#endif /* WITHUSEFAST */
+
+//#if WITHSPKMUTE
+
+///* Включение-выключение динамика */
+//static void 
+//uif_key_loudsp(void)
+//{
+//	gmutespkr = calc_next(gmutespkr, 0, 1);
+//	save_i8(RMT_MUTELOUDSP_BASE, gmutespkr);
+//	updateboard(1, 0);
+//}
+
+//uint_fast8_t hamradio_get_spkon_value(void)
+//{
+//	return ! gmutespkr;
+//}
+
+//#endif /* WITHSPKMUTE */
+
+//#if CTLSTYLE_RA4YBO
+
+///* включение ФНЧ на приёме в аппарате RA4YBO */
+//static void 
+//uif_key_affilter(void)
+//{
+//	gaffilter = calc_next(gaffilter, 0, 1);
+//	save_i8(RMT_AFFILTER_BASE, gaffilter);
+//	updateboard(1, 0);
+//}
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+
+//#elif CTLSTYLE_RA4YBO_V1 || CTLSTYLE_RA4YBO_V2 || CTLSTYLE_RA4YBO_V3 || KEYBSTYLE_RA4YBO_AM0
+
+//static void 
+//uif_key_user1(void)
+//{
+//	guser1 = calc_next(guser1, 0, 1);
+//	save_i8(RMT_USER1_BASE, guser1);
+//	updateboard(1, 0);
+//}
+
+//static void 
+//uif_key_user2(void)
+//{
+//	guser2 = calc_next(guser2, 0, 1);
+//	save_i8(RMT_USER2_BASE, guser2);
+//	updateboard(1, 0);
+//}
+//static void 
+//uif_key_user3(void)
+//{
+//	guser3 = calc_next(guser3, 0, 1);
+//	save_i8(RMT_USER3_BASE, guser3);
+//	updateboard(1, 0);
+//}
+
+//static void 
+//uif_key_user4(void)
+//{
+//	guser4 = calc_next(guser4, 0, 1);
+//	save_i8(RMT_USER4_BASE, guser4);
+//	updateboard(1, 0);
+//}
+//static void 
+//uif_key_user5(void)
+//{
+//	guser5 = calc_next(guser5, 0, 1);
+//	save_i8(RMT_USER5_BASE, guser5);
+//	updateboard(1, 0);
+//}
+
+///* включение ФНЧ на приёме в аппарате RA4YBO */
+//static void 
+//uif_key_affilter(void)
+//{
+//	gaffilter = calc_next(gaffilter, 0, 1);
+//	save_i8(RMT_AFFILTER_BASE, gaffilter);
+//	updateboard(1, 0);
+//}
+
+//#endif /* CTLSTYLE_RA4YBO_V1 || CTLSTYLE_RA4YBO_V2 */
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+//#if WITHIF4DSP
+///* Переключение полос пропускания в CW приёмника
+//	 - не вызывает сохранение состояния диапазона */
+
+//static void 
+//uif_key_changebw(void)
+//{
+//	const uint_fast8_t bwseti = mdt [gmode].bwsetis [0];	// индекс банка полос пропускания для данного режима на приеме
+
+//	bwsetpos [bwseti] = calc_next(bwsetpos [bwseti], 0, bwsetsc [bwseti].last);
+//	save_i8(RMT_BWSETPOS_BASE(bwseti), bwsetpos [bwseti]);	/* только здесь сохраняем новый фильтр для режима */
+//	updateboard(1, 1);
+//}
+
+///* Переключение шумоподавления
+//	 - не вызывает сохранение состояния диапазона */
+
+//static void 
+//uif_key_changenr(void)
+//{
+//	gnoisereducts [gmode] = calc_next(gnoisereducts [gmode], 0, 1);
+//	save_i8(RMT_NR_BASE(gmode), gnoisereducts [gmode]);
+//	updateboard(1, 1);
+//}
+
+//#if WITHUSBUAC
+
+///* переключение источника звука с USB или обычного для данного режима */
+//static void 
+//uif_key_click_datamode(void)
+//{
+//	gdatamode = calc_next(gdatamode, 0, 1);
+//	save_i8(RMT_DATAMODE_BASE, gdatamode);
+//	updateboard(1, 0);
+//}
+
+//#endif /* WITHUSBUAC */
+
+
+//#else /* WITHIF4DSP */
+///* Переключение фильтров приёмника
+//	 - не вызывает сохранение состояния диапазона */
+//static void 
+//uif_key_changefilter(void)
+//{
+//	gfi = getsuitablerx(gmode, calc_next(gfi, 0, getgfasize() - 1));
+//	save_i8(RMT_FILTER_BASE(gmode), gfi);	/* только здесь сохраняем новый фильтр для режима */
+//	updateboard(1, 1);
+//}
+
+//#endif /* WITHIF4DSP */
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+//#if WITHTX
+///* включение режима настройки */
+//static void 
+//uif_key_tuneoff(void)
+//{
+//	if (getactualtune() || moxmode)
+//	{
+//		moxmode = 0;
+//		tunemode = 0;		/* не важно, по какой причине переходил на передачу - выход из режима при настройке */
+//#if WITHCAT
+//		cattunemode = 0;
+//#endif /* WITHCAT */
+//	}
+//	else
+//	{
+//		moxmode = calc_next(moxmode, 0, 1);
+//	}
+//	updateboard(1, 1);
+//}
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+///* включение режима настройки */
+
+//static void 
+//uif_key_tune(void)
+//{
+//	tunemode = calc_next(tunemode, 0, 1);
+//	updateboard(1, 1);
+//}
+
+//#endif /* WITHTX */
+
+//#if WITHKEYBOARD
+//#endif /* WITHKEYBOARD */
+
+
+//#if WITHAUTOTUNER
+
+//static void 
+//uif_key_bypasstoggle(void)
+//{
+//	const uint_fast8_t tx = 1;
+//	const uint_fast8_t bi = getbankindex_tx(tx);
+//	const vindex_t b = getvfoindex(bi);
+
+//	tunerwork = calc_next(tunerwork, 0, 1);	// переключаем в противоположное состояние
+//	save_i8(offsetof(struct nvmap, bands[b].tunerwork), 1);
+//	if (tunerwork == 0)
+//		reqautotune = 0;	// сброс идущей настройки
+//	updateboard(1, 0);
+//}
+
+//static void 
+//uif_key_atunerstart(void)
+//{
+//	const uint_fast8_t tx = 1;
+//	const uint_fast8_t bi = getbankindex_tx(tx);
+//	const vindex_t b = getvfoindex(bi);
+
+//	reqautotune = 1;
+//	// отработка перехода в режим передачи делается в основном цикле
+//	tunerwork = 1;
+//	save_i8(offsetof(struct nvmap, bands[b].tunerwork), 1);
+//	updateboard(1, 0);
+//}
+
+//uint_fast8_t
+//hamradio_get_bypvalue(void)
+//{
+//	return ! tunerwork;
+//}
+
+//uint_fast8_t
+//hamradio_get_atuvalue(void)
+//{
+//	return reqautotune;
+//}
+//#endif /* WITHAUTOTUNER */
+
+//#if WITHNOTCHONOFF || WITHNOTCHFREQ
+
+//uint_fast8_t hamradio_get_notchvalue(int_fast32_t * p)
+//{
+//#if WITHNOTCHFREQ
+//	* p = gnotchfreq.value;
+//#else /* WITHNOTCHFREQ */
+//	* p = 0;
+//#endif /* WITHNOTCHFREQ */
+//	return gnotch && notchmodes [gnotchtype].code != BOARD_NOTCH_OFF;
+//}
+
+//const FLASHMEM char * hamradio_get_notchtype5_P(void)
+//{
+//	return notchmodes [gnotchtype].label;
+//}
+
+
+//#endif /* WITHNOTCHONOFF || WITHNOTCHFREQ  */
+
+//#if WITHINTEGRATEDDSP
+//// NR ON/OFF
+//uint_fast8_t hamradio_get_nrvalue(int_fast32_t * p)
+//{
+//	* p = gnoisereductvl;
+//	return gnoisereducts [gmode] != 0;
+//}
+//#endif /* WITHINTEGRATEDDSP */
+
+//// текущее состояние TUNE
+//uint_fast8_t hamradio_get_tunemodevalue(void)
+//{
+//	return getactualtune();
+//}
+
+//#if WITHVOLTLEVEL
+
+//// Вольты в десятых долях
+//uint_fast8_t hamradio_get_volt_value(void)
+//{
+//#if WITHTDIRECTDATA
+
+//	return (sadcvalholder_t) board_getadc_filtered_truevalue(VOLTMRRIX) / 100;	// миливольты в 0.1 вольта
+
+//#elif WITHTARGETVREF
+
+//	unsigned Vref_mV = board_getadc_unfiltered_truevalue(VREFMVMRRIX); //WITHTARGETVREF;//ADCVREF_CPU * 100;
+//	if (Vref_mV == 0)
+//		Vref_mV = WITHTARGETVREF;
+//	const unsigned voltcalibr_mV = (Vref_mV * (VOLTLEVEL_UPPER + VOLTLEVEL_LOWER) + VOLTLEVEL_LOWER / 2) / VOLTLEVEL_LOWER;		// Напряжение fullscale - что показать при ADCVREF_CPU вольт на входе АЦП
+//	const uint_fast16_t mv = board_getadc_filtered_u16(VOLTMRRIX, 0, voltcalibr_mV);
+//	//PRINTF(PSTR("hamradio_get_volt_value: ref=%u, VrefmV=%u, v=%u, out=%u\n"), ref, Vref_mV, mv, (mv + 50) / 100);
+//	return (mv + 50) / 100;	// Приводим к десятым долям вольта
+
+//#elif WITHREFSENSOR
+//	// Измерение опрного напряжения
+//	const uint_fast8_t vrefi = VREFIX;
+//	const adcvalholder_t ref = board_getadc_unfiltered_truevalue(vrefi);	// текущее значение данного АЦП
+//	if (ref != 0)
+//	{
+//		//const unsigned Vref_mV = ADCVREF_CPU * 100;
+//		const unsigned Vref_mV = (uint_fast32_t) board_getadc_fsval(vrefi) * WITHREFSENSORVAL / ref;
+//		const unsigned voltcalibr_mV = (Vref_mV * (VOLTLEVEL_UPPER + VOLTLEVEL_LOWER) + VOLTLEVEL_LOWER / 2) / VOLTLEVEL_LOWER;		// Напряжение fullscale - что показать при ADCVREF_CPU вольт на входе АЦП
+//		const uint_fast16_t mv = board_getadc_filtered_u16(VOLTMRRIX, 0, voltcalibr_mV);
+//		//PRINTF(PSTR("hamradio_get_volt_value: ref=%u, VrefmV=%u, v=%u, out=%u\n"), ref, Vref_mV, mv, (mv + 50) / 100);
+//		return (mv + 50) / 100;	// Приводим к десятым долям вольта
+//	}
+//	else
+//	{
+//		//PRINTF(PSTR("hamradio_get_volt_value: ref=%u\n"), ref);
+//		return UINT8_MAX;
+//	}
+
+//#elif CTLSTYLE_SW2011ALL
+
+//	//PRINTF(PSTR("hamradio_get_volt_value: VOLTMRRIX=%u, voltcalibr100mV=%u\n"), board_getadc_unfiltered_truevalue(VOLTMRRIX), voltcalibr100mV);
+//	return board_getadc_unfiltered_u8(VOLTSOURCE, 0, voltcalibr100mV);
+
+//#else /* WITHREFSENSOR */
+
+//	// TODO: разобраться почему это не работает на SW20xx
+//	//PRINTF(PSTR("hamradio_get_volt_value: VOLTMRRIX=%u, voltcalibr100mV=%u\n"), board_getadc_unfiltered_truevalue(VOLTMRRIX), voltcalibr100mV);
+//	return board_getadc_filtered_u8(VOLTMRRIX, 0, voltcalibr100mV);
+
+//#endif /* WITHREFSENSOR */
+//}
+
+//#endif /* WITHVOLTLEVEL */
+
+//#if WITHTHERMOLEVEL
+
+//// Градусы в десятых долях
+//// Read from thermo sensor ST LM235Z (2 kOhm to +12)
+//int_fast16_t hamradio_get_temperature_value(void)
+//{
+//	const int_fast16_t thermo_offset = THERMOSENSOR_OFFSET;
+
+//	// XTHERMOIX - данные с АЦП напрямую
+//#if WITHTDIRECTDATA
+
+//	return (sadcvalholder_t) board_getadc_filtered_truevalue(XTHERMOMRRIX);	// 0.1 градуса
+
+//#elif WITHTARGETVREF
+
+//	unsigned Vref_mV = board_getadc_unfiltered_truevalue(VREFMVMRRIX); //WITHTARGETVREF;//ADCVREF_CPU * 100;
+//	if (Vref_mV == 0)
+//		Vref_mV = WITHTARGETVREF;
+//	const int_fast32_t mv = (int32_t) board_getadc_filtered_u32(XTHERMOMRRIX, 0, (uint_fast64_t) Vref_mV * (THERMOSENSOR_UPPER + THERMOSENSOR_LOWER) / THERMOSENSOR_LOWER);
+//	return (mv + thermo_offset) / THERMOSENSOR_DENOM;	// Приводим к десятым долям градуса
+
+//#elif WITHREFSENSOR
+//	// Измерение опрного напряжения
+//	const uint_fast8_t vrefi = VREFIX;
+//	const adcvalholder_t ref = board_getadc_unfiltered_truevalue(vrefi);	// текущее значение данного АЦП
+//	if (ref != 0)
+//	{
+//		const unsigned Vref_mV = (uint_fast32_t) board_getadc_fsval(vrefi) * WITHREFSENSORVAL / ref;
+//		const int_fast32_t mv = (int32_t) board_getadc_filtered_u32(XTHERMOMRRIX, 0, (uint_fast64_t) Vref_mV * (THERMOSENSOR_UPPER + THERMOSENSOR_LOWER) / THERMOSENSOR_LOWER);
+//		return (mv + thermo_offset) / THERMOSENSOR_DENOM;	// Приводим к десятым долям градуса
+//	}
+//	else
+//	{
+//		PRINTF(PSTR("hamradio_get_temperature_value: ref=%u\n"), ref);
+//		return 999;
+//	}
+
+//#else /* WITHREFSENSOR */
+
+//	const unsigned Vref_mV = 2900;//ADCVREF_CPU * 100;
+//	const int_fast32_t mv = (int32_t) board_getadc_filtered_u32(XTHERMOMRRIX, 0, (uint_fast64_t) Vref_mV * (THERMOSENSOR_UPPER + THERMOSENSOR_LOWER) / THERMOSENSOR_LOWER);
+//	return (mv + thermo_offset) / THERMOSENSOR_DENOM;	// Приводим к десятым долям градуса
+
+//#endif /* WITHREFSENSOR */
+//}
+
+//#endif /* WITHTHERMOLEVEL */
+
+//#if (WITHCURRLEVEL || WITHCURRLEVEL2)
+
+//// Ток в десятках милиампер (может быть отрицательным)
+//// PA current sense - ACS712ELCTR-05B-T chip
+//// PA current sense - ACS712ELCTR-30B-T chip
+//int_fast16_t hamradio_get_pacurrent_value(void)
+//{
+//	// Чувствительность датчиков:
+//	// x05B - 0.185 V/A
+//	// x20A - 0.100 V/A
+//	// x30A - 0.066 V/A
+
+//#if WITHCURRLEVEL_ACS712_30A
+//	// x30A - 0.066 V/A
+//	enum {
+//		sens = 66,			// millivolts / ampher
+//		scale = 100			// результат - в сотых долях ампера
+//	};
+//#elif WITHCURRLEVEL_ACS712_20A
+//	//  x20A - 0.100 V/A
+//	enum {
+//		sens = 100,			// millivolts / ampher
+//		scale = 100			// результат - в сотых долях ампера
+//	};
+//#else /* WITHCURRLEVEL_ACS712_30A */
+//	// x05B - 0.185 V/A
+//	enum {
+//		sens = 185,			// millivolts / ampher
+//		scale = 100			// результат - в сотых долях ампера
+//	};
+//#endif /* CTLSTYLE_RA4YBO_V3 */
+
+//#if WITHCURRLEVEL
+
+//	const uint_fast8_t adci = PASENSEMRRIX;
+
+//#elif WITHCURRLEVEL2
+
+//#endif
+
+//#if WITHTDIRECTDATA
+
+//#elif WITHTARGETVREF
+
+//	unsigned Vref_mV = board_getadc_unfiltered_truevalue(VREFMVMRRIX); //WITHTARGETVREF;//ADCVREF_CPU * 100;
+//	if (Vref_mV == 0)
+//		Vref_mV = WITHTARGETVREF;
+
+//#elif WITHREFSENSOR
+//	// Измерение опрного напряжения
+//	const uint_fast8_t vrefi = VREFIX;
+//	const adcvalholder_t ref = board_getadc_unfiltered_truevalue(vrefi);	// текущее значение данного АЦП
+//	if (ref == 0)
+//		return 0;
+//	//const unsigned Vref_mV = ADCVREF_CPU * 100;
+//	const unsigned Vref_mV = (uint_fast32_t) board_getadc_fsval(vrefi) * WITHREFSENSORVAL / ref;
+//#else /* WITHREFSENSOR */
+//	// опорное напряжение известно из конфигурации процессора.
+//	const unsigned Vref_mV = ADCVREF_CPU * 100;
+//#endif /* WITHREFSENSOR */
+
+
+//#if WITHTDIRECTDATA
+
+//	int curr10 = (sadcvalholder_t) board_getadc_filtered_truevalue(PASENSEMRRIX) / 10;	// милиамперы в десятки милиампер
+
+//#elif WITHCURRLEVEL2
+
+//	const adcvalholder_t midp = board_getadc_unfiltered_truevalue(PAREFERIX2);
+//	const adcvalholder_t sense = board_getadc_unfiltered_truevalue(PASENSEIX2);
+
+//	const long curr10 = ((long) midp - (long) sense) * (int_fast64_t) Vref_mV * scale / ((long) sens * board_getadc_fsval(PAREFERIX2));
+
+//#else /* WITHCURRLEVEL2 */
+
+//	const long vsense = board_getadc_filtered_u32(PASENSEMRRIX, 0, (uint_fast32_t) Vref_mV * scale);
+
+//#if CTLSTYLE_RAVENDSP_V5
+//	const long midpoint = (gtx ? 2472uL : 2442uL) * scale; // tx=247200, rx=244200
+//#else
+//	static const long midpoint = 2516uL * scale;
+//#endif
+
+//	int curr10 = ((long) midpoint - (long) vsense + sens / 2) / sens;
+
+//#endif /* WITHCURRLEVEL2 */
+
+//	return curr10 + (gipacali + getipacalibase());
+//}
+
+//#endif /* (WITHCURRLEVEL || WITHCURRLEVEL2) */
+
+//uint_fast8_t hamradio_get_tx(void)
+//{
+//	return gtx;
+//}
+
+//// RX bandwidth
+//#if WITHIF4DSP
+
+//const FLASHMEM char * hamradio_get_rxbw_value_P(void)
+//{
+//	const uint_fast8_t bwseti = mdt [gmode].bwsetis [gtx];	// индекс банка полос пропускания для данного режима
+//	return bwsetsc [bwseti].labels [bwsetpos[bwseti]];
+//}
+
+//#else /* WITHIF4DSP */
+
+//const FLASHMEM char * hamradio_get_rxbw_value_P(void)
+//{
+//#if WITHFIXEDBFO
+//	return PSTR("");
+//#else /* WITHFIXEDBFO */
+//	return getrxfilter(gsubmode, gfi)->labelf3;
+//#endif /* WITHFIXEDBFO */
+//}
+
+//#endif /* WITHIF4DSP */
+
+//// RX preamplifier
+//const FLASHMEM char * hamradio_get_pre_value_P(void)
+//{
+//#if ! WITHONEATTONEAMP
+//	return pampmodes [gpamps [getbankindex_tx(0)]].label;
+//#else /* ! WITHONEATTONEAMP */
+//	return PSTR("   ");
+//#endif /* ! WITHONEATTONEAMP */
+//}
+
+//// RX attenuator (or att/pre).
+//const FLASHMEM char * hamradio_get_att_value_P(void)
+//{
+//	return attmodes [gatts [getbankindex_tx(0)]].label;
+//}
+
+//// RX agc time - 3 символа
+//const FLASHMEM char * hamradio_get_agc3_value_P(void)
+//{
+//#if ! WITHAGCMODENONE
+//	return agcmodes [gagcmode].label3;
+//#else /* ! WITHAGCMODENONE */
+//	return PSTR("   ");
+//#endif /* ! WITHAGCMODENONE */
+//}
+
+//// RX agc time - 4 символа
+//const FLASHMEM char * hamradio_get_agc4_value_P(void)
+//{
+//#if ! WITHAGCMODENONE
+//	return agcmodes [gagcmode].label4;
+//#else /* ! WITHAGCMODENONE */
+//	return PSTR("    ");
+//#endif /* ! WITHAGCMODENONE */
+//}
+
+//#if WITHPOWERLPHP
+//// HP/LP
+//const FLASHMEM char * hamradio_get_hplp_value_P(void)
+//{
+//	return pwrmodes [gpwri].label;
+//}
+//#endif /* WITHPOWERLPHP */
+
+
+/////////////////////////////
+//// обработчики кнопок клавиатуры
+////////////////////////////
+//#if WITHUSEDUALWATCH
+
+///* переключение основного/дополнительного приёмника */
+//static void 
+//uif_key_mainsubrx(void)
+//{
+//	mainsubrxmode = calc_next(mainsubrxmode, 0, MAINSUBRXMODE_COUNT - 1);
+//	save_i8(RMT_MAINSUBRXMODE_BASE, mainsubrxmode);	// Левый/правый, A - main RX, B - sub RX
+//	updateboard(1, 0);
+//}
+
+//// текущее состояние DUAL WATCH
+//const FLASHMEM char * hamradio_get_mainsubrxmode3_value_P(void)
+//{
+//	return mainsubrxmodes [mainsubrxmode].label;
+//}
+
+
+//#endif /* WITHUSEDUALWATCH */
 
 ///////////////////////////
 // обработчики кнопок клавиатуры
@@ -12241,7 +12241,7 @@ display2_redrawbarstimed(
 
 		/* отрисовка элементов, общих для всех режимов отображения */
 		/* отрисовка элементов, специфических для данного режима отображения */
-		display2_barmeters_subset(amenuset(), extra);
+		// display2_barmeters_subset(amenuset(), extra);
 		// подтверждение отрисовки
 		display_refreshperformed_bars();
 	}
@@ -12265,12 +12265,12 @@ display2_redrawbarstimed(
 	#endif /* WITHVOLTLEVEL */
 		/* --- переписываем значения из возможно внешних АЦП в кеш значений */
 
-		display2_volts(amenuset(), extra);
-		if (extra)
-		{
-			display2_menu(mp, 0);	// на дисплее без offscreen composition обновляем только индикацию значения
-		}
-		display_refreshperformed_voltage();
+		// display2_volts(amenuset(), extra);
+		// if (extra)
+		// {
+		// 	display2_menu(mp, 0);	// на дисплее без offscreen composition обновляем только индикацию значения
+		// }
+		// display_refreshperformed_voltage();
 	}
 }
 
@@ -12299,9 +12299,9 @@ display_redrawmodestimed(
 	{
 		/* отрисовка элементов, общих для всех режимов отображения */
 		/* отрисовка элементов, специфических для данного режима отображения */
-		display2_mode_subset(amenuset());
+		// display2_mode_subset(amenuset());
 		// подтверждение отрисовки
-		display_refreshperformed_modes();
+		// display_refreshperformed_modes();
 	}
 }
 
@@ -12325,92 +12325,92 @@ display_redrawfreqmodesbarsnow(
 	}
 }
 
-static void 
-directctlupdate(
-	uint_fast8_t inmenu,
-	const FLASHMEM struct menudef * mp
-	)
-{
-	uint_fast8_t changed = 0;
-	uint_fast8_t changedtx = 0;
-#if WITHTX
-	changedtx |= flagne_u8(& gtx, seq_get_txstate());	// текущее состояние прием или передача
-#endif /* WITHTX */
+// static void 
+// directctlupdate(
+// 	uint_fast8_t inmenu,
+// 	const FLASHMEM struct menudef * mp
+// 	)
+// {
+// 	uint_fast8_t changed = 0;
+// 	uint_fast8_t changedtx = 0;
+// #if WITHTX
+// 	changedtx |= flagne_u8(& gtx, seq_get_txstate());	// текущее состояние прием или передача
+// #endif /* WITHTX */
 
-	if (display_refreshenabled_wpm())
-	{
-		// +++ получение состояния органов управления */
-	#if WITHPOTPOWER
-		{
-			static adcvalholder_t powerstate;
-			changed |= FLAGNE_U8_CAT(& gnormalpower, board_getpot_filtered_u8(POTPOWER, WITHPOWERTRIMMIN, WITHPOWERTRIMMAX, & powerstate), CAT_PC_INDEX);	// регулировка мощности
-		}
-	#endif /* WITHPOTPOWER */
-	#if WITHPOTWPM
-		{
-			static adcvalholder_t wpmstate;
-			changed |= FLAGNE_U8_CAT(& elkeywpm, board_getpot_filtered_u8(POTWPM, CWWPMMIN, CWWPMMAX, & wpmstate), CAT_KS_INDEX);
-		}
-	#endif /* WITHPOTWPM */
-	#if WITHPOTNFMSQL
-		{
-			static adcvalholder_t sqlstate;
-			changed |= flagne_u8(& gsquelchNFM, board_getpot_filtered_u8(POTNFMSQL, 0, SQUELCHMAX, & sqlstate));
-		}
-	#endif /* WITHPOTNFMSQL */
-	#if WITHPOTIFGAIN
-		{
-			static adcvalholder_t ifgainstate;
-			changed |= FLAGNE_U16_CAT(& rfgain1, board_getpot_filtered_u16(POTIFGAIN, BOARD_IFGAIN_MIN, BOARD_IFGAIN_MAX, & ifgainstate), CAT_RG_INDEX);	// Параметр для регулировки усиления ПЧ
-		}
-	#endif /* WITHPOTIFGAIN */
-	#if WITHPOTAFGAIN
-		{
-			static adcvalholder_t afgainstate;
-			changed |= FLAGNE_U16_CAT(& afgain1, board_getpot_filtered_u16(POTAFGAIN, BOARD_AFGAIN_MIN, BOARD_AFGAIN_MAX, & afgainstate), CAT_AG_INDEX);	// Параметр для регулировки уровня на выходе аудио-ЦАП
-		}
-	#endif /* WITHPOTAFGAIN */
-	#if WITHPBT && WITHPOTPBT
-		{
-			/* установка gpbtoffset PBTMIN, PBTMAX, midscale = PBTHALF */
-			static adcvalholder_t pbtstate;
-			changed |= flagne_u16(& gpbtoffset, board_getpot_filtered_u16(POTPBT, PBTMIN, PBTMAX, & pbtstate) / 10 * 10);
-		}
-	#endif /* WITHPBT && WITHPOTPBT */
-	#if WITHIFSHIFT && WITHPOTIFSHIFT
-		{
-			/* установка gifshftoffset IFSHIFTTMIN, IFSHIFTMAX, midscale = IFSHIFTHALF */
-			static adcvalholder_t ifshiftstate;
-			changed |= flagne_u16(& ifshifoffset.value, board_getpot_filtered_u16(POTIFSHIFT, IFSHIFTTMIN, IFSHIFTMAX, & ifshiftstate) / 10 * 10);
-		}
-	#endif /* WITHIFSHIFT && WITHPOTIFSHIFT */
-	#if WITHPOTNOTCH && WITHNOTCHFREQ
-		{
-			static adcvalholder_t notchstate;
-			changed |= flagne_u16(& gnotchfreq.value, board_getpot_filtered_u16(POTNOTCH, WITHNOTCHFREQMIN, WITHNOTCHFREQMAX, & notchstate) / 50 * 50);	// регулировка частоты NOTCH фильтра
-		}
-	#endif /* WITHPOTNOTCH && WITHNOTCHFREQ */
+// 	if (display_refreshenabled_wpm())
+// 	{
+// 		// +++ получение состояния органов управления */
+// 	#if WITHPOTPOWER
+// 		{
+// 			static adcvalholder_t powerstate;
+// 			changed |= FLAGNE_U8_CAT(& gnormalpower, board_getpot_filtered_u8(POTPOWER, WITHPOWERTRIMMIN, WITHPOWERTRIMMAX, & powerstate), CAT_PC_INDEX);	// регулировка мощности
+// 		}
+// 	#endif /* WITHPOTPOWER */
+// 	#if WITHPOTWPM
+// 		{
+// 			static adcvalholder_t wpmstate;
+// 			changed |= FLAGNE_U8_CAT(& elkeywpm, board_getpot_filtered_u8(POTWPM, CWWPMMIN, CWWPMMAX, & wpmstate), CAT_KS_INDEX);
+// 		}
+// 	#endif /* WITHPOTWPM */
+// 	#if WITHPOTNFMSQL
+// 		{
+// 			static adcvalholder_t sqlstate;
+// 			changed |= flagne_u8(& gsquelchNFM, board_getpot_filtered_u8(POTNFMSQL, 0, SQUELCHMAX, & sqlstate));
+// 		}
+// 	#endif /* WITHPOTNFMSQL */
+// 	#if WITHPOTIFGAIN
+// 		{
+// 			static adcvalholder_t ifgainstate;
+// 			changed |= FLAGNE_U16_CAT(& rfgain1, board_getpot_filtered_u16(POTIFGAIN, BOARD_IFGAIN_MIN, BOARD_IFGAIN_MAX, & ifgainstate), CAT_RG_INDEX);	// Параметр для регулировки усиления ПЧ
+// 		}
+// 	#endif /* WITHPOTIFGAIN */
+// 	#if WITHPOTAFGAIN
+// 		{
+// 			static adcvalholder_t afgainstate;
+// 			changed |= FLAGNE_U16_CAT(& afgain1, board_getpot_filtered_u16(POTAFGAIN, BOARD_AFGAIN_MIN, BOARD_AFGAIN_MAX, & afgainstate), CAT_AG_INDEX);	// Параметр для регулировки уровня на выходе аудио-ЦАП
+// 		}
+// 	#endif /* WITHPOTAFGAIN */
+// 	#if WITHPBT && WITHPOTPBT
+// 		{
+// 			/* установка gpbtoffset PBTMIN, PBTMAX, midscale = PBTHALF */
+// 			static adcvalholder_t pbtstate;
+// 			changed |= flagne_u16(& gpbtoffset, board_getpot_filtered_u16(POTPBT, PBTMIN, PBTMAX, & pbtstate) / 10 * 10);
+// 		}
+// 	#endif /* WITHPBT && WITHPOTPBT */
+// 	#if WITHIFSHIFT && WITHPOTIFSHIFT
+// 		{
+// 			/* установка gifshftoffset IFSHIFTTMIN, IFSHIFTMAX, midscale = IFSHIFTHALF */
+// 			static adcvalholder_t ifshiftstate;
+// 			changed |= flagne_u16(& ifshifoffset.value, board_getpot_filtered_u16(POTIFSHIFT, IFSHIFTTMIN, IFSHIFTMAX, & ifshiftstate) / 10 * 10);
+// 		}
+// 	#endif /* WITHIFSHIFT && WITHPOTIFSHIFT */
+// 	#if WITHPOTNOTCH && WITHNOTCHFREQ
+// 		{
+// 			static adcvalholder_t notchstate;
+// 			changed |= flagne_u16(& gnotchfreq.value, board_getpot_filtered_u16(POTNOTCH, WITHNOTCHFREQMIN, WITHNOTCHFREQMAX, & notchstate) / 50 * 50);	// регулировка частоты NOTCH фильтра
+// 		}
+// 	#endif /* WITHPOTNOTCH && WITHNOTCHFREQ */
 
-	#if CTLSTYLE_RA4YBO_V3
-		{
-			changed |= flagne_u8(& guser2, kbd_get_ishold(KIF_USER2));
-			changed |= flagne_u8(& guser3, kbd_get_ishold(KIF_USER3));
-		}
-	#endif /* CTLSTYLE_RA4YBO_V3 */
-		// --- конец получения состояния органов управления */
+// 	#if CTLSTYLE_RA4YBO_V3
+// 		{
+// 			changed |= flagne_u8(& guser2, kbd_get_ishold(KIF_USER2));
+// 			changed |= flagne_u8(& guser3, kbd_get_ishold(KIF_USER3));
+// 		}
+// 	#endif /* CTLSTYLE_RA4YBO_V3 */
+// 		// --- конец получения состояния органов управления */
 
-		// подтверждаем, что обновление выполнено
-		display_refreshperformed_wpm();
-	}
-	if (changedtx != 0)
-	{
-		updateboard(1, 1);	/* полная перенастройка (как после смены режима) */
-		seq_ask_txstate(gtx);
-		display_redrawfreqmodesbarsnow(inmenu, mp);	// Обновление дисплея - всё, включая частоту
-	}
-	else if (changed != 0)
-		updateboard(1, 0);	/* полная перенастройка (как после смены режима) */
-}
+// 		// подтверждаем, что обновление выполнено
+// 		// display_refreshperformed_wpm();
+// 	}
+// 	// if (changedtx != 0)
+// 	// {
+// 	// 	updateboard(1, 1);	/* полная перенастройка (как после смены режима) */
+// 	// 	seq_ask_txstate(gtx);
+// 	// 	display_redrawfreqmodesbarsnow(inmenu, mp);	// Обновление дисплея - всё, включая частоту
+// 	// }
+// 	// else if (changed != 0)
+// 	// 	updateboard(1, 0);	/* полная перенастройка (как после смены режима) */
+// }
 
 // *************************
 // CAT sequence parser
@@ -14628,6 +14628,7 @@ uint_fast8_t dpclock_traylock(dpclock_t * lp)
 	return v;
 }
 
+static void updateboard(int a, int b){}
 
 /* обработка сообщений от уровня обработчиков прерываний к user-level функциям. */
 static void
@@ -14639,14 +14640,14 @@ processmessages(
 	const FLASHMEM struct menudef * mp
 	)
 {
-	if (hardware_getshutdown())	// признак провала питания
-	{
-		display_uninitialize();	// выключаем дисплей
-		gtx = 0;
-		updateboard(1, 1);	// переходим на приём
-		for (;;)				// вешаемся...
-			;
-	}
+	// if (hardware_getshutdown())	// признак провала питания
+	// {
+	// 	display_uninitialize();	// выключаем дисплей
+	// 	gtx = 0;
+	// 	updateboard(1, 1);	// переходим на приём
+	// 	for (;;)				// вешаемся...
+	// 		;
+	// }
 
 
 	uint8_t * buff;
@@ -14677,15 +14678,15 @@ processmessages(
 #if ORIGINALHFTRX
 		display2_bgprocess();			/* выполнение шагов state machine отображения дисплея */
 #endif
-		directctlupdate(inmenu, mp);		/* управление скоростью передачи (и другими параметрами) через потенциометр */
+		// directctlupdate(inmenu, mp);		/* управление скоростью передачи (и другими параметрами) через потенциометр */
 #if WITHLCDBACKLIGHT || WITHKBDBACKLIGHT
 		// обработать запрос на обновление состояния аппаратуры из user mode программы
 		if (dimmflagch != 0)
 		{
 			dimmflagch = 0;
-			display2_bgreset();
-			display_redrawfreqmodesbarsnow(inmenu, mp);			/* Обновление дисплея - всё, включая частоту */
-			updateboard(1, 0);
+			// display2_bgreset();
+			// display_redrawfreqmodesbarsnow(inmenu, mp);			/* Обновление дисплея - всё, включая частоту */
+			// updateboard(1, 0);
 		}
 #endif /* WITHLCDBACKLIGHT || WITHKBDBACKLIGHT */
 #if WITHFANTIMER
@@ -20694,8 +20695,8 @@ lowinitialize(void)
 #if WITHELKEY
 	elkey_initialize();
 #endif /* WITHELKEY */
-	seq_initialize();
-	vox_initialize();		/* подготовка работы задержек переключения приём-передача */
+	// seq_initialize();
+	// vox_initialize();		/* подготовка работы задержек переключения приём-передача */
 #if WITHSDHCHW
 	hardware_sdhost_initialize();	/* если есть аппаратный контрлллер SD CARD */
 #endif /* WITHSDHCHW */
@@ -21013,10 +21014,10 @@ hamradio_initialize(void)
 	loadnewband(getvfoindex(1), 1);	/* загрузка последнего сохраненного состояния - всегда VFO или MEMxx */
 	loadnewband(getvfoindex(0), 0);	/* загрузка последнего сохраненного состояния - всегда VFO или MEMxx */
 
-	synthcalc_init();
-	bandf_calc_initialize();
-	bandf2_calc_initialize();
-	bandf3_calc_initialize();
+	// synthcalc_init();
+	// bandf_calc_initialize();
+	// bandf2_calc_initialize();
+	// bandf3_calc_initialize();
 #if CTLSTYLE_SW2011ALL
 	board_set_bandfonhpf(bandf_calc(nyquistadj(14000000L)));	/* в SW20xx частота (диапазон), с которого включается ФВЧ на входе приёмника */
 	board_set_bandfonuhf(bandf_calc(nyquistadj(85000000L)));
@@ -21030,7 +21031,7 @@ hamradio_initialize(void)
 	board_init_chips();	// программирование всех микросхем синтезатора.
 
 #if WITHUSESDCARD
-	sdcardhw_initialize();
+	// sdcardhw_initialize();
 #endif /* WITHUSESDCARD */
 #if WITHUSERAMDISK
 	{
@@ -21084,7 +21085,7 @@ hamradio_initialize(void)
 
 #endif /* WITHUSBHW */
 
-	hardware_channels_enable();	// SAI, I2S и подключенная на них периферия
+	// hardware_channels_enable();	// SAI, I2S и подключенная на них периферия
 
 	board_set_i2s_enable(1);	// Разрешить FPGA формирование тактовой частоты для кодеков и тактирование I2S
 	board_update();
@@ -21416,7 +21417,7 @@ static void hamradio_main_initialize(void)
 {
 	// начальная инициализация
 	
-	seq_purge();
+	// seq_purge();
 
 #if FQMODEL_GEN500
 	gfreqs [getbankindex_raw(0)] = 434085900UL;
@@ -21429,9 +21430,9 @@ static void hamradio_main_initialize(void)
 #if WITHUSBHW
 	board_usbh_polling();     // usb device polling
 #endif /* WITHUSBHW */
-	directctlupdate(0, NULL);		/* управление скоростью передачи (и другими параметрами) через потенциометр */
-	updateboard(1, 1);	/* полная перенастройка (как после смены режима) - режим приема */
-	updateboard2();			/* настройки валкодера и цветовой схемы дисплея. */
+	// directctlupdate(0, NULL);		/* управление скоростью передачи (и другими параметрами) через потенциометр */
+	// updateboard(1, 1);	/* полная перенастройка (как после смены режима) - режим приема */
+	// updateboard2();			/* настройки валкодера и цветовой схемы дисплея. */
 #ifdef ORIGINALHFTRX
 	display2_bgreset();
 #endif
@@ -21473,7 +21474,7 @@ static void hamradio_main_initialize(void)
 #endif /* FQMODEL_GEN500 */
 
 
-	encoder_clear();
+	// encoder_clear();
 
 	/* начальное отображение */
 	display_redrawfreqmodesbarsnow(0, NULL);	// Обновление дисплея - всё, включая частоту
@@ -21589,22 +21590,22 @@ hamradio_main_step(void)
 				nrotate = 0;	// ignore encoder
 				nrotate2 = 0;	// ignore encoder
 			#else
-				nrotate = getRotateHiRes(& jumpsize, genc1div * gencderate);
-				nrotate2 = getRotateHiRes2(& jumpsize2, genc2div);
+				// nrotate = getRotateHiRes(& jumpsize, genc1div * gencderate);
+				// nrotate2 = getRotateHiRes2(& jumpsize2, genc2div);
 			#endif
 
-			if (uif_encoder2_rotate(nrotate2))
-			{
-				nrotate2 = 0;
-#if WITHTOUCHGUI && WITHENCODER2
-				hamradio_gui_enc2_update();
-				display2_mode_subset(0);
-#else
-#ifdef ORIGINALHFTRX
-				display_redrawfreqmodesbarsnow(0, NULL);			/* Обновление дисплея - всё, включая частоту */
-#endif
-#endif /* WITHTOUCHGUI && WITHENCODER2 */
-			}
+			// if (uif_encoder2_rotate(nrotate2))
+			// {
+			// 	nrotate2 = 0;
+// #if WITHTOUCHGUI && WITHENCODER2
+			// 	hamradio_gui_enc2_update();
+			// 	display2_mode_subset(0);
+// #else
+// #ifdef ORIGINALHFTRX
+			// 	display_redrawfreqmodesbarsnow(0, NULL);			/* Обновление дисплея - всё, включая частоту */
+// #endif
+// #endif /* WITHTOUCHGUI && WITHENCODER2 */
+			// }
 	#if 0//WITHDEBUG
 			{
 				/* здесь можно добавить обработку каких-либо команд с debug порта */
@@ -21644,64 +21645,64 @@ hamradio_main_step(void)
 			} // end keyboard processing
 	#endif /* WITHKEYBOARD */
 
-			if (processmodem())
-			{
-				/* обновление индикатора без сохранения состояния диапазона */
-#ifdef ORIGINALHFTRX
-				display_redrawfreqmodesbarsnow(0, NULL);			/* Обновление дисплея - всё, включая частоту */
-#endif
-			} // end keyboard processing
+			// if (processmodem())
+			// {
+			// 	/* обновление индикатора без сохранения состояния диапазона */
+// #ifdef ORIGINALHFTRX
+			// 	display_redrawfreqmodesbarsnow(0, NULL);			/* Обновление дисплея - всё, включая частоту */
+// #endif
+			// } // end keyboard processing
 
 			//auto int marker;
 			//PRINTF(PSTR("M0:@%p %02x %08lx!\n"), & marker, INTC.ICCRPR, __get_CPSR());
 
 		
-			if (lockmode == 0)
-			{
-				uint_fast8_t freqchanged = 0;
+			//if (lockmode == 0)
+			//{
+			//	uint_fast8_t freqchanged = 0;
 
-				/* Обработка накопленного количества импульсов от валкодера */
-				if (nrotate < 0)
-				{
-					/* Валкодер A: вращали "вниз" */
-					//const uint_fast32_t lowfreq = bandsmap [b].bottom;
-					gfreqs [bi_main] = prevfreq(gfreqs [bi_main], gfreqs [bi_main] - ((uint_fast32_t) gstep * jumpsize * - nrotate), gstep, tune_bottom(bi_main));
-					//gfreqs [bi_main] = prevfreq(gfreqs [bi_main], gfreqs [bi_main] - (jumpsize * - nrotate), gstep, TUNE_BOTTOM);
-					freqchanged = 1;
-				}
-				else if (nrotate > 0)
-				{
-					/* Валкодер A: вращали "вверх" */
-					//const uint_fast32_t topfreq = bandsmap [b].top;
-					gfreqs [bi_main] = nextfreq(gfreqs [bi_main], gfreqs [bi_main] + ((uint_fast32_t) gstep * jumpsize * nrotate), gstep, tune_top(bi_main));
-					//gfreqs [bi_main] = nextfreq(gfreqs [bi_main], gfreqs [bi_main] + (jumpsize * nrotate), gstep, TUNE_TOP);
-					freqchanged = 1;
-				}
-#if ! WITHTOUCHGUI
-				if (nrotate2 < 0)
-				{
-					/* Валкодер B: вращали "вниз" */
-					//const uint_fast32_t lowfreq = bandsmap [b].bottom;
-					gfreqs [bi_sub] = prevfreq(gfreqs [bi_sub], gfreqs [bi_sub] - ((uint_fast32_t) gstep * jumpsize2 * - nrotate2), gstep, tune_bottom(bi_sub));
-					//gfreqs [bi_sub] = prevfreq(gfreqs [bi_sub], gfreqs [bi_sub] - (jumpsize2 * - nrotate2), gstep, TUNE_BOTTOM);
-					freqchanged = 1;
-				}
-				else if (nrotate2 > 0)
-				{
-					/* Валкодер B: вращали "вверх" */
-					//const uint_fast32_t topfreq = bandsmap [b].top;
-					gfreqs [bi_sub] = nextfreq(gfreqs [bi_sub], gfreqs [bi_sub] + ((uint_fast32_t) gstep * jumpsize2 * nrotate2), gstep, tune_top(bi_sub));
-					//gfreqs [bi_sub] = nextfreq(gfreqs [bi_sub], gfreqs [bi_sub] + (jumpsize2 * nrotate2), gstep, TUNE_TOP);
-					freqchanged = 1;
-				}
-#endif /* ! WITHTOUCHGUI */
-				if (freqchanged != 0)
-				{
-					// Ограничение по скорости обновления дисплея уже заложено в него
-					sthrl = STHRL_RXTX_FQCHANGED;
-					updateboard(0, 0);	/* частичная перенастройка - без смены режима работы */
-				}
-			}
+			//	/* Обработка накопленного количества импульсов от валкодера */
+			//	if (nrotate < 0)
+			//	{
+			//		/* Валкодер A: вращали "вниз" */
+			//		//const uint_fast32_t lowfreq = bandsmap [b].bottom;
+			//		gfreqs [bi_main] = prevfreq(gfreqs [bi_main], gfreqs [bi_main] - ((uint_fast32_t) gstep * jumpsize * - nrotate), gstep, tune_bottom(bi_main));
+			//		//gfreqs [bi_main] = prevfreq(gfreqs [bi_main], gfreqs [bi_main] - (jumpsize * - nrotate), gstep, TUNE_BOTTOM);
+			//		freqchanged = 1;
+			//	}
+			//	else if (nrotate > 0)
+			//	{
+			//		/* Валкодер A: вращали "вверх" */
+			//		//const uint_fast32_t topfreq = bandsmap [b].top;
+			//		gfreqs [bi_main] = nextfreq(gfreqs [bi_main], gfreqs [bi_main] + ((uint_fast32_t) gstep * jumpsize * nrotate), gstep, tune_top(bi_main));
+			//		//gfreqs [bi_main] = nextfreq(gfreqs [bi_main], gfreqs [bi_main] + (jumpsize * nrotate), gstep, TUNE_TOP);
+			//		freqchanged = 1;
+			//	}
+//#if ! WITHTOUCHGUI
+			//	if (nrotate2 < 0)
+			//	{
+			//		/* Валкодер B: вращали "вниз" */
+			//		//const uint_fast32_t lowfreq = bandsmap [b].bottom;
+			//		gfreqs [bi_sub] = prevfreq(gfreqs [bi_sub], gfreqs [bi_sub] - ((uint_fast32_t) gstep * jumpsize2 * - nrotate2), gstep, tune_bottom(bi_sub));
+			//		//gfreqs [bi_sub] = prevfreq(gfreqs [bi_sub], gfreqs [bi_sub] - (jumpsize2 * - nrotate2), gstep, TUNE_BOTTOM);
+			//		freqchanged = 1;
+			//	}
+			//	else if (nrotate2 > 0)
+			//	{
+			//		/* Валкодер B: вращали "вверх" */
+			//		//const uint_fast32_t topfreq = bandsmap [b].top;
+			//		gfreqs [bi_sub] = nextfreq(gfreqs [bi_sub], gfreqs [bi_sub] + ((uint_fast32_t) gstep * jumpsize2 * nrotate2), gstep, tune_top(bi_sub));
+			//		//gfreqs [bi_sub] = nextfreq(gfreqs [bi_sub], gfreqs [bi_sub] + (jumpsize2 * nrotate2), gstep, TUNE_TOP);
+			//		freqchanged = 1;
+			//	}
+//#endif /* ! WITHTOUCHGUI */
+			//	if (freqchanged != 0)
+			//	{
+			//		// Ограничение по скорости обновления дисплея уже заложено в него
+			//		sthrl = STHRL_RXTX_FQCHANGED;
+			//		updateboard(0, 0);	/* частичная перенастройка - без смены режима работы */
+			//	}
+			//}
 #if WITHTOUCHGUI && WITHENCODER2
 			gui_set_encoder2_rotate(nrotate2);
 #endif /* WITHTOUCHGUI && WITHENCODER2 */
