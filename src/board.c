@@ -7457,78 +7457,18 @@ static void blinktest(void * ctx)
 
 static void adcfilters_initialize(void);
 
-/* инициализация при запрещённых прерываниях.
-*/
 void board_initialize(void)
 {
-#if CPUSTYLE_XC7Z
-	xc7z_hardware_initialize();
-#endif /* CPUSTYLE_XC7Z */
 
 	board_gpio_init();			/* инициализация на вывод битов PIO процессора, если некоторые биты управляются напрямую без SPI */
-
-#if WITHFPGAWAIT_AS
-	/* FPGA загружается из собственной микросхемы загрузчика - дождаться окончания загрузки перед инициализацией SPI в процессоре */
-	board_fpga_loader_initialize();
-	board_fpga_loader_wait_AS();
-#endif /* WITHFPGAWAIT_AS */
-
-
-#if (WITHTWIHW || WITHTWISW)
-	i2c_initialize();
-#endif /* (WITHTWIHW || WITHTWISW) */
-
-#if (WITHSPIHW || WITHSPISW)
-	spi_initialize();
-#endif /* (WITHSPIHW || WITHSPISW) */
-
-#if (WITHNANDHW || WITHNANDSW)
-	nand_initialize();
-#endif /* (WITHNANDHW || WITHNANDSW) */
-
-#if WITHFPGALOAD_DCFG
-	board_fpga_loader_XDCFG();	/* FPGA загружается процессором через интерфейс XDCFG (ZYNQ7000) */
-#endif /* WITHFPGALOAD_DCFG */
-#if WITHFPGALOAD_PS
-	/* FPGA загружается процессором с помощью SPI */
-	board_fpga_loader_initialize();
-	board_fpga_loader_PS();
-#endif /* WITHFPGALOAD_PS */
 
 	board_update_initial();		// Обнуление теневых переменных, синхронизация регистров с теневыми переменными.
 	board_reset();			/* формирование импульса на reset_n */
 
-#if WITHSPISLAVE
-	hardware_spi_slave_initialize();
-#endif /* WITHSPISLAVE */
+	// adcdones_initialize(); // регистрируются обработчики конца преобразвания АЦП
+	// adcfilters_initialize();	// раотают даже если нет аппаратного АЦП в процссоре
 
-	//hardware_channels_initialize();	// SAI, I2S и подключенная на них периферия
-
-#if WITHCPUDACHW
-	hardware_dac_initialize();	/* инициализация DAC на STM32F4xx */
-#endif /* WITHCPUDACHW */
-
-#if WITHDSPEXTFIR
-	board_fpga_fir_initialize();	// порт формирования стробов перезагрузки коэффициентов FIR фильтра в FPGA
-#endif /* WITHDSPEXTFIR */
-
-	adcdones_initialize(); // регистрируются обработчики конца преобразвания АЦП
-	adcfilters_initialize();	// раотают даже если нет аппаратного АЦП в процссоре
-
-	board_adc_initialize();
-
-#if defined (BOARD_BLINK_SETSTATE)
-	{
-#if WITHISBOOTLOADER
-	const unsigned thalf = 100;	// Toggle every 100 ms
-#else /* WITHISBOOTLOADER */
-	const unsigned thalf = 500;	// Toggle every 500 ms
-#endif /* WITHISBOOTLOADER */
-	static ticker_t ticker_blinks;
-	ticker_initialize(& ticker_blinks, NTICKS(thalf), blinktest, NULL);
-	ticker_add(& ticker_blinks);
-	}
-#endif /* defined (BOARD_BLINK_SETSTATE) */
+	// board_adc_initialize();
 }
 
 #if defined (RTC1_TYPE)
