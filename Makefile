@@ -63,7 +63,7 @@ SOURCES = src/crt_CortexA.S \
 		  src/hardware.c \
 		  src/irq.c \
 		  src/irq_ctrl_gic_forward.c \
-		  src/main.c \
+		  src/main2.c \
 		  src/serial.c \
 		  src/usb/usbd_desc.c \
 		  src/usb/usbd_msc_storage.c \
