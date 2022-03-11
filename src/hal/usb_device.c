@@ -31,8 +31,10 @@
 #if WITHUSEUSBFLASH
 #include "../../Class/MSC/Inc/usbh_msc.h"
 #endif /* WITHUSEUSBFLASH */
+#ifdef WITHUSBHW_HOST
 #include "../../Class/HID/Inc/usbh_hid.h"
 #include "../../Class/HUB/Inc/usbh_hub.h"
+#endif
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/

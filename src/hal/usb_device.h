@@ -92,7 +92,9 @@
 
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
+#ifdef WITHUSBHW_HOST
 #include "usbh_core.h"
+#endif
 
 /* USER CODE END INCLUDE */
 
@@ -182,7 +184,9 @@
    APPLICATION_DISCONNECT
  }ApplicationTypeDef;
 
+#ifdef WITHUSBHW_HOST
  extern USBH_HandleTypeDef hUsbHostHS;
+#endif
 
 #ifdef __cplusplus
 }
