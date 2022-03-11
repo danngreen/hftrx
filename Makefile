@@ -56,7 +56,6 @@ USBCLASSDIR = $(EXTLIBDIR)
 USBXDIR = src/hal
 
 SOURCES = src/crt_CortexA.S \
-		  src/buffers.c \
 		  src/clocks.c \
 		  src/formats.c \
 		  src/gpio.c \
