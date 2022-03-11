@@ -12248,7 +12248,7 @@ display2_redrawbarstimed(
 
 	if (immed || display_refreshenabled_voltage())
 	{
-		looptests();		// Периодически вызывается в главном цикле - тесты
+		// looptests();		// Периодически вызывается в главном цикле - тесты
 		/* медленно меняющиеся значения с редким опорсом */
 		/* +++ переписываем значения из возможно внешних АЦП в кеш значений */
 	#if WITHTHERMOLEVEL
@@ -23643,13 +23643,13 @@ main(void)
 
 #endif /* WITHDEBUG && ! CPUSTYLE_ARM */
 
-	lowtests();		/* функции тестирования, работающие до инициализации периферии */
+	// lowtests();		/* функции тестирования, работающие до инициализации периферии */
 
 	global_disableIRQ();
 	cpu_initialize();		// в случае ARM - инициализация прерываний и контроллеров, AVR - запрет JTAG
 	lowinitialize();	/* вызывается при запрещённых прерываниях. */
 	global_enableIRQ();
-	midtests();
+	// midtests();
 	// Инициализируем то что не получается иниитить в описании перменных.
 #if WITHTX
 	/* запись значений по умолчанию для корректировок мощности в завивимости от диапазона ФНЧ УМ */
@@ -23660,7 +23660,7 @@ main(void)
 	network_initialize();
 #endif
 	hamradio_initialize();
-	hightests();		/* подпрограммы для тестирования аппаратуры */
+	// hightests();		/* подпрограммы для тестирования аппаратуры */
 
 #if WITHISBOOTLOADER && WITHISBOOTLOADERFATFS
 	bootloader_fatfs_mainloop();
