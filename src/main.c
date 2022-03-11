@@ -20607,7 +20607,6 @@ lowinitialize(void)
 
 	hardware_timer_initialize(TICKS_FREQUENCY);
 
-	board_initialize();		/* инициализация чипселектов и SPI, I2C, загрузка FPGA */
 	cpu_initdone();			/* секция init (в которой лежит образ для загрузки в FPGA) больше не нужна */
 
 	buffers_initialize();	// инициализация системы буферов - в том числе очереди сообщений

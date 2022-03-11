@@ -737,12 +737,12 @@ prog_gpioreg(void)
 */
 
 // выставить уровень на сигнале lcd register select - не требуется board_update
-void board_lcd_rs(uint_fast8_t state)	
-{
-#if LS020_RS
-	LS020_RS_SET(state);	// LCD register address
-#endif /* LS020_RS */
-}
+// void board_lcd_rs(uint_fast8_t state)	
+// {
+// #if LS020_RS
+// 	LS020_RS_SET(state);	// LCD register address
+// #endif /* LS020_RS */
+// }
 
 /* инициализация на вывод битов PIO процессора, если некоторые биты управляются напрямую без SPI */
 /* вызывается при запрещённых прерываниях.*/
@@ -4923,59 +4923,6 @@ board_update_spi2(void)
 	
 }
 
-// Выдача в регистры текущего состояния теневых переменных.
-void 
-//NOINLINEAT
-board_update(void)
-{
-	//PRINTF(PSTR("board_update start.\n"));
-
-	board_update_direct();	// Обновление непосредственно подключенных к процессору сигналов
-	board_update_spi();		// Обновление прямо подключенных к SPI регистру сигналов
-	board_update_spi2();	// Зависящие от предидущих (например, кодек, RESET которого формируется через SPI регистр)
-
-
-#if CTLREGMODE_RAVENDSP_V3 || CTLREGMODE_RAVENDSP_V4 || CTLREGMODE_RAVENDSP_V5
-	if (flag_ctldacreg != 0)
-	{
-		flag_ctldacreg = 0;
-		prog_ctldacreg();	/* регистр выбора ГУН, сброс DDS и ЦАП подстройки опорника */
-	}
-	if (flag_ctrlreg != 0)
-	{
-		flag_ctrlreg = 0;
-		prog_gpioreg();
-		uint_fast8_t plane;
-		for (plane = 0; plane < BOARD_NPLANES; ++ plane)
-			prog_rxctrlreg(plane); 	/* управление приемником */
-	}
-
-#elif ATMEGA_CTLSTYLE_V7_H_INCLUDED || ARM_CTLSTYLE_V7_H_INCLUDED || ARM_CTLSTYLE_V7A_H_INCLUDED
-	if (flag_ctldacreg != 0)
-	{
-		flag_ctldacreg = 0;
-		prog_ctldacreg();	/* регистр выбора ГУН, сброс DDS и ЦАП подстройки опорника */
-	}
-	if (flag_rxctrlreg != 0)
-	{
-		flag_rxctrlreg = 0;
-		prog_gpioreg();
-		board_update_rxctrlreg();
-	}
-#else
-	if (flag_ctrlreg != 0)
-	{
-		flag_ctrlreg = 0;
-		prog_gpioreg();
-		board_update_ctrlreg();
-	}
-#endif
-
-	// prog_dsplreg_update();		// услолвное обновление регистров DSP
-	// prog_fltlreg_update();		// услолвное обновление регистров DSP
-	// prog_codecreg_update();		// услолвное обновление регистров аудио кодека
-	//PRINTF(PSTR("board_update done.\n"));
-}
 
 /* Установка запроса на обновление сигналов управления */
 static void
@@ -7650,70 +7597,6 @@ void board_reset(void)
 	board_update();
 	board_set_reset_n(1);	// снять сигнал сброса
 	board_update();
-}
-
-/* Initialize chips. All coeffecienters should be already calculated before. */
-/* вызывается при разрешённых прерываниях. */
-void board_init_chips(void)
-{
-#if XVTR_R820T2
-	r820t_initialize();
-	r820t_enable(0);
-#endif /* XVTR_R820T2 */
-
-#if defined(ADC1_TYPE)
-	prog_rfadc_initialize();
-#endif /* defined(ADC1_TYPE) */
-
-#if WITHSI5351AREPLACE
-	// do nothing
-#else /* WITHSI5351AREPLACE */
-	#if defined(DDS1_TYPE)
-		prog_dds1_initialize();
-	#endif /* defined(DDS1_TYPE) */
-	#if defined(DDS2_TYPE)
-		prog_dds2_initialize();
-	#endif /* defined(DDS2_TYPE) */
-	#if defined(DDS3_TYPE)
-		prog_dds3_initialize();
-	#endif /* defined(DDS3_TYPE) */
-#endif /* WITHSI5351AREPLACE */
-
-#if MULTIVFO
-	prog_vcodata_init();	// Инициализация границ диапазонов ГУН или границ фильтров за DDS.
-#endif /* MULTIVFO */
-
-	// calculate global constants - 
-	// setup scaler PLL - 1-st lo
-#if defined(PLL1_TYPE)
-	board_pll1_initialize();
-#endif /* defined(PLL1_TYPE) */
-
-	// setup fixed PLL - 2-nd lo
-#if LO1DIVIDEVCO
-	prog_pll2_initialize(1);
-#else /* LO1DIVIDEVCO */
-	#if defined (PLL2_TYPE)
-		prog_pll2_initialize(0);
-	#endif
-#endif /* LO1DIVIDEVCO */
-
-#if defined (RTC1_TYPE)
-	board_rtc_initialize();
-#endif /* defined (RTC1_TYPE) */
-
-#if defined (TSC1_TYPE)
-	// board_tsc_initialize();
-#endif /* defined (TSC1_TYPE) */
-
-#if defined(CODEC1_TYPE)
-	{
-		const codec1if_t * const ifc1 = board_getaudiocodecif();
-
-		ifc1->stop();
-	}
-
-#endif /* defined(CODEC1_TYPE) */
 }
 
 /* Initialize chips. All coeffecienters should be already calculated before. */
