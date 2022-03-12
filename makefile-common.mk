@@ -92,12 +92,12 @@ install:
 $(OBJDIR)/%.o: %.s
 	@mkdir -p $(dir $@)
 	$(info Building $< at $(OPTFLAG))
-	$(AS) -o $@ -c $(AFLAGS) $<
+	@$(AS) -o $@ -c $(AFLAGS) $<
 
 $(OBJDIR)/%.o: %.S
 	@mkdir -p $(dir $@)
 	$(info Assembling $< at $(OPTFLAG))
-	$(AS) -o $@ -c $(AFLAGS) $<
+	@$(AS) -o $@ -c $(AFLAGS) $<
 
 $(OBJDIR)/%.o: %.c $(OBJDIR)/%.d
 	@mkdir -p $(dir $@)
