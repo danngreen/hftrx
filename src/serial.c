@@ -11,7 +11,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "board.h"
+//#include "board.h"
 
 #include "formats.h"	// for debug prints
 #include "spi.h"

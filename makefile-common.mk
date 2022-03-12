@@ -96,7 +96,7 @@ $(OBJDIR)/%.o: %.s
 
 $(OBJDIR)/%.o: %.S
 	@mkdir -p $(dir $@)
-	$(info Building $< at $(OPTFLAG))
+	$(info Assembling $< at $(OPTFLAG))
 	$(AS) -o $@ -c $(AFLAGS) $<
 
 $(OBJDIR)/%.o: %.c $(OBJDIR)/%.d

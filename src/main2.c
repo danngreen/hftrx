@@ -1,6 +1,8 @@
 #include "hardware.h"
 #include "formats.h"
-#include "board.h"
+
+void board_usb_initialize(void);
+void board_usb_activate(void);
 
 static void lowinitialize(void)
 {

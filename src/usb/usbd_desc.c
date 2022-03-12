@@ -7,7 +7,7 @@
 #undef USE_HAL_DRIVER
 
 #include "hardware.h"
-#include "board.h"
+//#include "board.h"
 #include "audio.h"
 #include "formats.h"
 #include "spi.h"

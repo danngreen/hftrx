@@ -10,16 +10,8 @@
 #include <string.h>
 #include <math.h>
 
-#include "board.h"
 #include "formats.h"	// for debug prints
 #include "gpio.h"
-
-
-void ticker_add(ticker_t * p)
-{
-}
-
-
 
 static volatile uint32_t sys_now_counter;
 uint32_t sys_now(void)
@@ -30,7 +22,6 @@ uint32_t sys_now(void)
 RAMFUNC void spool_systimerbundle1(void)
 {
 	HAL_IncTick();
-
 	sys_now_counter += (1000 / TICKS_FREQUENCY);
 }
 
@@ -40,45 +31,11 @@ RAMFUNC void spool_systimerbundle2(void)
 
 
 
-#if CPUSTYLE_STM32MP1 || CPUSTYLE_STM32F
 /* прерывания от валколера при наличии в системе вложенных прерываний вызываются на уровне приоритета REALTINE */
 static RAMFUNC void stm32fxxx_pinirq(portholder_t pr)
 {
-#if WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT)
-	if ((pr & (ELKEY_BIT_LEFT | ELKEY_BIT_RIGHT)) != 0)
-	{
-		spool_elkeyinputsbundle();
-	}
-#endif /* WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT) */
-#if WITHENCODER && defined (ENCODER_BITS)
-	if ((pr & ENCODER_BITS) != 0)
-	{
-		spool_encinterrupt();	/* прерывание по изменению сигнала на входах от валкодера #1*/
-	}
-#endif /* WITHENCODER && defined (ENCODER_BITS) */
-#if WITHENCODER2 && defined (ENCODER2_BITS)
-	if ((pr & ENCODER2_BITS) != 0)
-	{
-		//spool_encinterrupt2();	/* прерывание по изменению сигнала на входах от валкодера #2*/
-	}
-#endif /* WITHENCODER && ENCODER2_BITS */
-#if BOARD_GT911_INT_PIN
-	if ((pr & BOARD_GT911_INT_PIN) != 0)
-	{
-		gt911_interrupt_handler();	/* прерывание по изменению сигнала на входе от тач */
-	}
-#endif /* BOARD_GT911_INT_PIN */
-#if BOARD_STMPE811_INT_PIN
-	if ((pr & BOARD_STMPE811_INT_PIN) != 0)
-	{
-		stmpe811_interrupt_handler();	/* прерывание по изменению сигнала на входе от тач */
-	}
-#endif /* BOARD_STMPE811_INT_PIN */
 }
 
-#endif /* CPUSTYLE_STM32MP1 || CPUSTYLE_STM32F */
-
-#if CPUSTYLE_STM32MP1
 
 	void EXTI0_IRQHandler(void)
 	{
@@ -240,1119 +197,27 @@ static RAMFUNC void stm32fxxx_pinirq(portholder_t pr)
 		stm32fxxx_pinirq(prf | prr);
 	}
 
-#elif CPUSTYLE_STM32L0XX
 
-	void EXTI0_1_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_IM0 | EXTI_IMR_IM1);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-	void EXTI2_3_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_IM2 | EXTI_IMR_IM3);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-	void EXTI4_15_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (
-				EXTI_IMR_IM15 | EXTI_IMR_IM14 | EXTI_IMR_IM13 | EXTI_IMR_IM12 | 
-				EXTI_IMR_IM11 | EXTI_IMR_IM10 | EXTI_IMR_IM9 | EXTI_IMR_IM8 | 
-				EXTI_IMR_IM7 | EXTI_IMR_IM6 | EXTI_IMR_IM5 | EXTI_IMR_IM4
-				);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-#elif CPUSTYLE_STM32H7XX
-
-	void EXTI0_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI_D1->PR1 & (EXTI_PR1_PR0);
-		EXTI_D1->PR1 = pr;		// reset all existing requests
-		(void) EXTI_D1->PR1;
-		stm32fxxx_pinirq(pr);
-	}
-	
-
-	void EXTI1_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI_D1->PR1 & (EXTI_PR1_PR1);
-		EXTI_D1->PR1 = pr;		// reset all existing requests
-		(void) EXTI_D1->PR1;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI2_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI_D1->PR1 & (EXTI_PR1_PR2);
-		EXTI_D1->PR1 = pr;		// reset all existing requests
-		(void) EXTI_D1->PR1;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI3_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI_D1->PR1 & (EXTI_PR1_PR3);
-		EXTI_D1->PR1 = pr;		// reset all existing requests
-		(void) EXTI_D1->PR1;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI4_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI_D1->PR1 & (EXTI_PR1_PR4);
-		EXTI_D1->PR1 = pr;		// reset all existing requests
-		(void) EXTI_D1->PR1;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI9_5_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI_D1->PR1 & (EXTI_PR1_PR9 | EXTI_PR1_PR8 | EXTI_PR1_PR7 | EXTI_PR1_PR6 | EXTI_PR1_PR5);
-		EXTI_D1->PR1 = pr;		// reset all existing requests
-		(void) EXTI_D1->PR1;
-		stm32fxxx_pinirq(pr);
-	}
-	void EXTI15_10_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI_D1->PR1 & (EXTI_PR1_PR15 | EXTI_PR1_PR14 | EXTI_PR1_PR13 | EXTI_PR1_PR12 | EXTI_PR1_PR11 | EXTI_PR1_PR10);
-		EXTI_D1->PR1 = pr;		// reset all existing requests
-		(void) EXTI_D1->PR1;
-		stm32fxxx_pinirq(pr);
-	}
-
-#elif CPUSTYLE_STM32F
-
-	void EXTI0_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR0);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI0_1_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR0 | EXTI_IMR_MR1);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI1_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR1);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI2_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR2);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI2_3_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR2 | EXTI_IMR_MR3);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI4_15_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (
-				EXTI_IMR_MR15 | EXTI_IMR_MR14 | EXTI_IMR_MR13 | EXTI_IMR_MR12 | 
-				EXTI_IMR_MR11 | EXTI_IMR_MR10 | EXTI_IMR_MR9 | EXTI_IMR_MR8 | 
-				EXTI_IMR_MR7 | EXTI_IMR_MR6 | EXTI_IMR_MR5 | EXTI_IMR_MR4
-				);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI3_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR3);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI4_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR4);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-	void EXTI9_5_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR9 | EXTI_IMR_MR8 | EXTI_IMR_MR7 | EXTI_IMR_MR6 | EXTI_IMR_MR5);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-	void EXTI15_10_IRQHandler(void)
-	{
-		const portholder_t pr = EXTI->PR & (EXTI_IMR_MR15 | EXTI_IMR_MR14 | EXTI_IMR_MR13 | EXTI_IMR_MR12 | EXTI_IMR_MR11 | EXTI_IMR_MR10);
-		EXTI->PR = pr;		// reset all existing requests
-		//(void) EXTI->PR;
-		stm32fxxx_pinirq(pr);
-	}
-
-#elif CPUSTYLE_ATSAM3S || CPUSTYLE_ATSAM4S
-
-	void RAMFUNC_NONILINE
-	PIOA_Handler(void)
-	{
-		//display_menu_label(PSTR("PIOA_IrqHandler"));
-		//for (;;)
-		//	;
-		// When the software reads PIO_ISR, all the interrupts are automatically cleared. This signifies that
-		// all the interrupts that are pending when PIO_ISR is read must be handled.
-		const portholder_t state = PIOA->PIO_ISR;
-	#if WITHENCODER && defined (ENCODER_BITS)
-		if ((state & (ENCODER_BITS)) != 0) // re-enable interrupt from PIO
-		{
-			spool_encinterrupt();	/* прерывание по изменению сигнала на входах от валкодера */
-		}
-	#endif /* WITHENCODER && defined (ENCODER_BITS) */
-	#if WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT)
-		if ((state & (ELKEY_BIT_LEFT | ELKEY_BIT_RIGHT)) != 0) // re-enable interrupt from PIO
-		{
-			spool_elkeyinputsbundle();
-		}
-	#endif /* WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT) */
-	#if WITHNMEA
-		if ((state & FROMCAT_BIT_DTR) != 0 && (FROMCAT_TARGET_PIN_DTR & FROMCAT_BIT_DTR) != 0)
-		{
-			spool_nmeapps();
-		}
-	#endif /* WITHNMEA */
-	#if BOARD_GT911_INT_PIN
-		if ((state & BOARD_GT911_INT_PIN) != 0)
-		{
-			gt911_interrupt_handler();	/* прерывание по изменению сигнала на входе от тач */
-		}
-	#endif /* BOARD_GT911_INT_PIN */
-	#if BOARD_STMPE811_INT_PIN
-		if ((pr & BOARD_STMPE811_INT_PIN) != 0)
-		{
-			stmpe811_interrupt_handler();	/* прерывание по изменению сигнала на входе от тач */
-		}
-	#endif /* BOARD_STMPE811_INT_PIN */
-	}
-
-#elif CPUSTYLE_AT91SAM7S
-
-	RAMFUNC_NONILINE void AT91F_PIOA_IRQHandler(void)
-	{
-		// When the software reads PIO_ISR, all the interrupts are automatically cleared. This signifies that
-		// all the interrupts that are pending when PIO_ISR is read must be handled.
-		const portholder_t state = AT91C_BASE_PIOA->PIO_ISR;
-	#if WITHENCODER && defined (ENCODER_BITS)
-		if ((state & (ENCODER_BITS)) != 0) // re-enable interrupt from PIO
-		{
-			spool_encinterrupt();	/* прерывание по изменению сигнала на входах от валкодера */
-		}
-	#endif /* WITHENCODER && defined (ENCODER_BITS) */
-	#if WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT)
-		if ((state & (ELKEY_BIT_LEFT | ELKEY_BIT_RIGHT)) != 0) // re-enable interrupt from PIO
-		{
-			spool_elkeyinputsbundle();
-		}
-	#endif /* WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT) */
-	#if WITHNMEA
-		if ((state & FROMCAT_BIT_DTR) != 0 && (FROMCAT_TARGET_PIN_DTR & FROMCAT_BIT_DTR) != 0)
-		{
-			spool_nmeapps();
-		}
-	#endif /* WITHNMEA */
-	#if BOARD_GT911_INT_PIN
-		if ((state & BOARD_GT911_INT_PIN) != 0)
-		{
-			gt911_interrupt_handler();	/* прерывание по изменению сигнала на входе от тач */
-		}
-	#endif /* BOARD_GT911_INT_PIN */
-	#if BOARD_STMPE811_INT_PIN
-		if ((pr & BOARD_STMPE811_INT_PIN) != 0)
-		{
-			stmpe811_interrupt_handler();	/* прерывание по изменению сигнала на входе от тач */
-		}
-	#endif /* BOARD_STMPE811_INT_PIN */
-	}
-
-#elif CPUSTYLE_ATMEGA
-
-	ISR(INT0_vect)
-	{
-		spool_encinterrupt();	/* прерывание по изменению сигнала на входах от валкодера */
-	}
-
-	ISR(INT1_vect)
-	{
-		spool_encinterrupt();	/* прерывание по изменению сигнала на входах от валкодера */
-	}
-
-
-	// Timer 1 output compare A interrupt service routine
-	ISR(TIMER1_COMPA_vect)
-	{
-		spool_elkeybundle();
-	}
-	// Обработчик по изменению состояния входов PTT и электронного ключа
-	#if CPUSTYLE_ATMEGA_XXX4
-		#if WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT)
-			// PC7 - PTT input, PC6 & PC5 - eectronic key inputs
-			ISR(PCIVECT)
-			{
-				spool_elkeyinputsbundle();
-			}
-		#endif /* (WITHELKEY && defined (ELKEY_BIT_LEFT) && defined (ELKEY_BIT_RIGHT)) */
-		#if defined (FROMCAT_BIT_DTR) && defined (DTRPCICR_BIT) && (PCICR_BIT != DTRPCICR_BIT)
-			ISR(DTRPCIVECT)
-			{
-				spool_elkeyinputsbundle();	// по изменению PTT
-			}
-		#endif
-	#endif /* CPUSTYLE_ATMEGA_XXX4 && defined (PCIVECT) */
-
-#else
-
-	//#warning Undefined CPUSTYLE_XXX encoder interrrupts handlers
-#endif
-
-//static volatile uint_fast8_t hardware_reqshutdown;
-/* возвращаем запрос на выключение - от компаратора питания */
-uint_fast8_t 
-hardware_getshutdown(void)
+uint_fast8_t hardware_getshutdown(void)
 {
-#if CPUSTYLE_STM32F1XX || CPUSTYLE_STM32F30X || CPUSTYLE_STM32L0XX
-	//return hardware_reqshutdown;
-	return (PWR->CR & PWR_CR_PVDE) && (PWR->CSR & PWR_CSR_PVDO);
-
-#else
 	return 0;
-#endif
 }
 
-void 
-hardware_encoder_initialize(void)
-{
-#if WITHENCODER
-	ENCODER_INITIALIZE();
-#endif /* WITHENCODER */
-}
-
-/* Чтение состояния выходов валкодера #1 - в два младших бита */
-/* Состояние фазы A - в бите с весом 2, фазы B - в бите с весом 1 */
-
-uint_fast8_t 
-hardware_get_encoder_bits(void)
-{
-#if WITHENCODER && defined (ENCODER_BITS) && defined (ENCODER_SHIFT)
-	return (ENCODER_INPUT_PORT & ENCODER_BITS) >> ENCODER_SHIFT;	// Биты валкодера #1
-#elif WITHENCODER && defined (ENCODER_BITS)
-	const portholder_t v = ENCODER_INPUT_PORT;
-	return ((v & ENCODER_BITA) != 0) * 2 + ((v & ENCODER_BITB) != 0);	// Биты идут не подряд
-#else /* WITHENCODER */
-	return 0;
-#endif /* WITHENCODER */
-}
-
-/* Чтение состояния выходов валкодера #2 - в два младших бита */
-/* Состояние фазы A - в бите с весом 2, фазы B - в бите с весом 1 */
-
-uint_fast8_t 
-hardware_get_encoder2_bits(void)
-{
-#if WITHENCODER && ENCODER2_BITS && defined (ENCODER2_SHIFT)
-	return (ENCODER2_INPUT_PORT & ENCODER2_BITS) >> ENCODER2_SHIFT;	// Биты валкодера #2
-#elif WITHENCODER && ENCODER2_BITS
-	const portholder_t v = ENCODER2_INPUT_PORT;
-	return ((v & ENCODER2_BITA) != 0) * 2 + ((v & ENCODER2_BITB) != 0);	// Биты идут не подряд
-#elif WITHENCODER && CPUSTYLE_XC7Z
-	return ((xc7z_readpin(ENCODER2_BITA) != 0) * 2 + (xc7z_readpin(ENCODER2_BITB) != 0));
-#else /* WITHENCODER */
-	return 0;
-#endif /* WITHENCODER */
-}
-
-// ADC intgerface functions
-
-#if WITHCPUADCHW
-
-
-// Проверка что индекс входа АЦП относится ко встроенной периферии процессора
-uint_fast8_t
-isadchw(uint_fast8_t adci)
-{
-	return adci < BOARD_ADCX0BASE;
-}
-
-//#define ADCINPUTS_COUNT (board_get_adcinputs())
-
-static uint_fast8_t adc_input;
-
-#if CPUSTYLE_ATSAM3S || CPUSTYLE_ATSAM4S
-
-void RAMFUNC_NONILINE ADC_Handler(void)
-{
-	//const unsigned long sr = ADC->ADC_ISR;	// ADC_IER_DRDY, ADC_ISR_DRDY
-	(void) ADC->ADC_ISR;	// ADC_IER_DRDY, ADC_ISR_DRDY
-
-	// ATSAM3Sxx считывает только 10 или 12 бит
-	// Read the 8 most significant bits
-	// of the AD conversion result
-	board_adc_store_data(board_get_adcch(adc_input), ADC->ADC_LCDR & ADC_LCDR_LDATA_Msk);	// на этом цикле используем результат
-	// Select next ADC input
-	for (;;)
-	{
-		if (++ adc_input >= board_get_adcinputs())
-		{
-			spool_adcdonebundle();
-			break;
-		}
-		else
-		{
-			const uint_fast8_t adci = board_get_adcch(adc_input);
-			if (isadchw(adci))
-			{
-				// Select next ADC input (only one)
-				const portholder_t mask = ADC_CHER_CH0 << adci;
-				ADC->ADC_CHER = mask; /* enable ADC */
-				ADC->ADC_CHDR = ~ mask; /* disable ADC */
-				ADC->ADC_CR = ADC_CR_START;	// Start the AD conversion
-				break;
-			}
-		}
-	}
-}
-	
-#elif CPUSTYLE_AT91SAM7S
-
-RAMFUNC_NONILINE void AT91F_ADC_IRQHandler(void)
-{
-	(void) AT91C_BASE_ADC->ADC_SR;
-	// Read the 8 most significant bits
-	// of the AD conversion result
-	board_adc_store_data(board_get_adcch(adc_input), AT91C_BASE_ADC->ADC_LCDR & AT91C_ADC_LDATA);	// на этом цикле используем результат
-	// Select next ADC input
-	for (;;)
-	{
-		if (++ adc_input >= board_get_adcinputs())
-		{
-			spool_adcdonebundle();
-			break;
-		}
-		else
-		{
-			// Select next ADC input (only one)
-			const uint_fast8_t adci = board_get_adcch(adc_input);
-			if (isadchw(adci))
-			{
-				const portholder_t mask = AT91C_ADC_CH0 << adci;
-				AT91C_BASE_ADC->ADC_CHDR = ~ mask; /* disable ADC inputs */
-				AT91C_BASE_ADC->ADC_CHER = mask; /* enable ADC */
-				AT91C_BASE_ADC->ADC_CR = AT91C_ADC_START;	// Start the AD conversion
-				break;
-			}
-		}
-	}
-}
-
-#elif CPUSTYLE_ATMEGA
-	///////adc
-	// получение кода выбора входа
-	static uint_fast8_t hardware_atmega_admux(uint_fast8_t ch)
-	{
-		enum { ATMEGA_ADC_VREF_TYPE = ((0UL << REFS1) | (1UL << REFS0))	}; // AVCC used as reference volage
-		#if HARDWARE_ADCBITS == 8
-			return ch | ATMEGA_ADC_VREF_TYPE | (1UL << ADLAR);
-		#else
-			return ch | ATMEGA_ADC_VREF_TYPE;
-		#endif
-	}
-
-	ISR(ADC_vect)
-	{
-		#if HARDWARE_ADCBITS == 8
-			// Read the 8 most significant bits
-			// of the AD conversion result
-			board_adc_store_data(board_get_adcch(adc_input), ADCH);
-		#else
-			// Read the AD conversion result
-			board_adc_store_data(board_get_adcch(adc_input), ADCW);
-		#endif 
-		// Select next ADC input
-		for (;;)
-		{
-			if (++ adc_input >= board_get_adcinputs())
-			{
-				spool_adcdonebundle();
-				break;
-			}
-			else
-			{
-				// Select next ADC input (only one)
-				const uint_fast8_t adci = board_get_adcch(adc_input);
-				if (isadchw(adci))
-				{
-					ADMUX = hardware_atmega_admux(adci);
-					ADCSRA |= (1U << ADSC);			// Start the AD conversion
-					break;
-				}
-			}
-		}
-	}
-#elif CPUSTYLE_ATXMEGAXXXA4
-
-	#warning TODO: write atxmega code for ADC interrupt handler
-
-
-	// adc
-	ISR(ADCA_CH0_vect)
-	{
-			// на этом цикле используем результат
-		#if HARDWARE_ADCBITS == 8
-			// Select next ADC input
-			// Read the 8 most significant bits
-			// of the AD conversion result
-			board_adc_store_data(board_get_adcch(adc_input), ADCA.CH0.RESH);
-		#else
-			// Read the AD conversion result
-			board_adc_store_data(board_get_adcch(adc_input), ADCA.CH0.RESH * 256 + ADCA.CH0.RESL);
-		#endif 
-		// Select next ADC input
-		for (;;)
-		{
-			if (++ adc_input >= board_get_adcinputs())
-			{
-				spool_adcdonebundle();
-				break;
-			}
-			else
-			{
-				// Select next ADC input (only one)
-				const uint_fast8_t adci = board_get_adcch(adc_input);
-				if (isadchw(adci))
-				{
-					ADCA.CH0.MUXCTRL = adci;
-					ADCA.CH0.CTRL |= (1U << ADC_CH_START_bp);			// Start the AD conversion
-					break;
-				}
-			}
-		}
-	}
-
-
-#elif CPUSTYLE_STM32H7XX || CPUSTYLE_STM32MP1
-
-// For SM32H7XXX: ADC_IRQn is a same vector as ADC1_2_IRQn (decimal 18)
-
-
-const adcinmap_t * getadcmap(uint_fast8_t adci)
-{
-	static const adcinmap_t adcinmaps [] =
-	{
-#if CPUSTYLE_STM32H7XX
-		{	16,	ADC1,	ADC12_COMMON,	15,	},	// @0:	PA0	ADC1_INP16 (PA0_C ADC12_INP0)
-		{	17,	ADC1,	ADC12_COMMON,	15,	},	// @1:	PA1	ADC1_INP17 (PA1_C ADC12_INP1)
-		{	14,	ADC1,	ADC12_COMMON,	15,	},	// @2:	PA2	ADC12_INP14
-		{	15,	ADC1,	ADC12_COMMON,	15,	},	// @3:	PA3	ADC12_INP15
-		{	18,	ADC1,	ADC12_COMMON,	15,	},	// @4:	PA4	ADC12_INP18
-		{	19,	ADC1,	ADC12_COMMON,	15,	},	// @5:	PA5	ADC12_INP19
-		{	3,	ADC1,	ADC12_COMMON,	15,	},	// @6:	PA6	ADC12_INP3
-		{	7,	ADC1,	ADC12_COMMON,	15,	},	// @7:	PA7	ADC12_INP7
-		{	9,	ADC1,	ADC12_COMMON,	15,	},	// @8:	PB0	ADC12_INP9
-		{	5,	ADC1,	ADC12_COMMON,	15,	},	// @9:	PB1	ADC12_INP5
-		{	10,	ADC1,	ADC12_COMMON,	15,	},	// @10:	PC0	ADC123_INP10
-		{	11,	ADC1,	ADC12_COMMON,	15,	},	// @11:	PC1	ADC123_INP11
-		{	12,	ADC1,	ADC12_COMMON,	15,	},	// @12:	PC2	ADC123_INP12 (PC2_C ADC3_INP0)
-		{	13,	ADC1,	ADC12_COMMON,	15,	},	// @13:	PC3	ADC12_INP13 (PC3_C ADC3_INP1)
-		{	4,	ADC1,	ADC12_COMMON,	15,	},	// @14:	PC4	ADC12_INP4
-		{	8,	ADC1,	ADC12_COMMON,	15,	},	// @15:	PC5	ADC12_INP8
-		{	18,	ADC3,	ADC3_COMMON,	90,	},	// @16:	Temperature sensor (VSENSE) - 9.0 uS required
-		{	19,	ADC3,	ADC3_COMMON,	43,	},	// @17:	Reference voltage (VREFINT) - 4.3 uS required
-#elif CPUSTYLE_STM32MP1
-		//	On ADC1, fast channels are PA6, PA7, PB0, PB1, PC4, PC5, PF11, PF12.
-		//	On ADC2, fast channels are PA6, PA7, PB0, PB1, PC4, PC5, PF13, PF14.
-		{	16,	ADC1,	ADC12_COMMON,	15,	},	// @0:	PA0		ADC1_INP16
-		{	17,	ADC1,	ADC12_COMMON,	15,	},	// @1:	PA1		ADC1_INP17
-		{	14,	ADC1,	ADC12_COMMON,	15,	},	// @2:	PA2		ADC1_INP14
-		{	15,	ADC1,	ADC12_COMMON,	15,	},	// @3:	PA3		ADC1_INP15
-		{	18,	ADC1,	ADC12_COMMON,	15,	},	// @4:	PA4		ADC1_INP18, ADC2_INP18
-		{	19,	ADC1,	ADC12_COMMON,	15,	},	// @5:	PA5		ADC1_INP19, ADC2_INP19
-		{	3,	ADC1,	ADC12_COMMON,	15,	},	// @6:	PA6		ADC1_INP3
-		{	7,	ADC1,	ADC12_COMMON,	15,	},	// @7:	PA7		ADC1_INP7
-		{	9,	ADC1,	ADC12_COMMON,	15,	},	// @8:	PB0		ADC1_INP9, ADC2_INP9
-		{	5,	ADC1,	ADC12_COMMON,	15,	},	// @9:	PB1		ADC1_INP5, ADC2_INP5
-		{	10,	ADC1,	ADC12_COMMON,	15,	},	// @10:	PC0		ADC1_INP10, ADC2_INP10
-		{	11,	ADC1,	ADC12_COMMON,	15,	},	// @11:	PC1		ADC1_INP11, ADC2_INP11
-		{	12,	ADC1,	ADC12_COMMON,	15,	},	// @12:	PC2		ADC1_INP12
-		{	13,	ADC1,	ADC12_COMMON,	15,	},	// @13:	PC3		ADC1_INP13
-		{	4,	ADC1,	ADC12_COMMON,	15,	},	// @14:	PC4		ADC1_INP4, ADC2_INP4
-		{	8,	ADC1,	ADC12_COMMON,	15,	},	// @15:	PC5		ADC1_INP8, ADC2_INP8
-		{	2, 	ADC1, 	ADC12_COMMON, 	15,	},	// @16: PF11	ADC1_INP2
-		{	6, 	ADC1, 	ADC12_COMMON, 	15,	},	// @17: PF12	ADC1_INP6, ADC1_INN2
-		{	2, 	ADC2, 	ADC12_COMMON, 	15,	},	// @18: PF13	ADC2_INP2
-		{	6, 	ADC2, 	ADC12_COMMON, 	15,	},	// @19: PF14	ADC2_INP6, ADC2_INN2
-		//{	18,	ADC3,	ADC3_COMMON,	90,	},	// @20:	Temperature sensor (VSENSE) - 9.0 uS required
-		//{	19,	ADC3,	ADC3_COMMON,	43,	},	// @21:	Reference voltage (VREFINT) - 4.3 uS required
-#endif /* CPUSTYLE_STM32H7XX, CPUSTYLE_STM32MP1 */
-	};
-
-	ASSERT(adci < (sizeof adcinmaps / sizeof adcinmaps [0]));
-	return & adcinmaps [adci];
-}
-
-static void 
-ADCs_IRQHandler(ADC_TypeDef * p)
-{
-	ASSERT(adc_input < board_get_adcinputs());
-	const adcinmap_t * const adcmap = getadcmap(board_get_adcch(adc_input));
-	ADC_TypeDef * const adc = adcmap->adc;
-	ASSERT(adc == p);
-	ASSERT((adc->ISR & ADC_ISR_OVR) == 0);
-	ASSERT((adc->CR & (ADC_CR_JADSTART | ADC_CR_ADSTART)) == 0);
-	if ((adc->ISR & ADC_ISR_EOS) != 0)
-	{
-		adc->ISR = ADC_ISR_EOS;		// EOS (end of regular sequence) flag
-		board_adc_store_data(board_get_adcch(adc_input), (adc->DR & ADC_DR_RDATA) >> ADC_DR_RDATA_Pos);	// на этом цикле используем результат
-		// Select next ADC input
-		for (;;)
-		{
-			if (++ adc_input >= board_get_adcinputs())
-			{
-				spool_adcdonebundle();
-				break;
-			}
-			else
-			{
-				// Select next ADC input (only one)
-				const uint_fast8_t adci = board_get_adcch(adc_input);
-				if (isadchw(adci))
-				{
-					// Установить следующий вход (блок ADC может измениться)
-					const adcinmap_t * const adcmap = getadcmap(adci);
-					ADC_TypeDef * const adc = adcmap->adc;
-
-					ASSERT((adc->CR & (ADC_CR_JADSTART | ADC_CR_ADSTART)) == 0);
-					adc->SQR1 = (adc->SQR1 & ~ (ADC_SQR1_L | ADC_SQR1_SQ1)) |
-						0 * ADC_SQR1_L_0 |	// Выбираем преобразование с одного канала. Сканирования нет.
-						adcmap->ch * ADC_SQR1_SQ1_0 |
-						0;
-					adc->CR |= ADC_CR_ADSTART;	// Запуск преобразования
-					break;
-				}
-			}
-		}
-	}
-	else
-	{
-		ASSERT(0);
-	}
-}
-
-#if CPUSTYLE_STM32H7XX
-
-	void
-	ADC_IRQHandler(void)
-	{
-		ADCs_IRQHandler(ADC1);
-	}
-
-	void
-	ADC3_IRQHandler(void)
-	{
-		ADCs_IRQHandler(ADC3);
-	}
-
-#elif CPUSTYLE_STM32MP1
-
-	void
-	ADC1_IRQHandler(void)
-	{
-		ADCs_IRQHandler(ADC1);
-	}
-
-	void
-	ADC2_IRQHandler(void)
-	{
-		ADCs_IRQHandler(ADC2);
-	}
-
-#endif
-
-#elif CPUSTYLE_STM32F1XX || CPUSTYLE_STM32F4XX || CPUSTYLE_STM32F7XX
-
-static void
-adcs_stm32f4xx_irq_handler(void)
-{
-	ASSERT(adc_input < board_get_adcinputs());
-	//const unsigned long sr = ADC1->SR;
-	ADC1->SR = 0;		// Сбрасываем все запросы прерывания.
-	board_adc_store_data(board_get_adcch(adc_input), ADC1->DR & ADC_DR_DATA);	// на этом цикле используем результат
-	// Select next ADC input
-	for (;;)
-	{
-		if (++ adc_input >= board_get_adcinputs())
-		{
-			spool_adcdonebundle();
-			break;
-		}
-		else
-		{
-			// Select next ADC input (only one)
-			const uint_fast8_t adci = board_get_adcch(adc_input);
-			if (isadchw(adci))
-			{
-				ADC1->SQR3 = (ADC1->SQR3 & ~ ADC_SQR3_SQ1) | (ADC_SQR3_SQ1_0 * adci);
-				#if CPUSTYLE_STM32F4XX || CPUSTYLE_STM32F7XX
-				ADC1->CR2 |= ADC_CR2_SWSTART;	// !!!!
-				#endif
-				break;
-			}
-		}
-	}
-}
-
-void
-ADC_IRQHandler(void)
-{
-	adcs_stm32f4xx_irq_handler();
-}
-
-void
-ADC1_2_IRQHandler(void)
-{
-	adcs_stm32f4xx_irq_handler();
-}
-
-
-
-#elif CPUSTYLE_STM32F0XX
-	#if STM32F0XX_MD
-		void 
-		ADC1_COMP_IRQHandler(void)
-		{
-			ASSERT(adc_input < board_get_adcinputs());
-			board_adc_store_data(board_get_adcch(adc_input), ADC1->DR & ADC_DR_DATA);	// используем результат
-			ADC1->ISR = ADC_ISR_EOC;
-			ADC1->CHSELR = 1UL <<  board_get_adcch(adc_input);
-			// Select next ADC input
-			for (;;)
-			{
-				if (++ adc_input >= board_get_adcinputs())
-				{
-					spool_adcdonebundle();
-					break;
-				}
-				else
-				{
-					// Select next ADC input (only one)
-					const uint_fast8_t adci = board_get_adcch(adc_input);
-					if (isadchw(adci))
-					{
-						ADC1->CHSELR = 1UL <<  board_get_adcch(adc_input);
-						ADC1->CR = ADC_CR_ADSTART;	// ADC Start of Regular conversion
-						break;
-					}
-				}
-			}
-		}
-	#else /* STM32F0XX_MD */
-		void 
-		ADC1_IRQHandler(void)
-		{
-			ASSERT(adc_input < board_get_adcinputs());
-			board_adc_store_data(board_get_adcch(adc_input), ADC1->DR & ADC_DR_DATA);	// используем результат
-			ADC1->ISR = ADC_ISR_EOC;
-			ADC1->CHSELR = 1UL <<  board_get_adcch(adc_input);
-			// Select next ADC input
-			for (;;)
-			{
-				if (++ adc_input >= board_get_adcinputs())
-				{
-					spool_adcdonebundle();
-					break;
-				}
-				else
-				{
-					// Select next ADC input (only one)
-					const uint_fast8_t adci = board_get_adcch(adc_input);
-					if (isadchw(adci))
-					{
-						ADC1->CHSELR = 1UL << adci;
-						ADC1->CR = ADC_CR_ADSTART;	// ADC Start of Regular conversion
-						break;
-					}
-				}
-			}
-		}
-	#endif /* STM32F0XX_MD */
-
-#elif CPUSTYLE_STM32L0XX
-
-	void 
-	ADC1_COMP_IRQHandler(void)
-	{
-		ASSERT(adc_input < board_get_adcinputs());
-		board_adc_store_data(board_get_adcch(adc_input), ADC1->DR & ADC_DR_DATA);	// используем результат
-		ADC1->ISR = ADC_ISR_EOC;
-		ADC1->CHSELR |= 1UL <<  board_get_adcch(adc_input);
-		// Select next ADC input
-		for (;;)
-		{
-			if (++ adc_input >= board_get_adcinputs())
-			{
-				spool_adcdonebundle();
-				break;
-			}
-			else
-			{
-				// Select next ADC input (only one)
-				const uint_fast8_t adci = board_get_adcch(adc_input);
-				if (isadchw(adci))
-				{
-					ADC1->CHSELR |= 1UL << adci;
-					ADC1->CR = ADC_CR_ADSTART;	// ADC Start of Regular conversion
-					break;
-				}
-			}
-		}
-	}
-
-#elif CPUSTYLE_STM32F30X
-
-void 
-ADC1_2_IRQHandler(void)
-{
-	ASSERT(adc_input < board_get_adcinputs());
-	//const unsigned long sr = ADC1->SR;
-	ADC1->ISR = 0;		// Сбрасываем все запросы прерывания.
-	board_adc_store_data(board_get_adcch(adc_input), ADC1->DR & ADC_DR_RDATA);	// на этом цикле используем результат
-	// Select next ADC input
-	for (;;)
-	{
-		if (++ adc_input >= board_get_adcinputs())
-		{
-			spool_adcdonebundle();
-			break;
-		}
-		else
-		{
-			// Select next ADC input (only one)
-			const uint_fast8_t adci = board_get_adcch(adc_input);
-			if (isadchw(adci))
-			{
-				ADC1->SQR1 = (ADC1->SQR1 & ~ ADC_SQR1_SQ1) | (ADC_SQR1_SQ1_0 * adci); 
-				ADC1->CR |= ADC_CR_ADSTART;	// ADC Start of Regular conversion
-				break;
-			}
-		}
-	}
-}
-
-#elif CPUSTYLE_R7S721
-
-void RAMFUNC_NONILINE
-r7s721_adi_irq_handler(void)
-{
-
-	//dbg_putchar('.');
-	//dbg_putchar('0' + adc_input);
-	//dbg_putchar('0' + board_get_adcch(adc_input));
-
-	//dbg_putchar(' ');
-	/*
-	static const volatile uint16_t * const adcports [HARDWARE_ADCINPUTS] =
-	{
-		& ADC.ADDRA,
-		& ADC.ADDRB,
-		& ADC.ADDRC,
-		& ADC.ADDRD,
-		& ADC.ADDRE,
-		& ADC.ADDRF,
-		& ADC.ADDRG,
-		& ADC.ADDRH,
-	};
-	*/
-	ASSERT(adc_input < board_get_adcinputs());
-	//const unsigned long sr = ADC1->SR;
-	////ADC1->ISR = 0;		// Сбрасываем все запросы прерывания.
-	board_adc_store_data(board_get_adcch(adc_input), (& ADC.ADDRA) [board_get_adcch(adc_input)] >> 4);	// на этом цикле используем результат
-	// Select next ADC input
-	for (;;)
-	{
-		if (++ adc_input >= board_get_adcinputs())
-		{
-			ADC.ADCSR &= ~ ADC_SR_ADF;	// ADF: A/D end flag - Cleared by reading ADF while ADF = 1, then writing 0 to ADF
-			// Это был последний вход
-			spool_adcdonebundle();
-			break;
-		}
-		else
-		{
-			// Select next ADC input (only one)
-			const uint_fast8_t adci = board_get_adcch(adc_input);
-			if (isadchw(adci))
-			{
-				ADC.ADCSR = (ADC.ADCSR & ~ (ADC_SR_ADF | ADC_SR_CH)) | 
-					(adci << ADC_SR_CH_SHIFT) |	// канал для преобразования
-					1 * ADC_SR_ADST |	// ADST: Single mode: A/D conversion starts
-					0;
-				break;
-			}
-		}
-	}
-}
-
-#else
-	#error No CPUSTYLE_XXXXX defined
-#endif
-
-
-// хотя бы один вход (s-метр) есть.
-void
-hardware_adc_startonescan(void)
-{
-	//ASSERT((adc_input == 0) || (adc_input == board_get_adcinputs()));	// проверяем, успело ли отработать ранее запущенное преобразование
-	if ((adc_input != 0) && (adc_input < board_get_adcinputs()))
-		return;	// не успели
-	// Ищем первый АЦП из встроеных в процессор
-	for (adc_input = 0; adc_input < board_get_adcinputs(); ++ adc_input)
-	{
-		const uint_fast8_t adci = board_get_adcch(adc_input);
-		if (isadchw(adci))
-			break;
-	}
-	if (adc_input >= board_get_adcinputs())
-		return;
-
-#if CPUSTYLE_ATSAM3S || CPUSTYLE_ATSAM4S
-
-	// Select next ADC input (only one)
-	const portholder_t mask = ADC_CHER_CH0 << board_get_adcch(adc_input);
-	ADC->ADC_CHER = mask; /* enable ADC */
-	ADC->ADC_CHDR = ~ mask; /* disable ADC */
-	ADC->ADC_CR = ADC_CR_START;	// Start the AD conversion
-
-#elif CPUSTYLE_AT91SAM7S
-
-	// Select next ADC input (only one)
-	const portholder_t mask = AT91C_ADC_CH0 << board_get_adcch(adc_input);
-	AT91C_BASE_ADC->ADC_CHDR = ~ mask; /* disable ADC inputs */
-	AT91C_BASE_ADC->ADC_CHER = mask; /* enable ADC */
-	AT91C_BASE_ADC->ADC_CR = AT91C_ADC_START;	// Start the AD conversion
-
-#elif CPUSTYLE_ATMEGA
-
-	ADMUX = hardware_atmega_admux(board_get_adcch(adc_input));
-	// Start the AD conversion
-	ADCSRA |= (1U << ADSC);
-
-#elif CPUSTYLE_ATXMEGAXXXA4
-
-	#warning TODO: write atxmega code - ADC start
-	ADCA.CH0.MUXCTRL = board_get_adcch(adc_input);
-	// Start the AD conversion
-	ADCA.CH0.CTRL |= (1U << ADC_CH_START_bp);			// Start the AD conversion
-
-#elif CPUSTYLE_STM32H7XX || CPUSTYLE_STM32MP1
-	// Установить следующий вход (блок ADC может измениться)
-	const adcinmap_t * const adcmap = getadcmap(board_get_adcch(adc_input));
-	ADC_TypeDef * const adc = adcmap->adc;
-
-	if ((adc->CR & ADC_CR_ADEN) == 0)
-		return;
-	if ((adc->CR & ADC_CR_ADSTART) != 0)
-		return;	// еще не закончилось ранее запущеное преобразование
-
-	ASSERT((adc->CR & ADC_CR_JADSTART) == 0);
-	ASSERT((adc->CR & ADC_CR_ADSTART) == 0);
-	ASSERT((adc->CR & (ADC_CR_JADSTART | ADC_CR_ADSTART)) == 0);
-
-	adc->SQR1 = (adc->SQR1 & ~ (ADC_SQR1_L | ADC_SQR1_SQ1)) |
-		0 * ADC_SQR1_L_0 |	//Выбираем преобразование с одного канала. Сканирования нет.
-		adcmap->ch * ADC_SQR1_SQ1_0 |
-		0;
-	adc->CR |= ADC_CR_ADSTART;	// Запуск преобразования
-
-#elif CPUSTYLE_STM32F1XX || CPUSTYLE_STM32F4XX || CPUSTYLE_STM32F7XX
-	//#warning TODO: to be implemented for CPUSTYLE_STM32F1XX
-
-	// Установить следующий вход
-	ADC1->SQR3 = (ADC1->SQR3 & ~ ADC_SQR3_SQ1) | (ADC_SQR3_SQ1_0 * board_get_adcch(adc_input));
-	#if CPUSTYLE_STM32F4XX || CPUSTYLE_STM32F7XX
-		ADC1->CR2 |= ADC_CR2_SWSTART;	// !!!!
-	#endif
-
-#elif CPUSTYLE_STM32F30X
-	#warning TODO: Add code for STM32F30X support
-
-	// Установить следующий вход
-	ADC1->SQR1 = (ADC1->SQR1 & ~ ADC_SQR1_SQ1) | (ADC_SQR1_SQ1_0 * board_get_adcch(adc_input));
-	ADC1->CR |= ADC_CR_ADSTART;	// ADC Start of Regular conversion
-
-#elif CPUSTYLE_STM32L0XX
-
-	ADC1->CHSELR = 1UL <<  board_get_adcch(adc_input);
-	ADC1->CR = ADC_CR_ADSTART;	// ADC Start of Regular conversion
-
-#elif CPUSTYLE_R7S721
-	//#warning TODO: Add code for R7S721 ADC support
-	// 27.4.1 Single Mode
-	// Установить следующий вход
-	ADC.ADCSR = (ADC.ADCSR & ~ (ADC_SR_CH)) |
-		(board_get_adcch(adc_input) << ADC_SR_CH_SHIFT) |	// канал для преобразования
-		1 * ADC_SR_ADST |	// ADST: Single mode: A/D conversion starts
-		0;
-
-#elif CPUSTYLE_STM32F0XX
-	#warning: #warning Must be implemented for this CPU
-
-#else
-
-	#warning Undefined CPUSTYLE_XXX
-
-#endif
-}
-
-#endif /* WITHCPUADCHW */
 
 
 uint32_t hardware_get_random(void)
 {
-#if CPUSTYLE_STM32F4XX || CPUSTYLE_STM32F7XX || CPUSTYLE_STM32H7XX
-
-	#if defined(STM32F446xx)
-		#warning RNG not exist
-		return 0;
-	#elif defined(STM32F401xC)
-		#warning RNG not exist
-		return 0;
-	#else
-		if ((RCC->AHB2ENR & RCC_AHB2ENR_RNGEN) == 0)
-		{
-			RCC->AHB2ENR |= RCC_AHB2ENR_RNGEN;	/* RNG clock enable */
-			(void) RCC->AHB2ENR;
-			RNG->CR |= RNG_CR_RNGEN;
-		}
-
-		while ((RNG->SR & RNG_SR_DRDY) == 0)
-			;
-		return RNG->DR;
-	#endif
-
-#elif CPUSTYLE_STM32L0XX && defined (RCC_AHBENR_RNGEN)
-
-	if ((RCC->AHBENR & RCC_AHBENR_RNGEN) == 0)
-	{
-		RCC->AHBENR |= RCC_AHBENR_RNGEN;	/* RNG clock enable */
-		(void) RCC->AHBENR;
-		RNG->CR |= RNG_CR_RNGEN;
-	}
-
-	while ((RNG->SR & RNG_SR_DRDY) == 0)
-		;
-	return RNG->DR;
-
-#else
-
-	//#warning RNG not exist - hardware_get_random not work
 	return 0;
-
-#endif
-
-
 }
 
 
-#if CPUSTYLE_ARM || CPUSTYPE_TMS320F2833X
 
-// количество циклов на микросекунду
-static unsigned long
-local_delay_uscycles(unsigned timeUS, unsigned cpufreq_MHz)
+static unsigned long local_delay_uscycles(unsigned timeUS, unsigned cpufreq_MHz)
 {
-#if CPUSTYLE_AT91SAM7S
-	#warning TODO: calibrate constant	 looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 175uL / cpufreq_MHz;
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_ATSAM3S
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 270uL / cpufreq_MHz;
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_ATSAM4S
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 270uL / cpufreq_MHz;
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_STM32F0XX
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 190uL / cpufreq_MHz;
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_RP20XX
-	const unsigned long top = timeUS * 1480uL / cpufreq_MHz;
-#elif CPUSTYLE_STM32L0XX
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 20uL / cpufreq_MHz;
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_STM32F1XX
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 345uL / cpufreq_MHz;
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_STM32F30X
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 430uL / cpufreq_MHz;
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_STM32F4XX
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 3800uL / cpufreq_MHz;
-#elif CPUSTYLE_STM32F7XX
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = 55uL * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_STM32H7XX
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = 77uL * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_R7S721
-	const unsigned long top = 105uL * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_XC7Z
-	const unsigned long top = 125uL * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_XCZU
-	const unsigned long top = 125uL * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYPE_ALLWNV3S
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = 125uL * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYLE_STM32MP1
-	// калибровано для 800 МГц процессора
 	const unsigned long top = 120uL * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYPE_TMS320F2833X && 1 // RAM code0
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = timeUS * 760uL / cpufreq_MHz;	// tested @ 100 MHz Execute from RAM
-	//const unsigned long top = 55 * cpufreq_MHz * timeUS / 1000;
-#elif CPUSTYPE_TMS320F2833X	&& 0	// FLASH code
-	#warning TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = 55uL * cpufreq_MHz * timeUS / 1000;
-#else
-	#error TODO: calibrate constant looks like CPUSTYLE_STM32MP1
-	const unsigned long top = 55uL * cpufreq_MHz * timeUS / 1000;
-#endif
 	return top;
 }
-// Атрибут RAMFUNC_NONILINE убран, так как функция
-// используется в инициализации SDRAM на процессорах STM32F746.
-// TODO: перекалибровать для FLASH контроллеров.
+
 void /* RAMFUNC_NONILINE */ local_delay_us(int timeUS)
 {
 	// Частота процессора приволится к мегагерцам.
@@ -1379,106 +244,6 @@ void local_delay_ms(int timeMS)
 	}
 }
 
-#endif /* CPUSTYLE_ARM || CPUSTYPE_TMS320F2833X */
-
-
-#if CPUSTYLE_STM32H7XX
-
-// MPU initialize
-static void lowlevel_stm32h7xx_mpu_initialize(void)
-{
-	/* Disables the MPU */
-	MPU->CTRL = (MPU->CTRL & ~ (MPU_CTRL_ENABLE_Msk)) |
-		0 * MPU_CTRL_ENABLE_Msk |
-		0;
-
-
- 
-#define INNER_NORMAL_WB_RWA_TYPE(x)   (( 0x04 << MPU_RASR_TEX_Pos ) | ( DISABLE  << MPU_RASR_C_Pos ) | ( ENABLE  << MPU_RASR_B_Pos )  | ( x << MPU_RASR_S_Pos )) 
-#define INNER_NORMAL_WB_NWA_TYPE(x)   (( 0x04 << MPU_RASR_TEX_Pos ) | ( ENABLE  << MPU_RASR_C_Pos )  | ( ENABLE  << MPU_RASR_B_Pos )  | ( x << MPU_RASR_S_Pos )) 
-#define STRONGLY_ORDERED_SHAREABLE_TYPE      (( 0x00 << MPU_RASR_TEX_Pos ) | ( DISABLE << MPU_RASR_C_Pos ) | ( DISABLE << MPU_RASR_B_Pos ))     // DO not care // 
-#define SHAREABLE_DEVICE_TYPE                (( 0x00 << MPU_RASR_TEX_Pos ) | ( DISABLE << MPU_RASR_C_Pos ) | ( ENABLE  << MPU_RASR_B_Pos ))     // DO not care // 
- 
-
-	// SRAM
-	/* Set the Region base address and region number */
-	MPU->RBAR = D1_AXISRAM_BASE | MPU_RBAR_VALID_Msk | 0x00;
-    MPU->RASR = 
-		(0x00 << MPU_RASR_XN_Pos)   |	// DisableExec
-		(0x03 << MPU_RASR_AP_Pos)   |	// AccessPermission
-		(0x04 << MPU_RASR_TEX_Pos)  |	// TypeExtField
-		(0x01 << MPU_RASR_C_Pos)    |	// IsCacheable
-	 	(0x01 << MPU_RASR_B_Pos)    |	// IsBufferable
-		(0x00 << MPU_RASR_S_Pos)    |	// IsShareable
-		(0x00 << MPU_RASR_SRD_Pos)  |	// SubRegionDisable (8 bits mask)
-		(0x12 << MPU_RASR_SIZE_Pos) |	// Size 512 kB
-		(0x01 << MPU_RASR_ENABLE_Pos) |	// Enable
-		0;
-	// ITCM
-	/* Set the Region base address and region number */
-	MPU->RBAR = D1_ITCMRAM_BASE | MPU_RBAR_VALID_Msk | 0x01;
-    MPU->RASR = 
-		(0x00 << MPU_RASR_XN_Pos)   |	// DisableExec
-		(0x03 << MPU_RASR_AP_Pos)   |	// AccessPermission
-		(0x04 << MPU_RASR_TEX_Pos)  |	// TypeExtField
-		(0x01 << MPU_RASR_C_Pos)    |	// IsCacheable
-	 	(0x01 << MPU_RASR_B_Pos)    |	// IsBufferable
-		(0x00 << MPU_RASR_S_Pos)    |	// IsShareable
-		(0x00 << MPU_RASR_SRD_Pos)  |	// SubRegionDisable (8 bits mask)
-		(0x0F << MPU_RASR_SIZE_Pos) |	// Size 64 kB
-		(0x01 << MPU_RASR_ENABLE_Pos) |	// Enable
-		0;
-	// DTCM
-	/* Set the Region base address and region number */
-	MPU->RBAR = D1_DTCMRAM_BASE | MPU_RBAR_VALID_Msk | 0x02;
-    MPU->RASR = 
-		(0x00 << MPU_RASR_XN_Pos)   |	// DisableExec
-		(0x03 << MPU_RASR_AP_Pos)   |	// AccessPermission
-		(0x04 << MPU_RASR_TEX_Pos)  |	// TypeExtField
-		(0x01 << MPU_RASR_C_Pos)    |	// IsCacheable
-	 	(0x01 << MPU_RASR_B_Pos)    |	// IsBufferable
-		(0x00 << MPU_RASR_S_Pos)    |	// IsShareable
-		(0x00 << MPU_RASR_SRD_Pos)  |	// SubRegionDisable (8 bits mask)
-		(0x10 << MPU_RASR_SIZE_Pos) |	// Size 128 kB
-		(0x01 << MPU_RASR_ENABLE_Pos) |	// Enable
-		0;
-	// FLASH
-	/* Set the Region base address and region number */
-	MPU->RBAR = D1_AXIFLASH_BASE | MPU_RBAR_VALID_Msk | 0x03;
-    MPU->RASR = 
-		(0x00 << MPU_RASR_XN_Pos)   |	// DisableExec
-		(0x03 << MPU_RASR_AP_Pos)   |	// AccessPermission
-		(0x04 << MPU_RASR_TEX_Pos)  |	// TypeExtField
-		(0x01 << MPU_RASR_C_Pos)    |	// IsCacheable
-	 	(0x01 << MPU_RASR_B_Pos)    |	// IsBufferable
-		(0x00 << MPU_RASR_S_Pos)    |	// IsShareable
-		(0x00 << MPU_RASR_SRD_Pos)  |	// SubRegionDisable (8 bits mask)
-		(0x14 << MPU_RASR_SIZE_Pos) |	// Size 2 MB
-		(0x01 << MPU_RASR_ENABLE_Pos) |	// Enable
-		0;
-	// DEVICE
-	/* Set the Region base address and region number */
-	MPU->RBAR = PERIPH_BASE | MPU_RBAR_VALID_Msk | 0x04;
-    MPU->RASR = 
-		(0x00 << MPU_RASR_XN_Pos)   |	// DisableExec
-		(0x03 << MPU_RASR_AP_Pos)   |	// AccessPermission
-		(0x04 << MPU_RASR_TEX_Pos)  |	// TypeExtField
-		(0x00 << MPU_RASR_C_Pos)    |	// IsCacheable
-	 	(0x00 << MPU_RASR_B_Pos)    |	// IsBufferable
-		(0x00 << MPU_RASR_S_Pos)    |	// IsShareable
-		(0x00 << MPU_RASR_SRD_Pos)  |	// SubRegionDisable (8 bits mask)
-		(0x1B << MPU_RASR_SIZE_Pos) |	// Size 256 MB
-		(0x01 << MPU_RASR_ENABLE_Pos) |	// Enable
-		0;
-	/* Enables the MPU */
-	MPU->CTRL = (MPU->CTRL & ~ (MPU_CTRL_ENABLE_Msk)) |
-		1 * MPU_CTRL_ENABLE_Msk |
-		0;
-}
-
-#endif /* CPUSTYLE_STM32H7XX */
-
-#if (__CORTEX_A != 0)
 
 //	MRC p15, 0, <Rt>, c6, c0, 2 ; Read IFAR into Rt
 //	MCR p15, 0, <Rt>, c6, c0, 2 ; Write Rt to IFAR
@@ -1578,12 +343,6 @@ void PAbort_Handler(void)
 //	}
 	for (;;)
 	{
-#if defined (BOARD_BLINK_SETSTATE)
-		BOARD_BLINK_SETSTATE(1);
-		local_delay_ms(250);
-		BOARD_BLINK_SETSTATE(0);
-		local_delay_ms(250);
-#endif /* defined (BOARD_BLINK_SETSTATE) */
 	}
 }
 
@@ -1643,12 +402,6 @@ void DAbort_Handler(void)
 	}
 	for (;;)
 	{
-#if defined (BOARD_BLINK_SETSTATE)
-		BOARD_BLINK_SETSTATE(1);
-		local_delay_ms(1250);
-		BOARD_BLINK_SETSTATE(0);
-		local_delay_ms(1250);
-#endif /* defined (BOARD_BLINK_SETSTATE) */
 	}
 }
 
@@ -1668,44 +421,6 @@ void Hyp_Handler(void)
 		;
 }
 
-#endif /* (__CORTEX_A != 0) */
-
-#if CPUSTYLE_ARM_CM7
-
-// Сейчас в эту память будем читать по DMA
-// Убрать копию этой области из кэша
-// Используется только в startup
-void arm_hardware_invalidate(uintptr_t base, int_fast32_t dsize)
-{
-	//ASSERT((base % 32) == 0);		// при работе с BACKUP SRAM невыровненно
-	SCB_InvalidateDCache_by_Addr((void *) base, dsize);	// DCIMVAC register used.
-}
-
-// Сейчас эта память будет записываться по DMA куда-то
-// Записать содержимое кэша данных в память
-void arm_hardware_flush(uintptr_t base, int_fast32_t dsize)
-{
-	//ASSERT((base % 32) == 0);		// при работе с BACKUP SRAM невыровненно
-	SCB_CleanDCache_by_Addr((void *) base, dsize);	// DCCMVAC register used.
-}
-
-// Записать содержимое кэша данных в память
-// применяетмся после начальной инициализации среды выполнния
-void arm_hardware_flush_all(void)
-{
-	SCB_CleanDCache();	// DCCMVAC register used.
-}
-
-// Сейчас эта память будет записываться по DMA куда-то. Потом содержимое не требуется
-// Записать содержимое кэша данных в память
-// Убрать копию этой области из кэша
-void arm_hardware_flush_invalidate(uintptr_t base, int_fast32_t dsize)
-{
-	//ASSERT((base % 32) == 0);		// при работе с BACKUP SRAM невыровненно
-	SCB_CleanInvalidateDCache_by_Addr((void *) base, dsize);	// DCCIMVAC register used.
-}
-
-#elif (__CORTEX_A != 0) || CPUSTYLE_ARM9
 
 //	MVA
 //	For more information about the possible meaning when the table shows that an MVA is required
@@ -1851,111 +566,24 @@ void arm_hardware_flush_invalidate(uintptr_t addr, int_fast32_t dsize)
 #endif /* (__L2C_PRESENT == 1) */
 }
 
-#else
-
-// Заглушки
-// Сейчас в эту память будем читать по DMA
-// Используется только в startup
-void arm_hardware_invalidate(uintptr_t base, int_fast32_t dsize)
-{
-}
-
-// Сейчас эта память будет записываться по DMA куда-то
-void arm_hardware_flush(uintptr_t base, int_fast32_t dsize)
-{
-}
-
-// Записать содержимое кэша данных в память
-// применяетмся после начальной инициализации среды выполнния
-void arm_hardware_flush_all(void)
-{
-}
-
-// Сейчас эта память будет записываться по DMA куда-то. Потом содержимое не требуется
-void arm_hardware_flush_invalidate(uintptr_t base, int_fast32_t dsize)
-{
-}
-
-#endif /* CPUSTYLE_ARM_CM7 */
 
 
 // получение из аппаратного счетчика монотонно увеличивающегося кода
 // see SystemInit() in hardware.c
 uint_fast32_t cpu_getdebugticks(void)
 {
-#if CPUSTYLE_ARM_CM3 || CPUSTYLE_ARM_CM4 || CPUSTYLE_ARM_CM7
-	return DWT->CYCCNT;	// use TIMESTAMP_GET();
-#elif (__CORTEX_A != 0) || CPUSTYLE_ARM9
-	{
-		uint32_t result;
-		// Read CCNT Register
-		//	MRC p15, 0, <Rt>, c9, c13, 0 : Read PMCCNTR into Rt
-		//	MCR p15, 0, <Rt>, c9, c13, 0 : Write Rt to PMCCNTR
-		//asm volatile ("MRC p15, 0, %0, c9, c13, 0\t\n": "=r"(value));  
-		__get_CP(15, 0, result, 9, 13, 0);
-		return(result);
-	}
-#else
-	//#warning Wromg CPUSTYLE_xxx - cpu_getdebugticks not work
-	return 0;
-#endif
+	uint32_t result;
+	// Read CCNT Register
+	//	MRC p15, 0, <Rt>, c9, c13, 0 : Read PMCCNTR into Rt
+	//	MCR p15, 0, <Rt>, c9, c13, 0 : Write Rt to PMCCNTR
+	//asm volatile ("MRC p15, 0, %0, c9, c13, 0\t\n": "=r"(value));  
+	__get_CP(15, 0, result, 9, 13, 0);
+	return(result);
 }
 
 
-#if 0
-
-typedef struct irqlog_tag
-{
-	IRQn_ID_t irqn;
-	int pos;	// in/out
-} irqlog_t;
-enum { IRQLOG_LEN = 1024 };
-
-static volatile unsigned irqlog_enabled;
-static volatile unsigned irqlog_count;
-static irqlog_t irqlogs [IRQLOG_LEN];
-
-void irqlog_start(void)
-{
-	irqlog_enabled = 0;
-	irqlog_count = 0;
-	irqlog_enabled = 1;
-}
-
-void irqlog_stop(void)
-{
-	irqlog_enabled = 0;
-}
-
-void irqlog_record(int pos, IRQn_ID_t irqn)
-{
-	if (irqlog_enabled == 0)
-		return;
-
-	if (irqlog_count >= IRQLOG_LEN)
-		return;
-
-	irqlog_t * const p = & irqlogs [irqlog_count ++];
-	p->pos = pos;
-	p->irqn = irqn;
-}
-
-void irqlog_print(void)
-{
-	PRINTF("irqlog_count=%u\n", irqlog_count);
-	unsigned i;
-	for (i = 0; i < irqlog_count; ++ i)
-	{
-		const irqlog_t * const p = & irqlogs [i];
-		PRINTF(" pos=%d, IRQ=%3u (0x%03X)\n", (int) p->pos, (unsigned) p->irqn, (unsigned) p->irqn);
-	}
-}
-#endif
-
-#if (__CORTEX_A != 0) || CPUSTYLE_ARM9
-
-#include "hardware.h"
-#include "formats.h"
+// #include "hardware.h"
+// #include "formats.h"
 //#include "hardware_r7s721.h"
 
 //#define INTC_LEVEL_SENSITIVE    (0)     /* Level sense  */
@@ -1963,53 +591,6 @@ void irqlog_print(void)
 
 /* ==== Interrupt detection ==== */
 
-#if defined(__GIC_PRESENT) && (__GIC_PRESENT == 1U)
-
-#if 0//CPUSTYLE_R7S721
-
-/* Вызывается из crt_CortexA.S со сброшенным флагом разрешения прерываний */
-void IRQ_Handler_GIC(void)
-{
-	//dbg_putchar('/');
-	const IRQn_ID_t irqn = IRQ_GetActiveIRQ();
-	//irqlog_record(1, irqn);
-	//static const char hex [16] = "0123456789ABCDEF";
-	//dbg_putchar(hex [(irqn >> 8) & 0x0F]);
-	//dbg_putchar(hex [(irqn >> 4) & 0x0F]);
-	//dbg_putchar(hex [(irqn >> 0) & 0x0F]);
-	////ASSERT(irqn != 0x3FC && irqn != 0x3FD);
-	IRQHandler_t const handler = IRQ_GetHandler(irqn);
-
-#if 0
-	switch (irqn)
-	{
-	//case PL310ERR_IRQn:
-	//	break;
-	default:
-		PRINTF(PSTR("IRQ_Handler_GICv1: irq=%d, handler=%p\n"), (int) irqn, (void *) handler);
-		break;
-	}
-#endif
-	if (handler != NULL)
-	{
-#if WITHNESTEDINTERRUPTS
-
-		__enable_irq();						/* modify I bit in CPSR */
-		(* handler)();	    /* Call interrupt handler */
-		__disable_irq();					/* modify I bit in CPSR */
-
-#else /* WITHNESTEDINTERRUPTS */
-
-		(* handler)();	    /* Call interrupt handler */
-
-#endif /* WITHNESTEDINTERRUPTS */
-	}
-	//irqlog_record(2, irqn);
-	//dbg_putchar('\\');
-	IRQ_EndOfInterrupt(irqn);
-}
-
-#elif 1//CPUSTYLE_R7S721
 
 #define INT_ID_MASK		0x3ffuL
 /* Interrupt IDs reported by the HPPIR and IAR registers */
@@ -2138,9 +719,6 @@ void IRQ_Handler_GIC(void)
 	//GIC_EndInterrupt(gicc_iar);	/* CPUID, EOINTID */
 	GICInterface->EOIR = gicc_iar;
 }
-#endif
-
-#endif /* defined(__GIC_PRESENT) && (__GIC_PRESENT == 1U) */
 
 uint8_t __attribute__ ((section(".stack"), used, aligned(64))) mystack [2048];
 /******************************************************************************/
@@ -2236,32 +814,18 @@ M_SIZE_IO_2     EQU     2550            ; [Area11] I/O area 2
 #define Bval_STGORD			0x00	/* Strongly-ordered, shareable */
 #define Cval_STGORD			0x00	/* Strongly-ordered, shareable */
 
-#if 0///CPUSTYLE_STM32MP1
-	// for debug: no Write-Allocate
-	#define TEXval_WBCACHE		0x00	/* Outer and Inner Write-Back, no Write-Allocate */
-	#define Bval_WBCACHE		0x01	/* Outer and Inner Write-Back, no Write-Allocate */
-	#define Cval_WBCACHE		0x01	/* Outer and Inner Write-Back, no Write-Allocate */
-#else /* CPUSTYLE_STM32MP1 */
-	#define TEXval_WBCACHE		0x01	/* Outer and Inner Write-Back, Write-Allocate */
-	#define Bval_WBCACHE		0x01	/* Outer and Inner Write-Back, Write-Allocate */
-	#define Cval_WBCACHE		0x01	/* Outer and Inner Write-Back, Write-Allocate */
-#endif /* CPUSTYLE_STM32MP1 */
+#define TEXval_WBCACHE		0x01	/* Outer and Inner Write-Back, Write-Allocate */
+#define Bval_WBCACHE		0x01	/* Outer and Inner Write-Back, Write-Allocate */
+#define Cval_WBCACHE		0x01	/* Outer and Inner Write-Back, Write-Allocate */
 
 #define TEXval_NOCACHE		0x01	/* Outer and Inner Non-cacheable, S bit */
 #define Bval_NOCACHE		0x00	/* Outer and Inner Non-cacheable, S bit */
 #define Cval_NOCACHE		0x00	/* Outer and Inner Non-cacheable, S bit */
 
-#if 0
-	// test
-	#define TEXval_DEVICE		0x00	/* Shareable Device */
-	#define Bval_DEVICE			0x00	/* Shareable Device */
-	#define Cval_DEVICE			0x01	/* Shareable Device */
-#else
-	// normal
-	#define TEXval_DEVICE		0x02	/* Non-shareable Device */
-	#define Bval_DEVICE			0x00	/* Non-shareable Device */
-	#define Cval_DEVICE			0x00	/* Non-shareable Device */
-#endif
+// normal
+#define TEXval_DEVICE		0x02	/* Non-shareable Device */
+#define Bval_DEVICE			0x00	/* Non-shareable Device */
+#define Cval_DEVICE			0x00	/* Non-shareable Device */
 
 #if WITHSMPSYSTEM
 	#define SHAREDval 1		// required for ldrex.. and strex.. functionality
@@ -2331,27 +895,6 @@ ttb_accessbits(uintptr_t a, int ro, int xn)
 {
 	const uint32_t addrbase = a & 0xFFF00000uL;
 
-#if CPUSTYLE_R7S721020
-
-	// Все сравнения должны быть не точнее 1 MB
-
-	if (a == 0x00000000uL)
-		return addrbase | TTB_PARA_NO_ACCESS;		// NULL pointers access trap
-
-	if (a >= 0x18000000uL && a < 0x20000000uL)			// FIXME: QSPI memory mapped should be R/O, but...
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro || 0, 0);
-
-	if (a >= 0x00000000uL && a < 0x00A00000uL)			// up to 10 MB
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-	if (a >= 0x20000000uL && a < 0x20A00000uL)			// up to 10 MB
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	return addrbase | TTB_PARA_DEVICE;
-
-#elif CPUSTYLE_STM32MP1
-
-	// Все сравнения должны быть не точнее 1 MB
-
 	if (a < 0x10000000uL)			// BOOT
 		return addrbase | TTB_PARA_NO_ACCESS;			// NULL pointers access trap
 
@@ -2369,107 +912,19 @@ ttb_accessbits(uintptr_t a, int ro, int xn)
 
 	if (a >= 0xA0000000uL && a < 0xC0000000uL)			//  GIC
 		return addrbase | TTB_PARA_DEVICE;
-#if 1
 	// 1 GB DDR RAM memory size allowed
 	if (a >= 0xC0000000uL)								// DDR memory
 		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
 
-#else
-
-	if (a >= 0xC0000000uL && a < 0xE0000000uL)			// DDR memory
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	if (a >= 0xE0000000uL)								//  DEBUG
-		return addrbase | TTB_PARA_DEVICE;
-
-#endif
-
 	return addrbase | TTB_PARA_NO_ACCESS;
-
-#elif CPUSTYLE_XC7Z
-
-	// Все сравнения должны быть не точнее 1 MB
-
-	if (a >= 0x00000000uL && a < 0x00100000uL)			//  OCM (On Chip Memory), DDR3_SCU
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	if (a >= 0x00100000uL && a < 0x40000000uL)			//  DDR3 - 255 MB
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	if (a >= 0xE1000000uL && a < 0xE6000000uL)			//  SMC (Static Memory Controller)
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	if (a >= 0x40000000uL && a < 0xFC000000uL)	// PL, peripherials
-		return addrbase | TTB_PARA_DEVICE;
-
-	if (a >= 0xFC000000uL && a < 0xFE000000uL)			//  Quad-SPI linear address for linear mode
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro || 1, 0);
-
-	if (a >= 0xFFF00000uL)			// OCM (On Chip Memory) is mapped high
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	return addrbase | TTB_PARA_DEVICE;
-
-#elif CPUSTYLE_XCZU
-
-	// Все сравнения должны быть не точнее 1 MB
-
-	if (a >= 0x00000000uL && a < 0x00100000uL)			//  OCM (On Chip Memory), DDR3_SCU
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	if (a >= 0x00100000uL && a < 0x40000000uL)			//  DDR3 - 255 MB
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	if (a >= 0xE1000000uL && a < 0xE6000000uL)			//  SMC (Static Memory Controller)
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	if (a >= 0x40000000uL && a < 0xFC000000uL)	// PL, peripherials
-		return addrbase | TTB_PARA_DEVICE;
-
-	if (a >= 0xFC000000uL && a < 0xFE000000uL)			//  Quad-SPI linear address for linear mode
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro || 1, 0);
-
-	if (a >= 0xFFF00000uL)			// OCM (On Chip Memory) is mapped high
-		return addrbase | TTB_PARA_NORMAL_CACHE(ro, 0);
-
-	return addrbase | TTB_PARA_DEVICE;
-
-#else
-
-	// Все сравнения должны быть не точнее 1 MB
-
-	#warning ttb_accessbits: Unhandled CPUSTYLE_xxxx
-
-	return addrbase | TTB_PARA_DEVICE;
-
-#endif
 }
+
 /* Загрузка TTBR, инвалидация кеш памяти и включение MMU */
-static void FLASHMEMINITFUNC
-sysinit_ttbr_initialize(void)
+static void FLASHMEMINITFUNC sysinit_ttbr_initialize(void)
 {
 	extern volatile uint32_t __TTB_BASE;		// получено из скрипта линкера
 	volatile uint32_t * const tlbbase = & __TTB_BASE;
 
-#if 0
-	/* Set location of level 1 page table
-	; 31:14 - Translation table base addr (31:14-TTBCR.N, TTBCR.N is 0 out of reset)
-	; 13:7  - 0x0
-	; 6     - IRGN[0] 0x1  (Inner WB WA)
-	; 5     - NOS     0x0  (Non-shared)
-	; 4:3   - RGN     0x01 (Outer WB WA)
-	; 2     - IMP     0x0  (Implementation Defined)
-	; 1     - S       0x0  (Non-shared)
-	; 0     - IRGN[1] 0x0  (Inner WB WA) */
-	__set_TTBR0(((uint32_t)&Image$$TTB$$ZI$$Base) | 0x48);
-	__ISB();
-
-	/* Set up domain access control register
-	; We set domain 0 to Client and all other domains to No Access.
-	; All translation table entries specify domain 0 */
-	__set_DACR(1);
-	__ISB();
-#else
 	//CP15_writeTTBCR(0);
 	   /* Set location of level 1 page table
 	    ; 31:14 - Translation table base addr (31:14-TTBCR.N, TTBCR.N is 0 out of reset)
@@ -2487,7 +942,6 @@ sysinit_ttbr_initialize(void)
 	// Program the domain access register
 	//__set_DACR(0x55555555); // domain 15: access are not checked
 	__set_DACR(0xFFFFFFFF); // domain 15: access are not checked
-#endif
 
 	MMU_InvalidateTLB();
 
@@ -2523,16 +977,13 @@ ttb_initialize(uint32_t (* accessbits)(uintptr_t a, int ro, int xn), uintptr_t t
 		textstart += pagesize;
 	}
 
-#if (CPUSTYLE_STM32MP1 || CPUSTYLE_XC7Z) && ! WITHISBOOTLOADER
 	/* R/O, XN for pages table. - 1 MB size. */
 	tlbbase [(uintptr_t) tlbbase / pagesize] = accessbits((uintptr_t) tlbbase, 1, 1);
-#endif /* CPUSTYLE_STM32MP1 && ! WITHISBOOTLOADER */
 }
 
 // TODO: use MMU_TTSection. See also MMU_TTPage4k MMU_TTPage64k and MMU_CreateTranslationTable
 // с точностью до 1 мегабайта
-static void
-FLASHMEMINITFUNC
+static void FLASHMEMINITFUNC
 ttb_map(
 	uintptr_t va,	/* virtual address */
 	uintptr_t la,	/* linear (physical) address */
@@ -2545,76 +996,20 @@ ttb_map(
 	tlbbase [i] =  accessbits(la);
 }
 
-#endif /* CPUSTYLE_R7S721 */
 
-// PLL and caches iniitialize
-static void FLASHMEMINITFUNC
-sysinit_fpu_initialize(void)
+static void FLASHMEMINITFUNC sysinit_fpu_initialize(void)
 {
-#if CPUSTYLE_ARM_CM3 || CPUSTYLE_ARM_CM4 || CPUSTYLE_ARM_CM7
-	#if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-
-		/* FPU enable on Cortex M4F */
-		SCB->CPACR |= ((3UL << 10 * 2) | (3UL << 11 * 2));  /* set CP10 and CP11 Full Access */
-
-		#if 0
-			/* Lazy stacking enabled, automatic state saving enabled is a default state */
-			/* http://infocenter.arm.com/help/topic/com.arm.doc.dai0298a/DAI0298A_cortex_m4f_lazy_stacking_and_context_switching.pdf */
-			__set_FPSCR(			/* Floating-Point Context Control Register */
-				(__get_FPSCR() & ~ (FPU_FPCCR_LSPEN_Msk)) | /* disable Lazy stacking feature */
-				FPU_FPCCR_ASPEN_Msk |
-				0);
-		#endif
-
-	#endif
-	#ifdef UNALIGNED_SUPPORT_DISABLE
-		SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
-	#endif
-
-#elif (__CORTEX_A != 0)
-
 	// FPU
 	__FPU_Enable();
-
-#endif /* CPUSTYLE_ARM_CM3 || CPUSTYLE_ARM_CM4 || CPUSTYLE_ARM_CM7 */
-
-#if (__CORTEX_M != 0) && CTLSTYLE_V3D
-	SCB->CCR &= ~ SCB_CCR_UNALIGN_TRP_Msk;
-#endif /* (__CORTEX_M != 0) && CTLSTYLE_V3D */
 }
 
-static void FLASHMEMINITFUNC
-sysintt_sdram_initialize(void)
+static void FLASHMEMINITFUNC sysintt_sdram_initialize(void)
 {
-#if WITHSDRAMHW && WITHISBOOTLOADER
-	/* В процессоре есть внешняя память - если уже в ней то не трогаем */
-	arm_hardware_sdram_initialize();
-
-#elif WITHSDRAMHW && (CTLSTYLE_V1D || CTLSTYLE_V3D)
-	/* В процессоре есть внешняя память - только данные */
-	arm_hardware_sdram_initialize();
-
-#endif /* WITHSDRAMHW && WITHISBOOTLOADER */
 }
 
-static void FLASHMEMINITFUNC
-sysinit_debug_initialize(void)
+static void FLASHMEMINITFUNC sysinit_debug_initialize(void)
 {
-#if __CORTEX_M == 3U || __CORTEX_M == 4U || __CORTEX_M == 7U
-
-	#if WITHDEBUG && __CORTEX_M == 7U
-		// Поддержка для функций диагностики быстродействия BEGINx_STAMP/ENDx_STAMP - audio.c
-		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-		DWT->LAR = 0xC5ACCE55;	// Key value for unlock
-		DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-		DWT->LAR = 0x00000000;	// Key value for lock
-	#endif /* WITHDEBUG && __CORTEX_M == 7U */
-
-#endif /* __CORTEX_M == 3U || __CORTEX_M == 4U || __CORTEX_M == 7U */
-
-#if (__CORTEX_A != 0) || CPUSTYLE_ARM9
-
-	#if WITHDEBUG
+#if WITHDEBUG
 	{
 		// Поддержка для функций диагностики быстродействия BEGINx_STAMP/ENDx_STAMP - audio.c
 		// From https://stackoverflow.com/questions/3247373/how-to-measure-program-execution-time-in-arm-cortex-a8-processor
@@ -2647,17 +1042,12 @@ sysinit_debug_initialize(void)
 		//asm volatile ("MCR p15, 0, %0, c9, c12, 3\t\n" :: "r"(0x8000000f));
 		__set_CP(15, 0, 0x8000000f, 9, 12, 3);
 	}
-	#endif /* WITHDEBUG */
 
-#endif /* (__CORTEX_A != 0) || CPUSTYLE_ARM9 */
-
-#if WITHDEBUG
 	HARDWARE_DEBUG_INITIALIZE();
 	HARDWARE_DEBUG_SET_SPEED(DEBUGSPEED);
 #endif /* WITHDEBUG */
 }
 
-#if (__CORTEX_A != 0) || CPUSTYLE_ARM9
 /** \brief  Set HVBAR
 
     This function assigns the given value to the Hyp Vector Base Address Register.
@@ -2669,13 +1059,9 @@ __STATIC_FORCEINLINE void __set_HVBAR(uint32_t hvbar)
 	// cp, op1, Rt, CRn, CRm, op2
   __set_CP(15, 4, hvbar, 12, 0, 0);
 }
-#endif /* (__CORTEX_A != 0) || CPUSTYLE_ARM9 */
 
-static void FLASHMEMINITFUNC
-sysinit_vbar_initialize(void)
+static void FLASHMEMINITFUNC sysinit_vbar_initialize(void)
 {
-#if (__CORTEX_A != 0) || CPUSTYLE_ARM9
-
 	extern unsigned long __Vectors;
 
 	const uintptr_t vbase = (uintptr_t) & __Vectors;
@@ -2689,171 +1075,60 @@ sysinit_vbar_initialize(void)
 
 	//PRINTF("vbar=%08lX, mvbar=%08lX\n", __get_VBAR(), __get_MVBAR());
 
-#endif /* (__CORTEX_A != 0) */
 }
 
-static void FLASHMEMINITFUNC
-sysinit_mmu_initialize(void)
+static void FLASHMEMINITFUNC sysinit_mmu_initialize(void)
 {
 	//PRINTF("sysinit_mmu_initialize\n");
-#if (__CORTEX_A != 0) || CPUSTYLE_ARM9
 	// MMU iniitialize
-
-#if 0 && WITHDEBUG
-	uint_fast32_t leveli;
-	for (leveli = 0; leveli <= ARM_CA9_CACHELEVELMAX; ++ leveli)
-	{
-
-		__set_CSSELR(leveli * 2 + 0);	// data cache select
-		const uint32_t ccsidr0 = __get_CCSIDR();
-		const uint32_t assoc0 = (ccsidr0 >> 3) & 0x3FF;
-		const int passoc0 = countbits2(assoc0);
-		const uint32_t maxsets0 = (ccsidr0 >> 13) & 0x7FFF;
-		const uint32_t linesize0 = 4uL << (((ccsidr0 >> 0) & 0x07) + 2);
-		PRINTF(PSTR("cpu_initialize1: level=%d, passoc=%d, assoc=%u, maxsets=%u, data cache row size = %u\n"), leveli, passoc0, assoc0, maxsets0, linesize0);
-
-		__set_CSSELR(leveli * 2 + 1);	// instruction cache select
-		const uint32_t ccsidr1 = __get_CCSIDR();
-		const uint32_t assoc1 = (ccsidr1 >> 3) & 0x3FF;
-		const int passoc1 = countbits2(assoc1);
-		const uint32_t maxsets1 = (ccsidr1 >> 13) & 0x7FFF;
-		const uint32_t linesize1 = 4uL << (((ccsidr1 >> 0) & 0x07) + 2);
-		PRINTF(PSTR("cpu_initialize1: level=%d, passoc=%d, assoc=%u, maxsets=%u, instr cache row size = %u\n"), leveli, passoc1, assoc1, maxsets1, linesize1);
-	}
-#endif /* WITHDEBUG */
-#if 1 && (__CORTEX_A == 9U) && WITHSMPSYSTEM && defined (SCU_CONTROL_BASE)
-	{
-		// SCU inut
-		// SCU Control Register
-		((volatile uint32_t *) SCU_CONTROL_BASE) [0] &= ~ 0x01;
-//
-//
-//		// Filtering Start Address Register
-//		((volatile uint32_t *) SCU_CONTROL_BASE) [0x10] = (((volatile uint32_t *) SCU_CONTROL_BASE) [0x10] & ~ (0xFFFuL << 20)) |
-//				(0x001uL << 20) |
-//				0;
-//		TP();
-//		// Filtering End Address Register
-//		((volatile uint32_t *) SCU_CONTROL_BASE) [0x11] = (((volatile uint32_t *) SCU_CONTROL_BASE) [0x11] & ~ (0xFFFuL << 20)) |
-//				(0xFFEuL << 20) |
-//				0;
-
-		((volatile uint32_t *) SCU_CONTROL_BASE) [0x3] = 0;		// SCU Invalidate All Registers in Secure State
-		((volatile uint32_t *) SCU_CONTROL_BASE) [0] |= 0x01;	// SCU Control Register
-	}
-#endif
-
-#if WITHISBOOTLOADER || CPUSTYLE_R7S721
-
-	// MMU iniitialize
-	ttb_initialize(ttb_accessbits, 0, 0);
-	sysinit_ttbr_initialize();	/* Загрузка TTBR, инвалидация кеш памяти и включение MMU */
-
-#elif CPUSTYLE_STM32MP1
 	extern uint32_t __data_start__;
 	// MMU iniitialize
 	ttb_initialize(ttb_accessbits, 0xC0000000, (uintptr_t) & __data_start__ - 0xC0000000);
 	sysinit_ttbr_initialize();	/* Загрузка TTBR, инвалидация кеш памяти и включение MMU */
-
-#else
-	// MMU iniitialize
-	ttb_initialize(ttb_accessbits, 0, 0);
-	sysinit_ttbr_initialize();	/* Загрузка TTBR, инвалидация кеш памяти и включение MMU */
-
-#endif
-
-#endif /* (__CORTEX_A != 0) */
-
 	//PRINTF("MMU initialized\n");
 }
 
-// ОБщая для всех процессоров инициализация
-static void FLASHMEMINITFUNC
-sysinit_cache_initialize(void)
+static void FLASHMEMINITFUNC sysinit_cache_initialize(void)
 {
-#if (__CORTEX_M != 0)
-	#if __ICACHE_PRESENT
-
-		SCB_InvalidateICache();
-		SCB_EnableICache();
-
-	#endif /* __ICACHE_PRESENT */
-	#if __DCACHE_PRESENT
-
-		SCB_InvalidateDCache();
-		SCB_EnableDCache();
-
-	#endif /* __DCACHE_PRESENT */
-
-	//arm_hardware_flush_all();
-#endif /* (__CORTEX_M != 0) */
-
-#if (__CORTEX_A == 7U) || (__CORTEX_A == 9U) || CPUSTYLE_ARM9
-
-	#if (CPUSTYLE_R7S721 && WITHISBOOTLOADER)
-	#else
-		L1C_InvalidateDCacheAll();
-		L1C_InvalidateICacheAll();
-		L1C_InvalidateBTAC();
-		L1C_EnableCaches();
-		L1C_EnableBTAC();
-		L1C_EnableCaches();
-		L1C_EnableBTAC();
-		#if (__CORTEX_A == 9U)
-			// not set the ACTLR.SMP
-			// 0x02: L2 Prefetch hint enable
-			__set_ACTLR(__get_ACTLR() | ACTLR_L1PE_Msk | ACTLR_FW_Msk | 0x02);
-			__ISB();
-			__DSB();
-		#elif (__CORTEX_A == 7U)
-			// set the ACTLR.SMP
-			__set_ACTLR(__get_ACTLR() | ACTLR_SMP_Msk);
-			__ISB();
-			__DSB();
-		#endif /* (__CORTEX_A == 9U) */
-	#endif
-#endif /* (__CORTEX_A == 7U) || (__CORTEX_A == 9U) */
+	L1C_InvalidateDCacheAll();
+	L1C_InvalidateICacheAll();
+	L1C_InvalidateBTAC();
+	L1C_EnableCaches();
+	L1C_EnableBTAC();
+	L1C_EnableCaches();
+	L1C_EnableBTAC();
+	// set the ACTLR.SMP
+	__set_ACTLR(__get_ACTLR() | ACTLR_SMP_Msk);
+	__ISB();
+	__DSB();
 }
 
 static void FLASHMEMINITFUNC
 sysinit_cache_L2_cpu0_initialize(void)
 {
 #if (__CORTEX_A == 7U) || (__CORTEX_A == 9U) || CPUSTYLE_ARM9
-	#if (CPUSTYLE_R7S721 && WITHISBOOTLOADER)
-	#else
-
-		#if (__L2C_PRESENT == 1) && defined (PL310_DATA_RAM_LATENCY)
-			L2C_Disable();
-			* (volatile uint32_t *) ((uintptr_t) L2C_310 + 0x010C) = PL310_DATA_RAM_LATENCY;	// reg1_data_ram_control
-			* (volatile uint32_t *) ((uintptr_t) L2C_310 + 0x0108) = PL310_TAG_RAM_LATENCY;	// reg1_tag_ram_control
-		#endif /* (__L2C_PRESENT == 1) */
-		#if (__L2C_PRESENT == 1)
-			// Enable Level 2 Cache
-			L2C_InvAllByWay();
-			L2C_Enable();
-		#endif
-	//arm_hardware_flush_all();
+	#if (__L2C_PRESENT == 1) && defined (PL310_DATA_RAM_LATENCY)
+		L2C_Disable();
+		* (volatile uint32_t *) ((uintptr_t) L2C_310 + 0x010C) = PL310_DATA_RAM_LATENCY;	// reg1_data_ram_control
+		* (volatile uint32_t *) ((uintptr_t) L2C_310 + 0x0108) = PL310_TAG_RAM_LATENCY;	// reg1_tag_ram_control
+	#endif /* (__L2C_PRESENT == 1) */
+	#if (__L2C_PRESENT == 1)
+		// Enable Level 2 Cache
+		L2C_InvAllByWay();
+		L2C_Enable();
 	#endif
+	//arm_hardware_flush_all();
 #endif /* (__CORTEX_A == 7U) || (__CORTEX_A == 9U) */
 }
 
-static void FLASHMEMINITFUNC
-sysinit_cache_cpu1_initialize(void)
+static void FLASHMEMINITFUNC sysinit_cache_cpu1_initialize(void)
 {
-#if (__CORTEX_A == 7U) || (__CORTEX_A == 9U)
-	#if (CPUSTYLE_R7S721 && WITHISBOOTLOADER)
-	#else
-		//arm_hardware_flush_all();
-	#endif
-#endif /* (__CORTEX_A == 7U) || (__CORTEX_A == 9U) */
 }
 
 /* функция вызывается из start-up до копирования в SRAM всех "быстрых" функций и до инициализации переменных
 */
 // watchdog disable, clock initialize, cache enable
-void
-FLASHMEMINITFUNC
-SystemInit(void)
+void FLASHMEMINITFUNC SystemInit(void)
 {
 	sysinit_fpu_initialize();
 	sysinit_pll_initialize();	// PLL iniitialize
@@ -2866,8 +1141,6 @@ SystemInit(void)
 }
 
 
-#if  (__CORTEX_A != 0) || CPUSTYLE_ARM9
-
 static void cortexa_cpuinfo(void)
 {
 	volatile uint_fast32_t vvv;
@@ -2876,9 +1149,6 @@ static void cortexa_cpuinfo(void)
 }
 
 #if WITHSMPSYSTEM
-
-#if CPUSTYLE_STM32MP1
-
 
 /*
  * Cores secure magic numbers
@@ -2943,34 +1213,6 @@ static void cortexa_mp_cpu1_start(uintptr_t startfunc)
 	GIC_SendSGI(SGI8_IRQn, 0x01 << 1, 0x00);	// CPU1, filer=0
 }
 
-#elif CPUSTYLE_XC7Z
-
-// See also:
-//	https://stackoverflow.com/questions/60873390/zynq-7000-minimum-asm-code-to-init-cpu1-from-cpu0
-
-static void cortexa_mp_cpu1_start(uintptr_t startfunc)
-{
-	* (volatile uint32_t *) 0xFFFFFFF0 = startfunc;	// Invoke at SVC context
-	arm_hardware_flush_all();	// startup code should be copyed in to sysram for example.
-	/* Generate an IT to core 1 */
-	__SEV();
-}
-
-#elif CPUSTYLE_XCZU
-
-// See also:
-//	https://stackoverflow.com/questions/60873390/zynq-7000-minimum-asm-code-to-init-cpu1-from-cpu0
-
-static void cortexa_mp_cpu1_start(uintptr_t startfunc)
-{
-	* (volatile uint32_t *) 0xFFFFFFF0 = startfunc;	// Invoke at SVC context
-	arm_hardware_flush_all();	// startup code should be copyed in to sysram for example.
-	/* Generate an IT to core 1 */
-	__SEV();
-}
-
-
-#endif /* CPUSTYLE_STM32MP1 */
 
 static RAMDTCM SPINLOCK_t cpu1init;
 
@@ -3085,293 +1327,18 @@ void cpump_initialize(void)
 
 #endif /* WITHSMPSYSTEM */
 
-#endif /*  (__CORTEX_A != 0) */
-
-#if CPUSTYLE_ATSAM3S
-
-static void 
-arm_cpu_atsam3s_pll_initialize(void)
-{
-	// Disable Watchdog
-	//WDT->WDT_MR = WDT_MR_WDDIS;
-
-	// Embedded Flash Wait State VDDCORE set at 1.65V
-	// 17 MHz - 1 cycle = FWS = 0
-	// 30 MHz - 2 cycle = FWS = 1
-	// 54 MHz - 3 cycle = FWS = 2
-	// 64 MHz - 4 cycle = FWS = 3
-
-	// Embedded Flash Wait State VDDCORE set at 1.80V
-	// 32 MHz - 1 cycle = FWS = 0
-	// 38 MHz - 2 cicle = FWS = 1
-	// 64 MHz - 3 cycls = FWS = 2
-
-#if CPU_FREQ == 64000000UL
-	enum { OSC_MUL = 32, OSC_DIV = 3, FWS = 2, noneedpll = 0 };	// 12 MHz / 3 * 32 = 128 MHz
-#elif CPU_FREQ == 48000000UL
-	enum { OSC_MUL = 8, OSC_DIV = 1, FWS = 2, noneedpll = 0 };	// 12 MHz / 1 * 8 = 96 MHz
-#elif CPU_FREQ == 32000000UL
-	enum { OSC_MUL = 16, OSC_DIV = 3, FWS = 1, noneedpll = 0 };	// 12 MHz / 3 * 16 = 96 MHz
-#else
-	enum { OSC_MUL = 1, OSC_DIV = 1, FWS = 1, noneedpll = 1 };	// 12 MHz / 3 * 16 = 96 MHz
-	//#error Unsupported CPU_FREQ value
-#endif
-
-	if (noneedpll)
-	{
-	}
-	else if (1)
-	{
-		// умножение кварцевого генератора
-		lowlevel_sam3s_init_pll_clock_xtal(OSC_MUL, OSC_DIV, FWS);
-	}
-	else if (0)
-	{
-		// умножение от внутреннего RC генератора
-		lowlevel_sam3s_init_pll_clock_RC12(OSC_MUL, OSC_DIV, FWS);	
-	}
-}
-#endif /* CPUSTYLE_ATSAM3S */
-
-#if CPUSTYLE_ATSAM4S
-static void 
-arm_cpu_atsam4s_pll_initialize(void)
-{
-	// Disable Watchdog
-	//WDT->WDT_MR = WDT_MR_WDDIS;
-
-	// Embedded Flash Wait State VDDCORE set at 1.65V
-	// 17 MHz - 1 cycle = FWS = 0
-	// 30 MHz - 2 cycle = FWS = 1
-	// 54 MHz - 3 cycle = FWS = 2
-	// 64 MHz - 4 cycle = FWS = 3
-
-	// Embedded Flash Wait State VDDCORE set at 1.80V
-	// 32 MHz - 1 cycle = FWS = 0
-	// 38 MHz - 2 cicle = FWS = 1
-	// 64 MHz - 3 cycls = FWS = 2
-
-#if CPU_FREQ == 120000000UL
-	enum { OSC_MUL = 60, OSC_DIV = 3, FWS = 5, noneedpll = 0 };	// 12 MHz / 3 * 60 = 240 MHz
-#elif CPU_FREQ == 112000000UL
-	enum { OSC_MUL = 56, OSC_DIV = 3, FWS = 5, noneedpll = 0 };	// 12 MHz / 3 * 40 = 224 MHz
-#elif CPU_FREQ == 104000000UL
-	enum { OSC_MUL = 52, OSC_DIV = 3, FWS = 5, noneedpll = 0 };	// 12 MHz / 3 * 52 = 208 MHz
-#elif CPU_FREQ == 96000000UL
-	enum { OSC_MUL = 48, OSC_DIV = 3, FWS = 5, noneedpll = 0 };	// 12 MHz / 3 * 40 = 160 MHz
-#elif CPU_FREQ == 80000000UL
-	enum { OSC_MUL = 40, OSC_DIV = 3, FWS = 4, noneedpll = 0 };	// 12 MHz / 3 * 40 = 160 MHz
-#elif CPU_FREQ == 64000000UL
-	enum { OSC_MUL = 32, OSC_DIV = 3, FWS = 3, noneedpll = 0 };	// 12 MHz / 3 * 32 = 128 MHz
-#elif CPU_FREQ == 48000000UL
-	enum { OSC_MUL = 8, OSC_DIV = 1, FWS = 2, noneedpll = 0 };	// 12 MHz / 1 * 8 = 96 MHz
-#elif CPU_FREQ == 32000000UL
-	enum { OSC_MUL = 16, OSC_DIV = 3, FWS = 1, noneedpll = 0 };	// 12 MHz / 3 * 16 = 96 MHz
-#else
-	enum { OSC_MUL = 1, OSC_DIV = 1, FWS = 1, noneedpll = 1 };	// 12 MHz / 3 * 16 = 96 MHz
-	//#error Unsupported CPU_FREQ value
-#endif
-
-	if (noneedpll)
-	{
-	}
-	else if (1)
-	{
-		// умножение кварцевого генератора
-		lowlevel_sam4s_init_pll_clock_xtal(OSC_MUL, OSC_DIV, FWS);
-	}
-	else if (0)
-	{
-		// умножение от внутреннего RC генератора
-		lowlevel_sam4s_init_pll_clock_RC12(OSC_MUL, OSC_DIV, FWS);	
-	}
-}
-#endif /* CPUSTYLE_ATSAM4S */
-
-#if CPUSTYLE_ATXMEGA
-
-static uint8_t CLKSYS_Main_ClockSource_Select( CLK_SCLKSEL_t clockSource )
-{
-	auto void CCPWrite(volatile uint8_t * address, uint8_t value)
-	{
-		volatile uint8_t * const tmpAddr = address;
-		//system_disableIRQ();
-	#ifdef RAMPZ
-		RAMPZ = 0;
-	#endif
-		asm volatile(
-			"movw r30,  %0"	      "\n\t"
-			"ldi  r16,  %2"	      "\n\t"	// take signature to R16
-			"out   %3, r16"	      "\n\t"	// write to CCP
-			"st     Z,  %1"       "\n\t"	// write to desired register
-			:
-			: "r" (tmpAddr), "r" (value), "M" (CCP_IOREG_gc), "i" (& CCP)
-			: "r16", "r30", "r31"
-			);
-
-		//system_enableIRQ();
-	}
-
-	const uint8_t clkCtrl = (CLK.CTRL & ~CLK_SCLKSEL_gm) | clockSource;
-#if 0
-	// Так нельзя, работоспособность кода зависит от оптимизаций.
-	CCP = CCP_IOREG_gc;   	
-	CLK.CTRL = clkCtrl;
-#else
-	CCPWrite(& CLK.CTRL, clkCtrl);
-#endif
-	return (CLK.CTRL & clockSource);
-}
 
 
-static void cpu_atxmega_switchto32MHz()
-{
-	// switch to 32 MHz
-	OSC.CTRL |= OSC_RC32MEN_bm;
-	while ((OSC.STATUS & OSC_RC32MRDY_bm ) == 0)
-		;
-	CLKSYS_Main_ClockSource_Select(CLK_SCLKSEL_RC32M_gc);
-	OSC.CTRL &= ~ (OSC_RC2MEN_bm | OSC_RC32KEN_bm);
-}
 
-#endif /* CPUSTYLE_ATXMEGA */
-
-#if CPUSTYPE_TMS320F2833X
-
-void cpu_tms320f2833x_pll_initialize(
-		uint_fast8_t pllcrDIV, 		// PLL multiplier
-		uint_fast8_t pllstsDIVSEL)	// PLL divider (from PLL to CPU)
-{
-    /* check if running in Limp mode; if yes, abort */
-    if (PLLSTS & PLLSTS_MCLKSTS_BIT) {
-        //Boot_limpAbort();
-    	for (;;)
-    		;
-    }
-
-    /* set max divide select (DIVSEL = 0) */
-    PLLSTS &= ~PLLSTS_DIVSEL_BITS;
-
-    /* temporarily disable failed oscillator detect */
-    PLLSTS |= PLLSTS_MCLKOFF_BIT;
-
-    /* set the new PLL multiplier value */
-    PLLCR = pllcrDIV;
-
-    /* wait for the PLL to relock */
-    while (!(PLLSTS & PLLSTS_PLLLOCKS_BIT)) {
-    };
-
-    /* re-enable failed oscillator detection */
-    PLLSTS &= ~PLLSTS_MCLKOFF_BIT;
-
-    /* set divide select bits (DIVSEL) */
-    PLLSTS |= pllstsDIVSEL << PLLSTS_DIVSEL_SHIFTBITS;
-}
-
-
-#pragma CODE_SECTION(cpu_tms320f2833x_flash_waitstates, "ramfuncs")
-
-static void
-cpu_tms320f2833x_flash_waitstates(uint_fast8_t flashws, uint_fast8_t otpws)
-{
-	// To ensure the FLASH in high power mode
-	FPWR = 0x003;
-	asm(" RPT #8 || NOP");
-
-	//Enable Flash Pipeline mode to improve performance
-	//of code executed from Flash.
-	//FlashRegs.FOPT.bit.ENPIPE = 1;
-	FOPT |= 0x0001;
-	asm(" RPT #8 || NOP");
-
-	//                CAUTION
-	//Minimum waitstates required for the flash operating
-	//at a given CPU rate must be characterized by TI.
-	//Refer to the datasheet for the latest information.
-
-	//Set the Paged Waitstate for the Flash.
-	//FlashRegs.FBANKWAIT.bit.PAGEWAIT = 3;
-	FBANKWAIT = (FBANKWAIT & ~ 0x0f00) | (flashws << 8);
-	asm(" RPT #8 || NOP");
-
-	//Set the Random Waitstate for the Flash.
-	//FlashRegs.FBANKWAIT.bit.RANDWAIT = 3;
-	FBANKWAIT = (FBANKWAIT & ~ 0x000f) | (flashws << 0);
-	asm(" RPT #8 || NOP");
-
-	//Set the Waitstate for the OTP.
-	//FlashRegs.FOTPWAIT.bit.OTPWAIT = 5;
-	FOTPWAIT = (FOTPWAIT & ~ 0x000f) | (otpws << 0);
-	asm(" RPT #8 || NOP");
-
-	//                CAUTION
-	//ONLY THE DEFAULT VALUE FOR THESE 2 REGISTERS SHOULD BE USED
-	//FlashRegs.FSTDBYWAIT.bit.STDBYWAIT = 0x01FF;
-	FSTDBYWAIT = (FSTDBYWAIT & ~ 0x01FF) | 0x01FF;
-	asm(" RPT #8 || NOP");
-	//FlashRegs.FACTIVEWAIT.bit.ACTIVEWAIT = 0x01FF;
-	FACTIVEWAIT = (FACTIVEWAIT & ~ 0x01FF) | 0x01FF;
-	asm(" RPT #8 || NOP");
-
-	//Force a pipeline flush to ensure that the write to
-	//the last register configured occurs before returning.
-
-	asm(" RPT #8 || NOP");
-}
-#endif /* CPUSTYPE_TMS320F2833X */
 
 // секция init больше не нужна
 void cpu_initdone(void)
 {
-#if WITHISBOOTLOADER
-	#if BOOTLOADER_RAMSIZE
-		bootloader_copyapp(BOOTLOADER_RAMAREA);	/* копирование исполняемого образа (если есть) в требуемое место */
-	#endif /* BOOTLOADER_RAMSIZE */
-#if CPUSTYLE_R7S721
-
-	if ((CPG.STBCR9 & CPG_STBCR9_BIT_MSTP93) == 0)
-	{
-#if 0
-		// Когда загрузочный образ FPGA будт оставаться в SERIAL FLASH, запретить отключение.
-		while ((SPIBSC0.CMNSR & (1u << 0)) == 0)	// TEND bit
-			;
-
-		SPIBSC0.CMNCR = (SPIBSC0.CMNCR & ~ ((1 << SPIBSC_CMNCR_BSZ))) |	// BSZ
-			(1 << SPIBSC_CMNCR_BSZ_SHIFT) |
-			0;
-		(void) SPIBSC0.CMNCR;	/* Dummy read */
-
-		// SPI multi-io Read Cache Flush
-		SPIBSC0.DRCR |= (1u << SPIBSC_DRCR_RCF_SHIFT);	// RCF bit
-		(void) SPIBSC0.DRCR;		/* Dummy read */
-
-		local_delay_ms(50);
-
-		SPIBSC0.SMCR = 0;
-		(void) SPIBSC0.SMCR;	/* Dummy read */
-
-#endif
-		// spi multi-io hang off
-		//CPG.STBCR9 |= CPG_STBCR9_BIT_MSTP93;	// Module Stop 93	- 1: Clock supply to channel 0 of the SPI multi I/O bus controller is halted.
-		//(void) CPG.STBCR9;			/* Dummy read */
-	}
-
-#endif /* CPUSTYLE_R7S721 */
-
-#endif /* WITHISBOOTLOADER */
-
-	//spidf_hangoff();	// Отключить процессор от SERIAL FLASH
 }
 
 void arm_hardware_reset(void)
 {
-#if defined (__NVIC_PRIO_BITS)
-	NVIC_SystemReset();
-#endif /* defined (__NVIC_PRIO_BITS) */
-#if CPUSTYLE_STM32MP1
 	RCC->MP_GRSTCSETR = RCC_MP_GRSTCSETR_MPSYSRST_Msk;
-#endif /* CPUSTYLE_STM32MP1 */
 	for (;;)
 		;
 }
@@ -3379,15 +1346,11 @@ void arm_hardware_reset(void)
 /* разрешение сторожевого таймера в устройстве */
 void watchdog_initialize(void)
 {
-#if CPUSTYLE_STM32MP1
-#endif /* CPUSTYLE_STM32MP1 */
 }
 
 /* перезапуск сторожевого таймера */
 void watchdog_ping(void)
 {
-#if CPUSTYLE_STM32MP1
-#endif /* CPUSTYLE_STM32MP1 */
 }
 
 // optimizer test: from electronix.ru - should be one divmod call

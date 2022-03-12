@@ -7,7 +7,7 @@
 
 #include "hardware.h"	/* зависящие от процессора функции работы с портами */
 
-#include "board.h"
+//#include "board.h"
 #include "gpio.h"
 #include "clocks.h"
 #include "spi.h"
