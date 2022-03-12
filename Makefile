@@ -7,15 +7,15 @@ ARCHDIR = arch/stm32mp1xx
 LINKSCR = build/stm32mp157axx/stm32mp15xx_ca7_app.ld
 
 #Same?
-MCU =  -mcpu=cortex-a7 -mfpu=vfpv4 -mfloat-abi=hard
+# MCU =  -mcpu=cortex-a7 -mfpu=vfpv4 -mfloat-abi=hard
 
-MCFLAGS = 	$(MCU) \
-			-fno-math-errno -funroll-loops \
-			-fgraphite-identity \
-			-ffunction-sections \
-			-fdata-sections \
-			-ffat-lto-objects \
-			-ftree-vectorize \
+# MCFLAGS = 	$(MCU) \
+# 			-fno-math-errno -funroll-loops \
+# 			-fgraphite-identity \
+# 			-ffunction-sections \
+# 			-fdata-sections \
+# 			-ffat-lto-objects \
+# 			-ftree-vectorize \
 
 # 157C vs 157A matters?
 # =1 or just defined matters?
@@ -24,24 +24,25 @@ MCFLAGS = 	$(MCU) \
 # 			   -DSTM32MP1 \
 # 			   -DCORE_CA7 \
 # 			   $(EXTRA_ARCH_CFLAGS)
-EXTRA_ARCH_CFLAGS += -D"NDEBUG"=1 -D"CPUSTYLE_STM32MP1"=1 -D"EGL_STATIC_LIBRARY"=1 -D"STM32MP157Axx"=1
+
+EXTRA_ARCH_CFLAGS = -D"NDEBUG"=1 -D"CPUSTYLE_STM32MP1"=1 -D"EGL_STATIC_LIBRARY"=1 -D"STM32MP157Axx"=1 
 EXTRA_ARCH_CFLAGS += -D"USE_HAL_DRIVER"=1 
 EXTRA_ARCH_CFLAGS += -D"CORE_CA7"=1 -D"USE_FULL_LL_DRIVER"=1
 
-CFLAGS = 	-std=gnu99 -Wstrict-prototypes \
-			$(MCFLAGS) \
-			-gdwarf-2 -fomit-frame-pointer -Wall \
-			$(EXTRA_ARCH_CFLAGS) \
+# CFLAGS = 	-std=gnu99 -Wstrict-prototypes \
+# 			$(MCFLAGS) \
+# 			-gdwarf-2 -fomit-frame-pointer -Wall \
+# 			$(EXTRA_ARCH_CFLAGS) \
 
 EXTRA_AFLAGS = -D__ASSEMBLY__=1
 
 EXTRALDFLAGS = -lm
-LFLAGS = $(MCFLAGS) $(OPTFLAG) \
-		 -nostartfiles \
-		 -Xlinker --gc-sections \
-		 -T$(LINKSCR) \
-		 -Wl,-Map=$(BUILDDIR)/$(BINARYNAME).map,--cref \
-		 -lm
+# LFLAGS = $(MCFLAGS) $(OPTFLAG) \
+# 		 -nostartfiles \
+# 		 -Xlinker --gc-sections \
+# 		 -T$(LINKSCR) \
+# 		 -Wl,-Map=$(BUILDDIR)/$(BINARYNAME).map,--cref \
+# 		 -lm
 
 #LINK_STDLIB = 
 
@@ -94,7 +95,8 @@ INCLUDES = -I. \
 		   -I$(CMSISDIR)/Core_A/Include \
 		   -I$(CMSISDIR)/Core_A/Source \
 
-CFLAGS += $(INCLUDES)
+#CFLAGS += $(INCLUDES)
+LINK_STDLIB =
 
 include makefile-common.mk
 
